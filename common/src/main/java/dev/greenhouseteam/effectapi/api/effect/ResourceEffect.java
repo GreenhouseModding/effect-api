@@ -14,7 +14,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -31,6 +33,10 @@ public class ResourceEffect<T> extends Effect {
         this.resourceType = resourceType;
         this.defaultValue = defaultValue;
         ID_TO_EFFECT_MAP.put(id, this);
+    }
+
+    public static void clearEffectMap() {
+        ID_TO_EFFECT_MAP.clear();
     }
 
     @Override
@@ -96,8 +102,20 @@ public class ResourceEffect<T> extends Effect {
     }
 
     public static class EffectCodec implements Codec<ResourceEffect<?>> {
+        private static boolean registryPhase = true;
+        private static final List<ResourceLocation> LOADED_IDS = new ArrayList<>();
+
         protected EffectCodec() {
 
+        }
+
+
+        public static void setRegistryPhase(boolean value) {
+            registryPhase = value;
+        }
+
+        public static void clearLoadedIds() {
+            LOADED_IDS.clear();
         }
 
         @Override
@@ -110,6 +128,9 @@ public class ResourceEffect<T> extends Effect {
             if (id.isError())
                 return DataResult.error(() -> "Failed to decode 'id' field for `effectapi:resource` effect." + id.error().get().message());
 
+            if (LOADED_IDS.contains(id.getOrThrow().getFirst()))
+                return DataResult.error(() -> "Attempted to register duplicate resource ID '" + id.getOrThrow().getFirst() + "'.");
+
             DataResult<Pair<Codec<?>, T>> resourceType = EffectAPIRegistries.RESOURCE_TYPE.byNameCodec().decode(ops, mapLike.getOrThrow().get("resource_type"));
             if (resourceType.isError())
                 return DataResult.error(() -> "Failed to decode 'resource_type' field for `effectapi:resource` effect." + resourceType.error().get().message());
@@ -120,6 +141,8 @@ public class ResourceEffect<T> extends Effect {
                 return DataResult.error(() -> "Failed to decode 'default_value' field for `effectapi:resource` effect." + resourceType.error().get().message());
 
             ResourceEffect<?> effect = new ResourceEffect<>(id.getOrThrow().getFirst(), resourceTypeCodec, defaultValue.getOrThrow().getFirst());
+            if (registryPhase)
+                LOADED_IDS.add(id.getOrThrow().getFirst());
             return DataResult.success(Pair.of(effect, input));
         }
 

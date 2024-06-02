@@ -2,6 +2,7 @@ package dev.greenhouseteam.effectapi.impl;
 
 import dev.greenhouseteam.effectapi.api.EffectAPIEffects;
 import dev.greenhouseteam.effectapi.api.EffectAPIResourceTypes;
+import dev.greenhouseteam.effectapi.api.effect.ResourceEffect;
 import dev.greenhouseteam.effectapi.api.network.clientbound.ChangeResourceClientboundPacket;
 import dev.greenhouseteam.effectapi.api.network.clientbound.SyncResourcesAttachmentClientboundPacket;
 import dev.greenhouseteam.effectapi.impl.registry.EffectAPIAttachments;
@@ -13,6 +14,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
@@ -58,6 +60,17 @@ public class EffectAPINeoForge {
         public static void onStartTracking(PlayerEvent.StartTracking event) {
             if (event.getTarget().hasData(EffectAPIAttachments.RESOURCES))
                 EffectAPI.getHelper().sendClientboundTracking(new SyncResourcesAttachmentClientboundPacket(event.getTarget().getId(), event.getTarget().getData(EffectAPIAttachments.RESOURCES)), event.getTarget());
+        }
+
+        @SubscribeEvent
+        public static void onServerStart(ServerStartedEvent event) {
+            ResourceEffect.EffectCodec.setRegistryPhase(false);
+            ResourceEffect.EffectCodec.clearLoadedIds();
+        }
+
+        @SubscribeEvent
+        public static void onServerStop(ServerStartedEvent event) {
+            ResourceEffect.EffectCodec.setRegistryPhase(true);
         }
     }
 }
