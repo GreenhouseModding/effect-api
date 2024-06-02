@@ -3,7 +3,7 @@
     {
       "id": "test:hidden",
       "resource_type": "effectapi:float",
-      "default_value": false,
+      "default_value": 5.0,
       "hidden": true
     }
   ]
