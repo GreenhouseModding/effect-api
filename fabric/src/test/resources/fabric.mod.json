@@ -1,8 +1,8 @@
 {
     "schemaVersion": 1,
-    "id": "${mod_id}",
+    "id": "${mod_id}test",
     "version": "${version}",
-    "name": "${mod_name}",
+    "name": "${mod_name} Test",
     "description": "${mod_description}",
     "authors": [
         "${mod_author}"
@@ -20,18 +20,14 @@
     "environment": "*",
     "entrypoints": {
         "main": [
-            "dev.greenhouseteam.effectapi.impl.EffectAPIFabric"
+            "dev.greenhouseteam.test.EffectAPITestFabric"
         ],
         "client": [
-            "dev.greenhouseteam.effectapi.impl.client.EffectAPIFabricClient"
-        ],
-        "preLaunch": [
-            "dev.greenhouseteam.effectapi.impl.EffectAPIFabricPre"
+            "dev.greenhouseteam.test.client.EffectAPITestFabricClient"
         ]
     },
     "mixins": [
-        "${mod_id}.mixins.json",
-        "${mod_id}.fabric.mixins.json"
+        "${mod_id}test.fabric.mixins.json"
     ],
     "depends": {
         "fabricloader": "${fabric_loader_range}",
