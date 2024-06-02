@@ -2,6 +2,8 @@ package dev.greenhouseteam.effectapi.impl;
 
 import dev.greenhouseteam.effectapi.api.EffectAPIEffects;
 import dev.greenhouseteam.effectapi.api.EffectAPIResourceTypes;
+import dev.greenhouseteam.effectapi.api.command.DataResourceArgument;
+import dev.greenhouseteam.effectapi.api.command.DataResourceValueArgument;
 import dev.greenhouseteam.effectapi.api.effect.ResourceEffect;
 import dev.greenhouseteam.effectapi.api.network.clientbound.ChangeResourceClientboundPacket;
 import dev.greenhouseteam.effectapi.api.network.clientbound.SyncResourcesAttachmentClientboundPacket;
@@ -9,6 +11,9 @@ import dev.greenhouseteam.effectapi.impl.registry.EffectAPIAttachments;
 import dev.greenhouseteam.effectapi.api.registry.EffectAPIRegistries;
 import dev.greenhouseteam.effectapi.impl.registry.internal.RegistrationCallback;
 import dev.greenhouseteam.effectapi.platform.EffectAPIPlatformHelperNeoForge;
+import net.minecraft.commands.synchronization.ArgumentTypeInfos;
+import net.minecraft.commands.synchronization.SingletonArgumentInfo;
+import net.minecraft.core.registries.Registries;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -31,6 +36,8 @@ public class EffectAPINeoForge {
     public static class ModEvents {
         @SubscribeEvent
         public static void registerContent(RegisterEvent event) {
+            event.register(Registries.COMMAND_ARGUMENT_TYPE, EffectAPI.asResource("data_resource"), () -> ArgumentTypeInfos.registerByClass(DataResourceArgument.class, SingletonArgumentInfo.contextFree(DataResourceArgument::resource)));
+            event.register(Registries.COMMAND_ARGUMENT_TYPE, EffectAPI.asResource("data_resource_type"), () -> ArgumentTypeInfos.registerByClass(DataResourceValueArgument.class, new DataResourceValueArgument.Info()));
             register(event, EffectAPIAttachments::registerAll);
             register(event, EffectAPIEffects::registerAll);
             register(event, EffectAPIResourceTypes::registerAll);

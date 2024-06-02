@@ -1,0 +1,10 @@
+{
+  "effectapi:resource": [
+    {
+      "id": "test:hidden",
+      "resource_type": "effectapi:float",
+      "default_value": false,
+      "hidden": true
+    }
+  ]
+}

@@ -16,9 +16,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 public class ResourceEffect<T> extends Effect {
     public static final Codec<ResourceEffect<?>> CODEC = new EffectCodec();
@@ -27,12 +29,19 @@ public class ResourceEffect<T> extends Effect {
     private final ResourceLocation id;
     private final Codec<T> resourceType;
     private T defaultValue;
+    private boolean hidden;
 
-    public ResourceEffect(ResourceLocation id, Codec<T> resourceType, T defaultValue) {
+    public ResourceEffect(ResourceLocation id, Codec<T> resourceType,
+                          T defaultValue, boolean hidden) {
         this.id = id;
         this.resourceType = resourceType;
         this.defaultValue = defaultValue;
+        this.hidden = hidden;
         ID_TO_EFFECT_MAP.put(id, this);
+    }
+
+    public static Map<ResourceLocation, ResourceEffect<?>> getIdMap() {
+        return Map.copyOf(ID_TO_EFFECT_MAP);
     }
 
     public static void clearEffectMap() {
@@ -76,6 +85,10 @@ public class ResourceEffect<T> extends Effect {
 
     public T getDefaultValue() {
         return defaultValue;
+    }
+
+    public boolean isHidden() {
+        return hidden;
     }
 
     public static class ResourceHolder<T> {
@@ -124,23 +137,31 @@ public class ResourceEffect<T> extends Effect {
             if (mapLike.isError())
                 return DataResult.error(() -> mapLike.error().get().message());
 
-            DataResult<Pair<ResourceLocation, T>> id = ResourceLocation.CODEC.decode(ops, mapLike.getOrThrow().get("id"));
+            var id = ResourceLocation.CODEC.decode(ops, mapLike.getOrThrow().get("id"));
             if (id.isError())
                 return DataResult.error(() -> "Failed to decode 'id' field for `effectapi:resource` effect." + id.error().get().message());
 
             if (LOADED_IDS.contains(id.getOrThrow().getFirst()))
                 return DataResult.error(() -> "Attempted to register duplicate resource ID '" + id.getOrThrow().getFirst() + "'.");
 
-            DataResult<Pair<Codec<?>, T>> resourceType = EffectAPIRegistries.RESOURCE_TYPE.byNameCodec().decode(ops, mapLike.getOrThrow().get("resource_type"));
+            var resourceType = EffectAPIRegistries.RESOURCE_TYPE.byNameCodec().decode(ops, mapLike.getOrThrow().get("resource_type"));
             if (resourceType.isError())
                 return DataResult.error(() -> "Failed to decode 'resource_type' field for `effectapi:resource` effect." + resourceType.error().get().message());
 
             Codec<Object> resourceTypeCodec = (Codec<Object>) resourceType.getOrThrow().getFirst();
-            DataResult<Pair<Object, T>> defaultValue = resourceTypeCodec.decode(ops, mapLike.getOrThrow().get("default_value"));
+            var defaultValue = resourceTypeCodec.decode(ops, mapLike.getOrThrow().get("default_value"));
             if (defaultValue.isError())
                 return DataResult.error(() -> "Failed to decode 'default_value' field for `effectapi:resource` effect." + resourceType.error().get().message());
 
-            ResourceEffect<?> effect = new ResourceEffect<>(id.getOrThrow().getFirst(), resourceTypeCodec, defaultValue.getOrThrow().getFirst());
+            boolean hidden = false;
+            if (mapLike.getOrThrow().get("hidden") != null) {
+                var hiddenResult = Codec.BOOL.decode(ops, mapLike.getOrThrow().get("hidden"));
+                if (hiddenResult.isError())
+                    return DataResult.error(() -> "Failed to decode 'hidden' field for 'effectapi:resource' effect." + hiddenResult.error().get().message());
+                hidden = hiddenResult.getOrThrow().getFirst();
+            }
+
+            ResourceEffect<?> effect = new ResourceEffect<>(id.getOrThrow().getFirst(), resourceTypeCodec, defaultValue.getOrThrow().getFirst(), hidden);
             if (registryPhase)
                 LOADED_IDS.add(id.getOrThrow().getFirst());
             return DataResult.success(Pair.of(effect, input));
