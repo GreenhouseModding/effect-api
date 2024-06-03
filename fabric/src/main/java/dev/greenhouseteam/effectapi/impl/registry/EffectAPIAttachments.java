@@ -11,6 +11,7 @@ public class EffectAPIAttachments {
     public static final AttachmentType<ResourcesAttachment> RESOURCES = AttachmentRegistry.<ResourcesAttachment>builder()
             .initializer(() -> new ResourcesAttachment(new HashMap<>()))
             .persistent(ResourcesAttachment.CODEC)
+            .copyOnDeath()
             .buildAndRegister(ResourcesAttachment.ID);
 
     public static void init() {
