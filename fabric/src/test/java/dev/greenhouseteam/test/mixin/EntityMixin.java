@@ -1,6 +1,6 @@
-package dev.greenhouseteam.effectapi.mixin.fabric;
+package dev.greenhouseteam.test.mixin;
 
-import dev.greenhouseteam.effectapi.impl.registry.EffectAPIAttachments;
+import dev.greenhouseteam.test.EffectAPITestFabric;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,7 +15,7 @@ public abstract class EntityMixin {
 
     @Inject(method = "tick", at = @At("TAIL"))
     private void effectapitest$tick(CallbackInfo ci) {
-        if (!this.level().isClientSide() && ((Entity)(Object)this).hasAttached(EffectAPIAttachments.EFFECTS))
-            ((Entity)(Object)this).getAttached(EffectAPIAttachments.EFFECTS).tick();
+        if (!level().isClientSide() && ((Entity)(Object)this).hasAttached(EffectAPITestFabric.POWERS))
+            ((Entity)(Object)this).getAttached(EffectAPITestFabric.POWERS).tick();
     }
 }
