@@ -92,6 +92,10 @@ public class EffectsAttachment {
                 if (component.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect)
                     newMap.computeIfAbsent(holder.getKey(), k -> new Reference2ObjectArrayMap<>()).computeIfAbsent(component.type(), t -> new ArrayList<>()).addAll((Collection<? extends EffectAPIEffect>) list);
         }
+        Optional<EffectSource> opt = allComponents.keySet().stream().filter(effectSource -> effectSource.id() == source.id()).findFirst();
+        if (opt.isPresent() && !opt.get().equals(source))
+            throw new IllegalStateException("Attempted to add source with id '" + source.id() + "' that differs to the source that is already applied.");
+
         newMap.computeIfAbsent(source, k -> new Reference2ObjectArrayMap<>()).computeIfAbsent(effect.type(), t -> new ArrayList<>()).add(effect);
 
         Map<EffectSource, DataComponentMap> finalMap = new HashMap<>();

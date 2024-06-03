@@ -31,6 +31,7 @@ public class PowersAttachment {
             attachment.addDelegatedPower(power);
         return attachment;
     }, attachment -> attachment.powers);
+    public static final EffectSource SOURCE = new EffectSource(ID, true);
 
     private List<Holder<Power>> powers = new ArrayList<>();
     private List<Holder<Power>> powersToApply = new ArrayList<>();
@@ -46,7 +47,7 @@ public class PowersAttachment {
         powersToApply.forEach(p -> {
             for (var entry : p.value().effects())
                 for (EffectAPIEffect effect : (List<EffectAPIEffect>) entry.value())
-                    EffectAPI.getHelper().addEffect(entity, effect, new EffectSource(ID, true));
+                    EffectAPI.getHelper().addEffect(entity, effect, SOURCE);
             if (entity.level().isClientSide())
                 return;
         });
@@ -66,7 +67,7 @@ public class PowersAttachment {
         powers.add(power);
         for (var entry : power.value().effects())
             for (EffectAPIEffect effect : (List<EffectAPIEffect>) entry.value())
-                EffectAPI.getHelper().addEffect(entity, effect, new EffectSource(ID, true));
+                EffectAPI.getHelper().addEffect(entity, effect, SOURCE);
         if (entity.level().isClientSide())
             return;
         EffectAPI.getHelper().sendClientboundTracking(new SyncPowerAttachmentClientboundPacket(entity.getId(), List.of(power), false), entity);
@@ -81,7 +82,7 @@ public class PowersAttachment {
         powers.remove(power);
         for (var entry : power.value().effects())
             for (EffectAPIEffect effect : (List<EffectAPIEffect>) entry.value())
-                EffectAPI.getHelper().removeEffect(entity, effect, new EffectSource(ID, true));
+                EffectAPI.getHelper().removeEffect(entity, effect, SOURCE);
         if (entity.level().isClientSide())
             return;
         EffectAPI.getHelper().sendClientboundTracking(new SyncPowerAttachmentClientboundPacket(entity.getId(), List.of(power), true), entity);
