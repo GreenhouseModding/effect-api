@@ -35,24 +35,24 @@ public class EffectUtil {
         return builder.build();
     }
 
-    public static boolean handleChangedActives(Entity entity, DataComponentMap newMap, DataComponentMap oldMap) {
-        List<TypedDataComponent<?>> oldValues = oldMap.stream().toList();
-        List<TypedDataComponent<?>> newValues = newMap.stream().toList();
+    public static boolean hasUpdatedActives(Entity entity, DataComponentMap newMap, DataComponentMap oldMap) {
+        List<?> oldValues = oldMap.stream().map(TypedDataComponent::value).toList();
+        List<?> newValues = newMap.stream().map(TypedDataComponent::value).toList();
 
         if (oldValues.equals(newValues))
             return false;
 
-        newValues.stream().filter(object -> !oldValues.contains(object)).forEach(component -> {
-            if (component.value() instanceof List<?> list)
-                for (Object value : list)
-                    if (value instanceof EffectAPIEffect effect)
+        newValues.stream().filter(object -> !oldValues.contains(object)).forEach(value -> {
+            if (value instanceof List<?> list)
+                for (Object v : list)
+                    if (v instanceof EffectAPIEffect effect)
                         if (effect.paramSet() == EffectAPILootContextParamSets.ENTITY)
                             effect.onAdded(EffectAPIEffect.createEntityOnlyContext(entity));
         });
-        oldValues.stream().filter(object -> !newValues.contains(object)).forEach(component -> {
-            if (component.value() instanceof List<?> list)
-                for (Object value : list)
-                    if (value instanceof EffectAPIEffect effect)
+        oldValues.stream().filter(object -> !newValues.contains(object)).forEach(value -> {
+            if (value instanceof List<?> list)
+                for (Object v : list)
+                    if (v instanceof EffectAPIEffect effect)
                         if (effect.paramSet() == EffectAPILootContextParamSets.ENTITY)
                             effect.onRemoved(EffectAPIEffect.createEntityOnlyContext(entity));
         });

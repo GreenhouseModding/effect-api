@@ -75,7 +75,7 @@ public class PowersAttachment {
     private void updateActiveComponents() {
         DataComponentMap previous = activeComponents;
         DataComponentMap potential = EffectUtil.getActive(provider, allComponents);
-        if (EffectUtil.handleChangedActives(provider, potential, previous)) {
+        if (EffectUtil.hasUpdatedActives(provider, potential, previous)) {
             activeComponents = potential;
             sync();
         }
