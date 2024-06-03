@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.List;
 
 @Mixin(RegistryDataLoader.class)
-public class RegsistryDataLoaderMixin {
+public class RegistryDataLoaderMixin {
     @Inject(method = "load(Lnet/minecraft/resources/RegistryDataLoader$LoadingFunction;Lnet/minecraft/core/RegistryAccess;Ljava/util/List;)Lnet/minecraft/core/RegistryAccess$Frozen;", at = @At("HEAD"))
     private static void effectapi$setRegistryPhase(RegistryDataLoader.LoadingFunction loadingFunction, RegistryAccess access, List<RegistryDataLoader.RegistryData<?>> data, CallbackInfoReturnable<RegistryAccess.Frozen> cir) {
         ResourceEffect.EffectCodec.setRegistryPhase(true);

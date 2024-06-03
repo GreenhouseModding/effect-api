@@ -111,7 +111,7 @@ public record ResourceEffect<T>(ResourceLocation id, Codec<T> resourceType,
     }
 
     public static class EffectCodec implements Codec<ResourceEffect<?>> {
-        private static boolean registryPhase = true;
+        private static boolean registryPhase = false;
         private static final List<ResourceLocation> LOADED_IDS = new ArrayList<>();
 
         protected EffectCodec() {
