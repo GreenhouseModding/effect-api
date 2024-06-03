@@ -36,25 +36,21 @@ public class EffectUtil {
     }
 
     public static boolean hasUpdatedActives(Entity entity, DataComponentMap newMap, DataComponentMap oldMap) {
-        List<?> oldValues = oldMap.stream().map(TypedDataComponent::value).toList();
-        List<?> newValues = newMap.stream().map(TypedDataComponent::value).toList();
+        List<?> oldValues = oldMap.stream().flatMap(component -> ((List<?>)component.value()).stream()).toList();
+        List<?> newValues = newMap.stream().flatMap(component -> ((List<?>)component.value()).stream()).toList();
 
         if (oldValues.equals(newValues))
             return false;
 
         newValues.stream().filter(object -> !oldValues.contains(object)).forEach(value -> {
-            if (value instanceof List<?> list)
-                for (Object v : list)
-                    if (v instanceof EffectAPIEffect effect)
-                        if (effect.paramSet() == EffectAPILootContextParamSets.ENTITY)
-                            effect.onAdded(EffectAPIEffect.createEntityOnlyContext(entity));
+            if (value instanceof EffectAPIEffect effect)
+                if (effect.paramSet() == EffectAPILootContextParamSets.ENTITY)
+                    effect.onAdded(EffectAPIEffect.createEntityOnlyContext(entity));
         });
         oldValues.stream().filter(object -> !newValues.contains(object)).forEach(value -> {
-            if (value instanceof List<?> list)
-                for (Object v : list)
-                    if (v instanceof EffectAPIEffect effect)
-                        if (effect.paramSet() == EffectAPILootContextParamSets.ENTITY)
-                            effect.onRemoved(EffectAPIEffect.createEntityOnlyContext(entity));
+            if (value instanceof EffectAPIEffect effect)
+                if (effect.paramSet() == EffectAPILootContextParamSets.ENTITY)
+                    effect.onRemoved(EffectAPIEffect.createEntityOnlyContext(entity));
         });
 
         return true;
