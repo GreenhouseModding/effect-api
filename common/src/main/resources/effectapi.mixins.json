@@ -6,9 +6,11 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "DataComponentMapBuilderAccessor",
+    "EntitySelectorAccessor",
     "RegistryDataLoaderMixin"
   ],
   "client": [
+    "client.ClientLevelAccessor"
   ],
   "server": [],
   "injectors": {

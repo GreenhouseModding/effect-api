@@ -21,16 +21,15 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 public record ResourceEffect<T>(ResourceLocation id, Codec<T> resourceType,
-                                T defaultValue, boolean hidden) implements EffectAPIEffect {
+                                T defaultValue) implements EffectAPIEffect {
     public static final Codec<ResourceEffect<?>> CODEC = new EffectCodec();
     private static final Map<ResourceLocation, ResourceEffect<?>> ID_TO_EFFECT_MAP = new HashMap<>();
 
     public ResourceEffect(ResourceLocation id, Codec<T> resourceType,
-                          T defaultValue, boolean hidden) {
+                          T defaultValue) {
         this.id = id;
         this.resourceType = resourceType;
         this.defaultValue = defaultValue;
-        this.hidden = hidden;
         ID_TO_EFFECT_MAP.put(id, this);
     }
 
@@ -81,10 +80,6 @@ public record ResourceEffect<T>(ResourceLocation id, Codec<T> resourceType,
 
     public T getDefaultValue() {
         return defaultValue;
-    }
-
-    public boolean isHidden() {
-        return hidden;
     }
 
     public static class ResourceHolder<T> {
@@ -149,15 +144,7 @@ public record ResourceEffect<T>(ResourceLocation id, Codec<T> resourceType,
             if (defaultValue.isError())
                 return DataResult.error(() -> "Failed to decode 'default_value' field for `effectapi:resource` effect." + resourceType.error().get().message());
 
-            boolean hidden = false;
-            if (mapLike.getOrThrow().get("hidden") != null) {
-                var hiddenResult = Codec.BOOL.decode(ops, mapLike.getOrThrow().get("hidden"));
-                if (hiddenResult.isError())
-                    return DataResult.error(() -> "Failed to decode 'hidden' field for 'effectapi:resource' effect." + hiddenResult.error().get().message());
-                hidden = hiddenResult.getOrThrow().getFirst();
-            }
-
-            ResourceEffect<?> effect = new ResourceEffect<>(id.getOrThrow().getFirst(), resourceTypeCodec, defaultValue.getOrThrow().getFirst(), hidden);
+            ResourceEffect<?> effect = new ResourceEffect<>(id.getOrThrow().getFirst(), resourceTypeCodec, defaultValue.getOrThrow().getFirst());
             if (registryPhase)
                 LOADED_IDS.add(id.getOrThrow().getFirst());
             return DataResult.success(Pair.of(effect, input));
