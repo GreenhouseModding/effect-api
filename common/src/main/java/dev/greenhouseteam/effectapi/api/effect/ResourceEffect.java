@@ -20,14 +20,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class ResourceEffect<T> implements EffectAPIEffect {
+public record ResourceEffect<T>(ResourceLocation id, Codec<T> resourceType,
+                                T defaultValue, boolean hidden) implements EffectAPIEffect {
     public static final Codec<ResourceEffect<?>> CODEC = new EffectCodec();
     private static final Map<ResourceLocation, ResourceEffect<?>> ID_TO_EFFECT_MAP = new HashMap<>();
-
-    private final ResourceLocation id;
-    private final Codec<T> resourceType;
-    private final T defaultValue;
-    private final boolean hidden;
 
     public ResourceEffect(ResourceLocation id, Codec<T> resourceType,
                           T defaultValue, boolean hidden) {
