@@ -66,19 +66,11 @@ public class TestCommand {
                                 .executes(TestCommand::getResource)))
                 .build();
 
-        LiteralCommandNode<CommandSourceStack> removeResourceNode = Commands
-                .literal("remove")
-                .then(Commands.argument("targets", EntityArgument.entities())
-                        .then(Commands.argument("key", DataResourceArgument.resource("targets"))
-                                .executes(TestCommand::removeResource)))
-                .build();
-
         powerNode.addChild(grantPowerNode);
         powerNode.addChild(revokePowerNode);
 
         resourceNode.addChild(getResourceNode);
         resourceNode.addChild(setResourceNode);
-        resourceNode.addChild(removeResourceNode);
 
         testNode.addChild(powerNode);
         testNode.addChild(resourceNode);
