@@ -58,7 +58,7 @@ public class DataResourceArgument implements ArgumentType<ResourceEffect<?>> {
         List<? extends Entity> entities = EntitySelectorUtil.findEntities(selector, ((EntitySelectorAccessor)selector).effectapi$getPlayerName(), ((EntitySelectorAccessor)selector).effectapi$getEntityUUID());
 
         for (ResourceLocation val : ResourceEffect.getIdMap().keySet().stream()
-                .filter(resourceEffect -> entities.stream().allMatch(entity -> {
+                .filter(resourceEffect -> entities.stream().anyMatch(entity -> {
                     ResourcesAttachment attachment = EffectAPI.getHelper().getResources(entity);
                     if (attachment == null)
                         return false;
