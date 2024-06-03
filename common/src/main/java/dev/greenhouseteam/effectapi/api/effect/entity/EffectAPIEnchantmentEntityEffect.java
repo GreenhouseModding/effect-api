@@ -1,6 +1,5 @@
 package dev.greenhouseteam.effectapi.api.effect.entity;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.server.level.ServerLevel;
@@ -25,7 +24,7 @@ public record EffectAPIEnchantmentEntityEffect<T extends EnchantmentEntityEffect
         if (!(lootContext.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof LivingEntity living) || living.level().isClientSide())
             return;
         int level = Optional.ofNullable(lootContext.getParamOrNull(LootContextParams.ENCHANTMENT_LEVEL)).orElse(1);
-        ItemStack stack = Optional.ofNullable(lootContext.getParamOrNull(LootContextParams.TOOL)).orElse(ItemStack.EMPTY);
+        ItemStack stack = Optional.ofNullable(lootContext.getParamOrNull(LootContextParams.TOOL)).orElseGet(() -> slot().map(living::getItemBySlot).orElse(ItemStack.EMPTY));
         EquipmentSlot slot = slot().orElse(EquipmentSlot.MAINHAND);
         if (slot().isEmpty() && !stack.isEmpty()) {
             for (EquipmentSlot potential : EquipmentSlot.values()) {
