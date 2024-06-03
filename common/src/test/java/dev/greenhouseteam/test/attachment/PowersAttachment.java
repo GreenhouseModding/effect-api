@@ -19,6 +19,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -104,8 +105,8 @@ public class PowersAttachment {
 
         for (DataComponentMap component : powers.stream().map(power -> power.value().effects()).toList()) {
             for (var entry : component) {
-                if (entry.value() instanceof EffectAPIEffect effect)
-                    newMap.computeIfAbsent(entry.type(), type -> new ArrayList<>()).add(effect);
+                if (entry.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect)
+                    newMap.computeIfAbsent(entry.type(), type -> new ArrayList<>()).addAll((Collection<? extends EffectAPIEffect>) list);
                 else
                     EffectAPI.LOG.warn("Attempted to add non Effect API effect to power attachment");
             }
