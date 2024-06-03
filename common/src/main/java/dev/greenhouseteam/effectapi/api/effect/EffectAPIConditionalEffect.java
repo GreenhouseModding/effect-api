@@ -38,14 +38,19 @@ public record EffectAPIConditionalEffect<T extends EffectAPIEffect>(T effect, Op
 
 
     @Override
-    public void onAdded(LootContext lootContext) {
-        if (isActive(lootContext))
-            effect.onAdded(lootContext);
+    public void onAdded(LootContext context) {
+        if (isActive(context))
+            effect.onAdded(context);
     }
 
     @Override
-    public void onRemoved(LootContext lootContext) {
-        effect.onRemoved(lootContext);
+    public void onRemoved(LootContext context) {
+        effect.onRemoved(context);
+    }
+
+    @Override
+    public void onRefreshed(LootContext context) {
+        effect.onRefreshed(context);
     }
 
     @Override

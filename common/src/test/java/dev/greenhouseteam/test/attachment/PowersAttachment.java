@@ -68,7 +68,7 @@ public class PowersAttachment {
     public void refresh() {
         for (var entry : activeComponents) {
             if (entry.type() == EffectAPIEffectTypes.ENTITY_TICK && entry.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect)
-                list.forEach(effect -> ((EffectAPITickingEffect)((EffectAPIConditionalEffect)effect).effect()).onRemoved(EffectAPIEffect.createEntityOnlyContext(provider)));
+                list.forEach(effect -> ((EffectAPITickingEffect)((EffectAPIConditionalEffect)effect).effect()).onRefreshed(EffectAPIEffect.createEntityOnlyContext(provider)));
         }
     }
 

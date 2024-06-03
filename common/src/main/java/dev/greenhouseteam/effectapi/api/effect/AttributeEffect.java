@@ -1,7 +1,7 @@
 package dev.greenhouseteam.effectapi.api.effect;
 
 import com.google.common.collect.HashMultimap;
-import com.mojang.serialization.*;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.greenhouseteam.effectapi.api.EffectAPIEffectTypes;
 import dev.greenhouseteam.effectapi.api.registry.EffectAPILootContextParamSets;
@@ -26,15 +26,15 @@ public record AttributeEffect(ResourceLocation id, Holder<Attribute> attribute, 
     ).apply(inst, AttributeEffect::new));
 
     @Override
-    public void onAdded(LootContext lootContext) {
-        if (lootContext.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof LivingEntity living)
-            living.getAttributes().addTransientAttributeModifiers(this.makeAttributeMap(lootContext));
+    public void onAdded(LootContext context) {
+        if (context.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof LivingEntity living)
+            living.getAttributes().addTransientAttributeModifiers(this.makeAttributeMap(context));
     }
 
     @Override
-    public void onRemoved(LootContext lootContext) {
-        if (lootContext.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof LivingEntity living)
-            living.getAttributes().removeAttributeModifiers(this.makeAttributeMap(lootContext));
+    public void onRemoved(LootContext context) {
+        if (context.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof LivingEntity living)
+            living.getAttributes().removeAttributeModifiers(this.makeAttributeMap(context));
     }
 
     private HashMultimap<Holder<Attribute>, AttributeModifier> makeAttributeMap(LootContext context) {

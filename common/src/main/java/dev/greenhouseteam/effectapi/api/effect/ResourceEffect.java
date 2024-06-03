@@ -56,6 +56,9 @@ public record ResourceEffect<T>(ResourceLocation id, Codec<T> resourceType,
     }
 
     @Override
+    public void onRefreshed(LootContext context) {}
+
+    @Override
     public DataComponentType<?> type() {
         return EffectAPIEffectTypes.RESOURCE;
     }

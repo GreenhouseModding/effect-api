@@ -12,11 +12,15 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import java.util.Optional;
 
 public interface EffectAPIEffect {
-    default void onAdded(LootContext lootContext) {}
+    default void onAdded(LootContext context) {}
 
-    default void onRemoved(LootContext lootContext) {}
+    default void onRemoved(LootContext context) {}
 
-    default boolean isActive(LootContext lootContext) {
+    default void onRefreshed(LootContext context) {
+        onRemoved(context);
+    }
+
+    default boolean isActive(LootContext context) {
         return true;
     }
 
