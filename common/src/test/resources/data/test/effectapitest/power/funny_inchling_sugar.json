@@ -1,0 +1,23 @@
+{
+  "effectapi:attribute": [
+    {
+      "effect": {
+        "id": "test:funny_inchling_sugar",
+        "attribute": "minecraft:generic.movement_speed",
+        "amount": 0.5,
+        "operation": "add_multiplied_total"
+      },
+      "requirements": {
+        "condition": "minecraft:entity_properties",
+        "entity": "this",
+        "predicate": {
+          "slots": {
+            "weapon.mainhand": {
+              "items": "minecraft:sugar"
+            }
+          }
+        }
+      }
+    }
+  ]
+}
