@@ -1,6 +1,7 @@
 package dev.greenhouseteam.effectapi.impl;
 
 import dev.greenhouseteam.effectapi.api.EffectAPIEffects;
+import dev.greenhouseteam.effectapi.api.EffectAPIEntityEffects;
 import dev.greenhouseteam.effectapi.api.EffectAPIResourceTypes;
 import dev.greenhouseteam.effectapi.api.command.DataResourceArgument;
 import dev.greenhouseteam.effectapi.api.command.DataResourceValueArgument;
@@ -37,6 +38,7 @@ public class EffectAPIFabric implements ModInitializer {
     public static void registerContents() {
         EffectAPIAttachments.init();
         EffectAPIEffects.registerAll(Registry::register);
+        EffectAPIEntityEffects.registerAll(Registry::register);
         EffectAPIResourceTypes.registerAll(Registry::register);
 
         PayloadTypeRegistry.playS2C().register(ChangeResourceClientboundPacket.TYPE, ChangeResourceClientboundPacket.STREAM_CODEC);

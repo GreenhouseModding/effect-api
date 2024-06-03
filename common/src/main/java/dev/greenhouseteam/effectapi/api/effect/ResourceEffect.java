@@ -7,29 +7,32 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapLike;
 import dev.greenhouseteam.effectapi.api.EffectAPIEffects;
 import dev.greenhouseteam.effectapi.api.network.clientbound.ChangeResourceClientboundPacket;
+import dev.greenhouseteam.effectapi.api.params.EffectAPILootContextParamSets;
 import dev.greenhouseteam.effectapi.api.registry.EffectAPIRegistries;
 import dev.greenhouseteam.effectapi.impl.EffectAPI;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
-public class ResourceEffect<T> extends Effect {
+public class ResourceEffect<T> implements EffectAPIEffect {
     public static final Codec<ResourceEffect<?>> CODEC = new EffectCodec();
     private static final Map<ResourceLocation, ResourceEffect<?>> ID_TO_EFFECT_MAP = new HashMap<>();
 
     private final ResourceLocation id;
     private final Codec<T> resourceType;
-    private T defaultValue;
-    private boolean hidden;
+    private final T defaultValue;
+    private final boolean hidden;
 
     public ResourceEffect(ResourceLocation id, Codec<T> resourceType,
                           T defaultValue, boolean hidden) {
@@ -54,20 +57,22 @@ public class ResourceEffect<T> extends Effect {
     }
 
     @Override
-    public void onAdded(Entity entity) {
+    public void onAdded(LootContext lootContext) {
+        Entity entity = lootContext.getParam(LootContextParams.THIS_ENTITY);
         T value = EffectAPI.getHelper().setResource(entity, id, defaultValue);
         EffectAPI.getHelper().sendClientboundTracking(new ChangeResourceClientboundPacket<>(entity.getId(), this, Optional.of(value)), entity);
     }
 
     @Override
-    public void onRemoved(Entity entity) {
+    public void onRemoved(LootContext lootContext) {
+        Entity entity = lootContext.getParam(LootContextParams.THIS_ENTITY);
         EffectAPI.getHelper().removeResource(entity, id);
         EffectAPI.getHelper().sendClientboundTracking(new ChangeResourceClientboundPacket<>(entity.getId(), this, Optional.empty()), entity);
     }
 
     @Override
-    public Codec<? extends Effect> codec() {
-        return CODEC;
+    public LootContextParamSet paramSet() {
+        return EffectAPILootContextParamSets.ENTITY;
     }
 
     @Nullable

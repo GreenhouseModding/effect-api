@@ -1,7 +1,11 @@
 package dev.greenhouseteam.test.attachment;
 
 import com.mojang.serialization.Codec;
-import dev.greenhouseteam.effectapi.api.effect.Effect;
+import dev.greenhouseteam.effectapi.api.EffectAPIEffects;
+import dev.greenhouseteam.effectapi.api.effect.EffectAPIConditionalEffect;
+import dev.greenhouseteam.effectapi.api.effect.EffectAPIEffect;
+import dev.greenhouseteam.effectapi.api.effect.EffectAPITickEffect;
+import dev.greenhouseteam.effectapi.api.effect.entity.EffectAPIEntityEffect;
 import dev.greenhouseteam.effectapi.api.util.EffectUtil;
 import dev.greenhouseteam.effectapi.impl.EffectAPI;
 import dev.greenhouseteam.test.EffectAPITest;
@@ -70,15 +74,15 @@ public class PowersAttachment {
     public void tick() {
         updateAndSync();
         for (var entry : activeComponents) {
-            if (entry.value() instanceof List<?> list && list.getFirst() instanceof Effect)
-                list.forEach(effect -> ((Effect)effect).tick(entity));
+            if (entry.type() == EffectAPIEffects.TICK && entry.value() instanceof List list)
+                list.forEach(effect -> ((EffectAPITickEffect)((EffectAPIConditionalEffect)effect).effect()).tick(EffectAPIEffect.createEntityOnlyContext(entity)));
         }
     }
 
     public void refresh() {
         for (var entry : activeComponents) {
-            if (entry.value() instanceof List<?> list && list.getFirst() instanceof Effect)
-                list.forEach(effect -> ((Effect)effect).onRemoved(entity));
+            if (entry.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect)
+                list.forEach(effect -> ((EffectAPIEffect)effect).onRemoved(EffectAPIEffect.createEntityOnlyContext(entity)));
         }
     }
 
@@ -96,17 +100,20 @@ public class PowersAttachment {
     }
 
     private void setAllComponents() {
-        Map<DataComponentType<?>, List<Effect>> newMap = new Reference2ObjectArrayMap<>();
+        Map<DataComponentType<?>, List<EffectAPIEffect>> newMap = new Reference2ObjectArrayMap<>();
 
         for (DataComponentMap component : powers.stream().map(power -> power.value().effects()).toList()) {
             for (var entry : component) {
-                EffectUtil.getEffectsWithInner(entry.value()).forEach(effect -> newMap.computeIfAbsent(effect.type(), type -> new ArrayList<>()).add(effect));
+                if (entry.value() instanceof EffectAPIEffect effect)
+                    newMap.computeIfAbsent(entry.type(), type -> new ArrayList<>()).add(effect);
+                else
+                    EffectAPI.LOG.warn("Attempted to add non Effect API effect to power attachment");
             }
         }
 
         DataComponentMap.Builder builder = DataComponentMap.builder();
         for (var entry : newMap.entrySet())
-            builder.set((DataComponentType<? super List<Effect>>) entry.getKey(), entry.getValue());
+            builder.set((DataComponentType<? super List<EffectAPIEffect>>) entry.getKey(), entry.getValue());
         allComponents = builder.build();
     }
 

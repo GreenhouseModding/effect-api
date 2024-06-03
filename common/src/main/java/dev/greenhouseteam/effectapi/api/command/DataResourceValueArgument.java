@@ -55,7 +55,7 @@ public class DataResourceValueArgument implements ArgumentType<Object> {
         }
         reader.setCursor(index);
         String typeId = reader.getRemaining().split(" ", 2)[0];
-        ResourceEffect<Object> resource = ResourceEffect.getEffectFromId(new ResourceLocation(typeId));
+        ResourceEffect<Object> resource = ResourceEffect.getEffectFromId(ResourceLocation.parse(typeId));
         if (resource == null)
             throw ERROR_RESOURCE_NOT_PRESENT.createWithContext(reader);;
         reader.setCursor(valueStart);

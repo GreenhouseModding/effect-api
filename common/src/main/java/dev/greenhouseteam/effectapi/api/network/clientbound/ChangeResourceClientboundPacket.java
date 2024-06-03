@@ -1,7 +1,6 @@
 package dev.greenhouseteam.effectapi.api.network.clientbound;
 
 import com.mojang.serialization.Codec;
-import dev.greenhouseteam.effectapi.api.effect.Effect;
 import dev.greenhouseteam.effectapi.api.effect.ResourceEffect;
 import dev.greenhouseteam.effectapi.impl.EffectAPI;
 import net.minecraft.client.Minecraft;
