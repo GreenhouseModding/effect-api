@@ -9,6 +9,7 @@ import dev.greenhouseteam.effectapi.api.effect.EffectAPIConditionalEffect;
 import dev.greenhouseteam.effectapi.api.effect.EffectAPIEffect;
 import dev.greenhouseteam.effectapi.api.effect.EffectAPITickingEffect;
 import dev.greenhouseteam.effectapi.api.network.clientbound.SyncEffectsClientboundPacket;
+import dev.greenhouseteam.effectapi.api.registry.EffectAPILootContextParamSets;
 import dev.greenhouseteam.effectapi.api.util.EffectUtil;
 import dev.greenhouseteam.effectapi.impl.EffectAPI;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
@@ -66,7 +67,7 @@ public class EffectsAttachment {
 
     public void refresh() {
         for (var entry : activeComponents) {
-            if (entry.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect)
+            if (entry.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect first && first.paramSet() == EffectAPILootContextParamSets.ENTITY)
                 list.forEach(effect -> ((EffectAPIEffect)effect).onRemoved(EffectAPIEffect.createEntityOnlyContext(provider)));
         }
     }
@@ -129,6 +130,8 @@ public class EffectsAttachment {
         }
         allComponents = Map.copyOf(finalMap);
         combineComponents();
+        if (effect.paramSet() == EffectAPILootContextParamSets.ENTITY)
+            effect.onRemoved(EffectAPIEffect.createEntityOnlyContext(provider));
     }
 
     public void combineComponents() {
