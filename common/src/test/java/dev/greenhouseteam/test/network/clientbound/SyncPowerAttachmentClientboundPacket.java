@@ -16,25 +16,25 @@ import net.minecraft.world.entity.Entity;
 
 import java.util.List;
 
-public record SyncPowerAttachmentClientboundPacket(int entityId, List<Holder<Power>> allPowers, DataComponentMap activeComponents) implements CustomPacketPayload {
+public record SyncPowerAttachmentClientboundPacket(int entityId, List<Holder<Power>> allPowers, boolean remove) implements CustomPacketPayload {
     public static final ResourceLocation ID = EffectAPITest.asResource("sync_power_attachment");
     public static final Type<SyncPowerAttachmentClientboundPacket> TYPE = new Type<>(ID);
     public static final StreamCodec<RegistryFriendlyByteBuf, SyncPowerAttachmentClientboundPacket> STREAM_CODEC = StreamCodec.of(SyncPowerAttachmentClientboundPacket::write, SyncPowerAttachmentClientboundPacket::new);
 
     public SyncPowerAttachmentClientboundPacket(RegistryFriendlyByteBuf buf) {
-        this(buf.readInt(), Power.CODEC.listOf().fieldOf("powers").codec().decode(RegistryOps.create(NbtOps.INSTANCE, buf.registryAccess()), buf.readNbt()).getOrThrow().getFirst(), EffectAPIEffectTypes.CODEC.decode(RegistryOps.create(NbtOps.INSTANCE, buf.registryAccess()), buf.readNbt()).getOrThrow().getFirst());
+        this(buf.readInt(), Power.CODEC.listOf().fieldOf("powers").codec().decode(RegistryOps.create(NbtOps.INSTANCE, buf.registryAccess()), buf.readNbt()).getOrThrow().getFirst(), buf.readBoolean());
     }
 
     public static void write(RegistryFriendlyByteBuf buf, SyncPowerAttachmentClientboundPacket packet) {
         buf.writeInt(packet.entityId);
         buf.writeNbt(Power.CODEC.listOf().fieldOf("powers").codec().encodeStart(RegistryOps.create(NbtOps.INSTANCE, buf.registryAccess()), packet.allPowers).getOrThrow());
-        buf.writeNbt(EffectAPIEffectTypes.CODEC.encodeStart(RegistryOps.create(NbtOps.INSTANCE, buf.registryAccess()), packet.activeComponents).getOrThrow());
+        buf.writeBoolean(packet.remove);
     }
 
     public void handle() {
         Minecraft.getInstance().execute(() -> {
             Entity entity = Minecraft.getInstance().level.getEntity(entityId);
-            EffectAPITest.getHelper().getPowers(entity).setFromNetwork(allPowers, activeComponents);
+            EffectAPITest.getHelper().getPowers(entity).addFromNetwork(allPowers, remove);
         });
     }
 

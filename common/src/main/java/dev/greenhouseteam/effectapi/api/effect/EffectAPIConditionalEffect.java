@@ -1,19 +1,14 @@
 
 package dev.greenhouseteam.effectapi.api.effect;
 
-import com.google.common.collect.Sets;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.greenhouseteam.effectapi.api.params.EffectAPILootContextParamSets;
 import net.minecraft.core.component.DataComponentType;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.ProblemReporter;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.enchantment.ConditionalEffect;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 
 import java.util.Optional;
@@ -58,5 +53,10 @@ public record EffectAPIConditionalEffect<T extends EffectAPIEffect>(T effect, Op
     @Override
     public boolean isActive(LootContext context) {
         return requirements.isEmpty() || requirements.get().test(context);
+    }
+
+    @Override
+    public DataComponentType<?> type() {
+        return effect.type();
     }
 }

@@ -1,7 +1,7 @@
 package dev.greenhouseteam.effectapi.api.util;
 
 import dev.greenhouseteam.effectapi.api.effect.EffectAPIEffect;
-import dev.greenhouseteam.effectapi.api.params.EffectAPILootContextParamSets;
+import dev.greenhouseteam.effectapi.api.registry.EffectAPILootContextParamSets;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;

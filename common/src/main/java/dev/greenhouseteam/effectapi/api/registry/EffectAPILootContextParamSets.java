@@ -1,4 +1,4 @@
-package dev.greenhouseteam.effectapi.api.params;
+package dev.greenhouseteam.effectapi.api.registry;
 
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;

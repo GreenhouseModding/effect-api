@@ -1,8 +1,6 @@
 package dev.greenhouseteam.effectapi.api.network.clientbound;
 
-import com.mojang.serialization.Codec;
 import dev.greenhouseteam.effectapi.api.attachment.ResourcesAttachment;
-import dev.greenhouseteam.effectapi.api.effect.ResourceEffect;
 import dev.greenhouseteam.effectapi.impl.EffectAPI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NbtOps;
@@ -12,8 +10,6 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
-
-import java.util.Optional;
 
 public record SyncResourcesAttachmentClientboundPacket(int entityId, ResourcesAttachment attachment) implements CustomPacketPayload {
     public static final ResourceLocation ID = EffectAPI.asResource("sync_resources_attachment");

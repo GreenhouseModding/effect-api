@@ -36,16 +36,6 @@ public class EffectAPITestFabric implements ModInitializer {
             }
         });
 
-        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
-            if (oldPlayer.hasAttached(POWERS))
-                newPlayer.getAttached(POWERS).refresh();
-        });
-
-        ServerEntityEvents.ENTITY_UNLOAD.register((entity, world) -> {
-            if (entity.hasAttached(POWERS))
-                entity.getAttached(POWERS).refresh();
-        });
-
         ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {
             if (entity.hasAttached(POWERS))
                 entity.getAttached(POWERS).init(entity);

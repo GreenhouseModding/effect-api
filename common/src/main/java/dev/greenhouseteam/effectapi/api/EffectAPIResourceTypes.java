@@ -7,9 +7,6 @@ import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
-import com.sun.jdi.connect.Connector;
-import dev.greenhouseteam.effectapi.api.effect.ResourceEffect;
 import dev.greenhouseteam.effectapi.impl.EffectAPI;
 import dev.greenhouseteam.effectapi.api.registry.EffectAPIRegistries;
 import dev.greenhouseteam.effectapi.impl.registry.internal.RegistrationCallback;
@@ -17,7 +14,6 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class EffectAPIResourceTypes {
     private static final Map<ResourceLocation, ArgumentType<?>> ARGUMENT_TYPES = new HashMap<>();

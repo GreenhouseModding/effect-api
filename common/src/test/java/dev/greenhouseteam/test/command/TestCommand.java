@@ -1,14 +1,9 @@
 package dev.greenhouseteam.test.command;
 
-import com.google.common.base.Strings;
-import com.google.gson.JsonElement;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.JsonOps;
 import dev.greenhouseteam.effectapi.api.command.DataResourceArgument;
 import dev.greenhouseteam.effectapi.api.command.DataResourceValueArgument;
 import dev.greenhouseteam.effectapi.api.effect.ResourceEffect;
@@ -21,10 +16,9 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.ResourceArgument;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
 
 public class TestCommand {
@@ -103,6 +97,7 @@ public class TestCommand {
             return 0;
         }
 
+        context.getSource().sendSuccess(() -> Component.literal("Granted power '" + power.unwrapKey().map(ResourceKey::location).orElse(null) + "' to entity."), true);
         return 1;
     }
 
@@ -115,14 +110,14 @@ public class TestCommand {
         if (attachment != null && attachment.hasPower(power))
             attachment.removePower(power);
         else {
-            context.getSource().sendFailure(Component.literal("Entity does not have power '" + power.unwrapKey().orElse(null) + "'."));
+            context.getSource().sendFailure(Component.literal("Entity does not have power '" + power.unwrapKey().map(ResourceKey::location).orElse(null) + "'."));
             return 0;
         }
 
         if (attachment.totalPowers() == 0)
             EffectAPITest.getHelper().removePowerAttachment(entity);
 
-        context.getSource().sendSuccess(() -> Component.literal("Removed power '" + power.unwrapKey().orElse(null) + "' from entity."), true);
+        context.getSource().sendSuccess(() -> Component.literal("Removed power '" + power.unwrapKey().map(ResourceKey::location).orElse(null) + "' from entity."), true);
         return 1;
     }
 

@@ -1,6 +1,7 @@
 package dev.greenhouseteam.effectapi.api.effect;
 
-import dev.greenhouseteam.effectapi.api.params.EffectAPILootContextParamSets;
+import dev.greenhouseteam.effectapi.api.registry.EffectAPILootContextParamSets;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -18,6 +19,8 @@ public interface EffectAPIEffect {
     default boolean isActive(LootContext lootContext) {
         return true;
     }
+
+    DataComponentType<?> type();
 
     LootContextParamSet paramSet();
 

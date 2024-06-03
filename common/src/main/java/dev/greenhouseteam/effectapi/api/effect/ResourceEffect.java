@@ -5,10 +5,12 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapLike;
+import dev.greenhouseteam.effectapi.api.EffectAPIEffectTypes;
 import dev.greenhouseteam.effectapi.api.network.clientbound.ChangeResourceClientboundPacket;
-import dev.greenhouseteam.effectapi.api.params.EffectAPILootContextParamSets;
+import dev.greenhouseteam.effectapi.api.registry.EffectAPILootContextParamSets;
 import dev.greenhouseteam.effectapi.api.registry.EffectAPIRegistries;
 import dev.greenhouseteam.effectapi.impl.EffectAPI;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -16,11 +18,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class ResourceEffect<T> implements EffectAPIEffect {
     public static final Codec<ResourceEffect<?>> CODEC = new EffectCodec();
@@ -60,6 +58,11 @@ public class ResourceEffect<T> implements EffectAPIEffect {
         Entity entity = lootContext.getParam(LootContextParams.THIS_ENTITY);
         EffectAPI.getHelper().removeResource(entity, id);
         EffectAPI.getHelper().sendClientboundTracking(new ChangeResourceClientboundPacket<>(entity.getId(), this, Optional.empty()), entity);
+    }
+
+    @Override
+    public DataComponentType<?> type() {
+        return EffectAPIEffectTypes.RESOURCE;
     }
 
     @Override

@@ -2,9 +2,10 @@ package dev.greenhouseteam.test.attachment;
 
 import com.mojang.serialization.Codec;
 import dev.greenhouseteam.effectapi.api.EffectAPIEffectTypes;
+import dev.greenhouseteam.effectapi.api.attachment.EffectSource;
 import dev.greenhouseteam.effectapi.api.effect.EffectAPIConditionalEffect;
 import dev.greenhouseteam.effectapi.api.effect.EffectAPIEffect;
-import dev.greenhouseteam.effectapi.api.effect.EffectAPITickEffect;
+import dev.greenhouseteam.effectapi.api.effect.EffectAPITickingEffect;
 import dev.greenhouseteam.effectapi.api.util.EffectUtil;
 import dev.greenhouseteam.effectapi.impl.EffectAPI;
 import dev.greenhouseteam.test.EffectAPITest;
@@ -27,25 +28,31 @@ public class PowersAttachment {
     public static final Codec<PowersAttachment> CODEC = Power.CODEC.listOf().xmap(holders -> {
         PowersAttachment attachment = new PowersAttachment();
         for (Holder<Power> power : holders)
-            attachment.addPowerInternal(power);
-        attachment.setAllComponents();
+            attachment.addDelegatedPower(power);
         return attachment;
     }, attachment -> attachment.powers);
 
     private List<Holder<Power>> powers = new ArrayList<>();
-    private DataComponentMap allComponents = DataComponentMap.EMPTY;;
-    private DataComponentMap activeComponents = DataComponentMap.EMPTY;
+    private List<Holder<Power>> powersToApply = new ArrayList<>();
     private Entity entity;
 
     public PowersAttachment() {}
 
     public void init(Entity entity) {
         this.entity = entity;
+        if (EffectAPI.getHelper().getEffects(entity) != null) {
+            EffectAPI.getHelper().getEffects(entity).init(entity);
+        }
+        powersToApply.forEach(p -> {
+            for (var entry : p.value().effects())
+                for (EffectAPIEffect effect : (List<EffectAPIEffect>) entry.value())
+                    EffectAPI.getHelper().addEffect(entity, effect, new EffectSource(ID, true));
+            if (entity.level().isClientSide())
+                return;
+        });
+        powersToApply.clear();
     }
 
-    public void getPowers(DataComponentType<?> type) {
-        activeComponents.getOrDefault(type, List.of());
-    }
 
     public int totalPowers() {
         return powers.size();
@@ -56,70 +63,41 @@ public class PowersAttachment {
     }
 
     public void addPower(Holder<Power> power) {
-        addPowerInternal(power);
-        setAllComponents();
-        updateAndSync();
+        powers.add(power);
+        for (var entry : power.value().effects())
+            for (EffectAPIEffect effect : (List<EffectAPIEffect>) entry.value())
+                EffectAPI.getHelper().addEffect(entity, effect, new EffectSource(ID, true));
+        if (entity.level().isClientSide())
+            return;
+        EffectAPI.getHelper().sendClientboundTracking(new SyncPowerAttachmentClientboundPacket(entity.getId(), List.of(power), false), entity);
     }
 
-    private void addPowerInternal(Holder<Power> power) {
+    private void addDelegatedPower(Holder<Power> power) {
         powers.add(power);
+        powersToApply.add(power);
     }
 
     public void removePower(Holder<Power> power) {
         powers.remove(power);
-        setAllComponents();
-        updateAndSync();
-    }
-
-    public void tick() {
-        updateAndSync();
-        for (var entry : activeComponents) {
-            if (entry.type() == EffectAPIEffectTypes.TICK && entry.value() instanceof List list)
-                list.forEach(effect -> ((EffectAPITickEffect)((EffectAPIConditionalEffect)effect).effect()).tick(EffectAPIEffect.createEntityOnlyContext(entity)));
-        }
-    }
-
-    public void refresh() {
-        for (var entry : activeComponents) {
-            if (entry.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect)
-                list.forEach(effect -> ((EffectAPIEffect)effect).onRemoved(EffectAPIEffect.createEntityOnlyContext(entity)));
-        }
-    }
-
-    private void updateAndSync() {
-        DataComponentMap previous = activeComponents;
-        DataComponentMap potential = EffectUtil.getActive(entity, allComponents);
-        if (EffectUtil.handleChangedActives(entity, potential, previous)) {
-            activeComponents = potential;
-            EffectAPI.getHelper().sendClientboundTracking(new SyncPowerAttachmentClientboundPacket(entity.getId(), powers, activeComponents), entity);
-        }
+        for (var entry : power.value().effects())
+            for (EffectAPIEffect effect : (List<EffectAPIEffect>) entry.value())
+                EffectAPI.getHelper().removeEffect(entity, effect, new EffectSource(ID, true));
+        if (entity.level().isClientSide())
+            return;
+        EffectAPI.getHelper().sendClientboundTracking(new SyncPowerAttachmentClientboundPacket(entity.getId(), List.of(power), true), entity);
     }
 
     public void sync() {
-        EffectAPI.getHelper().sendClientboundTracking(new SyncPowerAttachmentClientboundPacket(entity.getId(), powers, activeComponents), entity);
+        if (entity.level().isClientSide())
+            return;
+        EffectAPI.getHelper().sendClientboundTracking(new SyncPowerAttachmentClientboundPacket(entity.getId(), powers, false), entity);
     }
 
-    private void setAllComponents() {
-        Map<DataComponentType<?>, List<EffectAPIEffect>> newMap = new Reference2ObjectArrayMap<>();
-
-        for (DataComponentMap component : powers.stream().map(power -> power.value().effects()).toList()) {
-            for (var entry : component) {
-                if (entry.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect)
-                    newMap.computeIfAbsent(entry.type(), type -> new ArrayList<>()).addAll((Collection<? extends EffectAPIEffect>) list);
-                else
-                    EffectAPI.LOG.warn("Attempted to add non Effect API effect to power attachment");
-            }
+    public void addFromNetwork(List<Holder<Power>> powers, boolean remove) {
+        if (remove) {
+            powers.forEach(power -> removePower(power));
+            return;
         }
-
-        DataComponentMap.Builder builder = DataComponentMap.builder();
-        for (var entry : newMap.entrySet())
-            builder.set((DataComponentType<? super List<EffectAPIEffect>>) entry.getKey(), entry.getValue());
-        allComponents = builder.build();
-    }
-
-    public void setFromNetwork(List<Holder<Power>> powers, DataComponentMap activeComponents) {
-        this.powers = powers;
-        setAllComponents();
-        this.activeComponents = activeComponents;
+        powers.forEach(power -> addPower(power));
     }
 }

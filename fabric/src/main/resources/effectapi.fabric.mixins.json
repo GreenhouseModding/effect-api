@@ -4,7 +4,10 @@
   "package": "dev.greenhouseteam.effectapi.mixin.fabric",
   "refmap": "${mod_id}.refmap.json",
   "compatibilityLevel": "JAVA_21",
-  "mixins": [],
+  "mixins": [
+    "EntityMixin",
+    "ServerLevelEntityCallbacksMixin"
+  ],
   "client": [
   ],
   "server": [],
