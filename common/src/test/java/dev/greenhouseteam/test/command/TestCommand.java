@@ -87,7 +87,7 @@ public class TestCommand {
         if (attachment == null || !attachment.hasPower(power))
             attachment.addPower(power);
         else {
-            context.getSource().sendFailure(Component.literal("Entity already has power '" + power.unwrapKey().orElse(null) + "'."));
+            context.getSource().sendFailure(Component.literal("Entity already has power '" + power.unwrapKey().map(ResourceKey::location).orElse(null) + "'."));
             return 0;
         }
 
