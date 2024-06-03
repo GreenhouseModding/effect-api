@@ -4,13 +4,13 @@ object Versions {
     const val MOD = "2.0.0-alpha.1"
 
     const val MINECRAFT = "1.21"
-    const val INTERNAL_MINECRAFT = "1.21-pre1"
+    const val INTERNAL_MINECRAFT = "24w21b"
 
     const val FABRIC_API = "0.99.4+1.21"
     const val FABRIC_LOADER = "0.15.11"
     const val MOD_MENU = "10.0.0-beta.1"
     const val FABRIC_LOADER_RANGE = ">=0.15"
-    const val FABRIC_MINECRAFT_RANGE = ">=1.21"
+    const val FABRIC_MINECRAFT_RANGE = ">=1.21-"
 
     const val NEOFORGE = "20.6.100-beta"
     const val NEOFORGE_LOADER_RANGE = "[4,)"
