@@ -1,19 +1,37 @@
 package dev.greenhouseteam.effectapi.api.util;
 
+import dev.greenhouseteam.effectapi.api.EffectAPIEffectTypes;
+import dev.greenhouseteam.effectapi.api.effect.EffectAPIConditionalEffect;
 import dev.greenhouseteam.effectapi.api.effect.EffectAPIEffect;
 import dev.greenhouseteam.effectapi.api.registry.EffectAPILootContextParamSets;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.TypedDataComponent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 public class EffectUtil {
-    public static DataComponentMap getActive(Entity entity, DataComponentMap map) {
+    public static void executeOnAllEffects(DataComponentMap map, Consumer<EffectAPIEffect> consumer) {
+        for (var entry : map)
+            if (entry.type() == EffectAPIEffectTypes.ENTITY_TICK && entry.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect)
+                list.forEach(effect -> consumer.accept((EffectAPIEffect)effect));
+    }
+
+    public static <T extends EffectAPIEffect> T castConditional(EffectAPIEffect effect) {
+        return (T) ((EffectAPIConditionalEffect)effect).effect();
+    }
+
+    public static DataComponentMap getActive(Entity entity, DataComponentMap map, LootContext lootContext) {
         if (entity == null || map == DataComponentMap.EMPTY)
             return DataComponentMap.EMPTY;
 
@@ -22,7 +40,7 @@ public class EffectUtil {
         for (TypedDataComponent<?> component : map) {
             if (component.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect)
                 for (EffectAPIEffect effect : ((List<EffectAPIEffect>)list)) {
-                    if (effect.paramSet() == EffectAPILootContextParamSets.ENTITY && effect.isActive(EffectAPIEffect.createEntityOnlyContext(entity))) {
+                    if (effect.paramSet() == EffectAPILootContextParamSets.ENTITY && effect.isActive(lootContext)) {
                         newMap.computeIfAbsent(component.type(), type -> new ArrayList<>()).add(effect);
                     }
                 }
@@ -45,14 +63,23 @@ public class EffectUtil {
         newValues.stream().filter(object -> !oldValues.contains(object)).forEach(value -> {
             if (value instanceof EffectAPIEffect effect)
                 if (effect.paramSet() == EffectAPILootContextParamSets.ENTITY)
-                    effect.onAdded(EffectAPIEffect.createEntityOnlyContext(entity));
+                    effect.onAdded(createEntityOnlyContext(entity));
         });
         oldValues.stream().filter(object -> !newValues.contains(object)).forEach(value -> {
             if (value instanceof EffectAPIEffect effect)
                 if (effect.paramSet() == EffectAPILootContextParamSets.ENTITY)
-                    effect.onRemoved(EffectAPIEffect.createEntityOnlyContext(entity));
+                    effect.onRemoved(createEntityOnlyContext(entity));
         });
 
         return true;
+    }
+
+    public static LootContext createEntityOnlyContext(Entity entity) {
+        if (entity.level().isClientSide())
+            return null;
+        LootParams.Builder params = new LootParams.Builder((ServerLevel) entity.level());
+        params.withParameter(LootContextParams.THIS_ENTITY, entity);
+        params.withParameter(LootContextParams.ORIGIN, entity.position());
+        return new LootContext.Builder(params.create(EffectAPILootContextParamSets.ENTITY)).create(Optional.empty());
     }
 }

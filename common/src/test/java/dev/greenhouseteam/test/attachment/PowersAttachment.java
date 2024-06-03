@@ -2,9 +2,8 @@ package dev.greenhouseteam.test.attachment;
 
 import com.mojang.serialization.Codec;
 import dev.greenhouseteam.effectapi.api.EffectAPIEffectTypes;
-import dev.greenhouseteam.effectapi.api.effect.EffectAPIConditionalEffect;
 import dev.greenhouseteam.effectapi.api.effect.EffectAPIEffect;
-import dev.greenhouseteam.effectapi.api.effect.EffectAPITickingEffect;
+import dev.greenhouseteam.effectapi.api.effect.EntityTickEffect;
 import dev.greenhouseteam.effectapi.api.util.EffectUtil;
 import dev.greenhouseteam.effectapi.impl.EffectAPI;
 import dev.greenhouseteam.test.EffectAPITest;
@@ -58,23 +57,22 @@ public class PowersAttachment {
 
 
     public void tick() {
-        updateActiveComponents();
-        for (var entry : activeComponents) {
-            if (entry.type() == EffectAPIEffectTypes.ENTITY_TICK && entry.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect)
-                list.forEach(effect -> ((EffectAPITickingEffect)((EffectAPIConditionalEffect)effect).effect()).tick(EffectAPIEffect.createEntityOnlyContext(provider)));
-        }
+        updateActiveComponents(true);
+        EffectUtil.executeOnAllEffects(activeComponents, effect -> {
+            if (effect.type() == EffectAPIEffectTypes.ENTITY_TICK)
+                EffectUtil.<EntityTickEffect>castConditional(effect).tick(EffectUtil.createEntityOnlyContext(provider));
+        });
     }
 
     public void refresh() {
-        for (var entry : activeComponents) {
-            if (entry.type() == EffectAPIEffectTypes.ENTITY_TICK && entry.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect)
-                list.forEach(effect -> ((EffectAPITickingEffect)((EffectAPIConditionalEffect)effect).effect()).onRefreshed(EffectAPIEffect.createEntityOnlyContext(provider)));
-        }
+        EffectUtil.executeOnAllEffects(activeComponents, effect -> {
+            effect.onRefreshed(EffectUtil.createEntityOnlyContext(provider));
+        });
     }
 
-    private void updateActiveComponents() {
+    private void updateActiveComponents(boolean syncOnChange) {
         DataComponentMap previous = activeComponents;
-        DataComponentMap potential = EffectUtil.getActive(provider, allComponents);
+        DataComponentMap potential = EffectUtil.getActive(provider, allComponents, EffectUtil.createEntityOnlyContext(provider));
         if (EffectUtil.hasUpdatedActives(provider, potential, previous)) {
             activeComponents = potential;
             sync();
@@ -97,6 +95,7 @@ public class PowersAttachment {
     public void removePower(Holder<Power> power) {
         powers.remove(power);
         recalculateComponents();
+        updateActiveComponents(false);
         sync();
     }
 
