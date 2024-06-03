@@ -1,5 +1,5 @@
 {
-  "effectapi:": [
+  "effectapi:trigger": [
     {
       "effect": {
         "on_activation": {
