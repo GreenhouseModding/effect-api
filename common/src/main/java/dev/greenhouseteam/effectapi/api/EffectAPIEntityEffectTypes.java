@@ -7,9 +7,9 @@ import dev.greenhouseteam.effectapi.api.registry.EffectAPIRegistries;
 import dev.greenhouseteam.effectapi.impl.EffectAPI;
 import dev.greenhouseteam.effectapi.impl.registry.internal.RegistrationCallback;
 
-public class EffectAPIEntityEffects {
+public class EffectAPIEntityEffectTypes {
 
     public static void registerAll(RegistrationCallback<MapCodec<? extends EffectAPIEntityEffect>> callback) {
-        callback.register(EffectAPIRegistries.ENTITY_EFFECT, EffectAPI.asResource("enchantment_effect"), EffectAPIEnchantmentEntityEffect.CODEC);
+        callback.register(EffectAPIRegistries.ENTITY_EFFECT_TYPE, EffectAPI.asResource("enchantment_effect"), EffectAPIEnchantmentEntityEffect.CODEC);
     }
 }

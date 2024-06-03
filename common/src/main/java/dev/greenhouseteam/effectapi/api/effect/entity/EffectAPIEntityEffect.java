@@ -8,7 +8,7 @@ import net.minecraft.world.level.storage.loot.LootContext;
 import java.util.function.Function;
 
 public interface EffectAPIEntityEffect {
-    Codec<EffectAPIEntityEffect> CODEC = EffectAPIRegistries.ENTITY_EFFECT.byNameCodec().dispatch(EffectAPIEntityEffect::codec, Function.identity());
+    Codec<EffectAPIEntityEffect> CODEC = EffectAPIRegistries.ENTITY_EFFECT_TYPE.byNameCodec().dispatch(EffectAPIEntityEffect::codec, Function.identity());
 
     void apply(LootContext lootContext);
 

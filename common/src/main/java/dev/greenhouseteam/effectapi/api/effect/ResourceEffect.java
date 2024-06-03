@@ -5,16 +5,13 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapLike;
-import dev.greenhouseteam.effectapi.api.EffectAPIEffects;
 import dev.greenhouseteam.effectapi.api.network.clientbound.ChangeResourceClientboundPacket;
 import dev.greenhouseteam.effectapi.api.params.EffectAPILootContextParamSets;
 import dev.greenhouseteam.effectapi.api.registry.EffectAPIRegistries;
 import dev.greenhouseteam.effectapi.impl.EffectAPI;
-import net.minecraft.core.component.DataComponentType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import org.jetbrains.annotations.Nullable;
@@ -49,11 +46,6 @@ public class ResourceEffect<T> implements EffectAPIEffect {
 
     public static void clearEffectMap() {
         ID_TO_EFFECT_MAP.clear();
-    }
-
-    @Override
-    public DataComponentType<?> type() {
-        return EffectAPIEffects.RESOURCE;
     }
 
     @Override

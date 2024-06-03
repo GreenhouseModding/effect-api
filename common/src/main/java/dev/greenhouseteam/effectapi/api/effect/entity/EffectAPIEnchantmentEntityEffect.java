@@ -22,7 +22,7 @@ public record EffectAPIEnchantmentEntityEffect<T extends EnchantmentEntityEffect
 
     @Override
     public void apply(LootContext lootContext) {
-        if (!(lootContext.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof LivingEntity living) || !living.level().isClientSide())
+        if (!(lootContext.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof LivingEntity living) || living.level().isClientSide())
             return;
         int level = Optional.ofNullable(lootContext.getParamOrNull(LootContextParams.ENCHANTMENT_LEVEL)).orElse(1);
         ItemStack stack = Optional.ofNullable(lootContext.getParamOrNull(LootContextParams.TOOL)).orElse(ItemStack.EMPTY);
@@ -40,6 +40,6 @@ public record EffectAPIEnchantmentEntityEffect<T extends EnchantmentEntityEffect
 
     @Override
     public MapCodec<? extends EffectAPIEntityEffect> codec() {
-        return null;
+        return CODEC;
     }
 }

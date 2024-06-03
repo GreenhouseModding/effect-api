@@ -22,8 +22,8 @@ public class EffectUtil {
         for (TypedDataComponent<?> component : map) {
             if (component.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect)
                 for (EffectAPIEffect effect : ((List<EffectAPIEffect>)list)) {
-                    if (effect.isActive(EffectAPIEffect.createEntityOnlyContext(entity))) {
-                        newMap.computeIfAbsent(effect.type(), type -> new ArrayList<>()).add(effect);
+                    if (effect.paramSet() == EffectAPILootContextParamSets.ENTITY && effect.isActive(EffectAPIEffect.createEntityOnlyContext(entity))) {
+                        newMap.computeIfAbsent(component.type(), type -> new ArrayList<>()).add(effect);
                     }
                 }
         }

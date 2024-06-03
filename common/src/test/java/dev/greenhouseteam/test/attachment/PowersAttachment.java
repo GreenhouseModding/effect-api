@@ -1,11 +1,10 @@
 package dev.greenhouseteam.test.attachment;
 
 import com.mojang.serialization.Codec;
-import dev.greenhouseteam.effectapi.api.EffectAPIEffects;
+import dev.greenhouseteam.effectapi.api.EffectAPIEffectTypes;
 import dev.greenhouseteam.effectapi.api.effect.EffectAPIConditionalEffect;
 import dev.greenhouseteam.effectapi.api.effect.EffectAPIEffect;
 import dev.greenhouseteam.effectapi.api.effect.EffectAPITickEffect;
-import dev.greenhouseteam.effectapi.api.effect.entity.EffectAPIEntityEffect;
 import dev.greenhouseteam.effectapi.api.util.EffectUtil;
 import dev.greenhouseteam.effectapi.impl.EffectAPI;
 import dev.greenhouseteam.test.EffectAPITest;
@@ -75,7 +74,7 @@ public class PowersAttachment {
     public void tick() {
         updateAndSync();
         for (var entry : activeComponents) {
-            if (entry.type() == EffectAPIEffects.TICK && entry.value() instanceof List list)
+            if (entry.type() == EffectAPIEffectTypes.TICK && entry.value() instanceof List list)
                 list.forEach(effect -> ((EffectAPITickEffect)((EffectAPIConditionalEffect)effect).effect()).tick(EffectAPIEffect.createEntityOnlyContext(entity)));
         }
     }

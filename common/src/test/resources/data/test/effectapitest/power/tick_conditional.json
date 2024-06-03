@@ -9,15 +9,11 @@
         }
       },
       "requirements": {
-        "condition": "minecraft:entity_properties",
-        "entity": "this",
+        "condition": "minecraft:location_check",
+        "offsetY": -1,
         "predicate": {
-          "location": {
-            "stepping_on": {
-              "block": {
-                "blocks": "minecraft:magma_block"
-              }
-            }
+          "block": {
+            "blocks": "minecraft:magma_block"
           }
         }
       }

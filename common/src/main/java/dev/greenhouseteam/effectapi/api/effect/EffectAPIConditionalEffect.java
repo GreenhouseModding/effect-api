@@ -18,67 +18,45 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 
 import java.util.Optional;
 
-public record EffectAPIConditionalEffect<T extends EffectAPIEffect>(T effect, Optional<LootItemCondition> requirements) implements EffectAPIEffect {
+public record EffectAPIConditionalEffect<T extends EffectAPIEffect>(T effect, Optional<LootItemCondition> requirements, LootContextParamSet paramSet) implements EffectAPIEffect {
     public static Codec<LootItemCondition> conditionCodec(LootContextParamSet paramSet) {
         return LootItemCondition.DIRECT_CODEC
                 .validate(
                         loot -> {
                             ProblemReporter.Collector collector = new ProblemReporter.Collector();
-                            var difference = Sets.difference(paramSet.getAllowed(), loot.getReferencedContextParams());
-                            if (!difference.isEmpty()) {
-                                collector.report("Parameters " + difference + " are not provided in this context");
-                            }
+                            if (!paramSet.getAllowed().containsAll(loot.getReferencedContextParams()))
+                                collector.report("Parameters " + loot.getReferencedContextParams().stream().filter(param -> !paramSet.isAllowed(param)).toList() + " are not provided in this context");
+
                             var map = collector.get();
                             if (map.isEmpty())
                                 return DataResult.success(loot);
-                            return DataResult.error(() -> "Validation error in Effect API effect condition: " + loot);
+                            return DataResult.error(() -> "Validation error in Effect API effect condition:" + collector.getReport().orElse("Unknown error."));
                         }
                 );
     }
 
-    public static <T extends EffectAPIEffect> Codec<EffectAPIConditionalEffect<T>> codec(Codec<T> $$0, LootContextParamSet $$1) {
-        return RecordCodecBuilder.create(
-                $$2 -> $$2.group(
-                                $$0.fieldOf("effect").forGetter(EffectAPIConditionalEffect::effect),
-                                conditionCodec($$1).optionalFieldOf("requirements").forGetter(EffectAPIConditionalEffect::requirements)
-                        )
-                        .apply($$2, EffectAPIConditionalEffect::new)
-        );
+    public static <T extends EffectAPIEffect> Codec<EffectAPIConditionalEffect<T>> codec(Codec<T> codec, LootContextParamSet paramSet) {
+        return RecordCodecBuilder.create(inst -> inst.group(
+                codec.fieldOf("effect").forGetter(EffectAPIConditionalEffect::effect),
+                conditionCodec(paramSet).optionalFieldOf("requirements").forGetter(EffectAPIConditionalEffect::requirements)
+        ).apply(inst, (t1, t2) -> new EffectAPIConditionalEffect<>(t1, t2, paramSet)));
     }
 
 
     @Override
     public void onAdded(LootContext lootContext) {
-        Entity entity = lootContext.getParamOrNull(LootContextParams.THIS_ENTITY);
-        if (entity != null && isActive(entity))
+        if (isActive(lootContext))
             effect.onAdded(lootContext);
     }
 
     @Override
     public void onRemoved(LootContext lootContext) {
-        Entity entity = lootContext.getParamOrNull(LootContextParams.THIS_ENTITY);
-        if (entity != null && isActive(entity))
+        if (isActive(lootContext))
             effect.onRemoved(lootContext);
     }
 
     @Override
-    public LootContextParamSet paramSet() {
-        return EffectAPILootContextParamSets.ENTITY;
-    }
-
-    @Override
-    public DataComponentType<?> type() {
-        return effect.type();
-    }
-
-    public boolean isActive(Entity entity) {
-        if (entity.level().isClientSide())
-            return false;
-        if (requirements.isEmpty())
-            return true;
-        LootParams.Builder params = new LootParams.Builder((ServerLevel) entity.level());
-        params.withParameter(LootContextParams.THIS_ENTITY, entity);
-        params.withParameter(LootContextParams.ORIGIN, entity.position());
-        return requirements.get().test(new LootContext.Builder(params.create(EffectAPILootContextParamSets.ENTITY)).create(Optional.empty()));
+    public boolean isActive(LootContext context) {
+        return requirements.isEmpty() || requirements.get().test(context);
     }
 }

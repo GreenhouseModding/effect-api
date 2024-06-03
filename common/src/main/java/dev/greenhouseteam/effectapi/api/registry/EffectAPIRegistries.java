@@ -8,7 +8,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;
 
 public class EffectAPIRegistries {
-    public static final Registry<DataComponentType<?>> EFFECT = EffectAPI.getHelper().createRegistry(EffectAPIRegistryKeys.EFFECT);
-    public static final Registry<MapCodec<? extends EffectAPIEntityEffect>> ENTITY_EFFECT = EffectAPI.getHelper().createRegistry(EffectAPIRegistryKeys.ENTITY_EFFECT);
+    public static final Registry<DataComponentType<?>> EFFECT_TYPE = EffectAPI.getHelper().createRegistry(EffectAPIRegistryKeys.EFFECT_TYPE);
+    public static final Registry<MapCodec<? extends EffectAPIEntityEffect>> ENTITY_EFFECT_TYPE = EffectAPI.getHelper().createRegistry(EffectAPIRegistryKeys.ENTITY_EFFECT_TYPE);
     public static final Registry<Codec<?>> RESOURCE_TYPE = EffectAPI.getHelper().createRegistry(EffectAPIRegistryKeys.RESOURCE_TYPE);
 }

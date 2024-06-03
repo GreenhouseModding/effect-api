@@ -1,6 +1,6 @@
 package dev.greenhouseteam.test.network.clientbound;
 
-import dev.greenhouseteam.effectapi.api.effect.EffectAPIEffect;
+import dev.greenhouseteam.effectapi.api.EffectAPIEffectTypes;
 import dev.greenhouseteam.test.EffectAPITest;
 import dev.greenhouseteam.test.Power;
 import net.minecraft.client.Minecraft;
@@ -22,13 +22,13 @@ public record SyncPowerAttachmentClientboundPacket(int entityId, List<Holder<Pow
     public static final StreamCodec<RegistryFriendlyByteBuf, SyncPowerAttachmentClientboundPacket> STREAM_CODEC = StreamCodec.of(SyncPowerAttachmentClientboundPacket::write, SyncPowerAttachmentClientboundPacket::new);
 
     public SyncPowerAttachmentClientboundPacket(RegistryFriendlyByteBuf buf) {
-        this(buf.readInt(), Power.CODEC.listOf().fieldOf("powers").codec().decode(RegistryOps.create(NbtOps.INSTANCE, buf.registryAccess()), buf.readNbt()).getOrThrow().getFirst(), EffectAPIEffect.CODEC.decode(RegistryOps.create(NbtOps.INSTANCE, buf.registryAccess()), buf.readNbt()).getOrThrow().getFirst());
+        this(buf.readInt(), Power.CODEC.listOf().fieldOf("powers").codec().decode(RegistryOps.create(NbtOps.INSTANCE, buf.registryAccess()), buf.readNbt()).getOrThrow().getFirst(), EffectAPIEffectTypes.CODEC.decode(RegistryOps.create(NbtOps.INSTANCE, buf.registryAccess()), buf.readNbt()).getOrThrow().getFirst());
     }
 
     public static void write(RegistryFriendlyByteBuf buf, SyncPowerAttachmentClientboundPacket packet) {
         buf.writeInt(packet.entityId);
         buf.writeNbt(Power.CODEC.listOf().fieldOf("powers").codec().encodeStart(RegistryOps.create(NbtOps.INSTANCE, buf.registryAccess()), packet.allPowers).getOrThrow());
-        buf.writeNbt(EffectAPIEffect.CODEC.encodeStart(RegistryOps.create(NbtOps.INSTANCE, buf.registryAccess()), packet.activeComponents).getOrThrow());
+        buf.writeNbt(EffectAPIEffectTypes.CODEC.encodeStart(RegistryOps.create(NbtOps.INSTANCE, buf.registryAccess()), packet.activeComponents).getOrThrow());
     }
 
     public void handle() {

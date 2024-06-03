@@ -1,6 +1,5 @@
 package dev.greenhouseteam.effectapi.platform;
 
-import dev.greenhouseteam.effectapi.api.EffectAPIEffects;
 import dev.greenhouseteam.effectapi.api.attachment.ResourcesAttachment;
 import dev.greenhouseteam.effectapi.impl.registry.EffectAPIAttachments;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;

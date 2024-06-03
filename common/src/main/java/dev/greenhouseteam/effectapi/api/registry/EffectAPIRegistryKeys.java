@@ -9,7 +9,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.resources.ResourceKey;
 
 public class EffectAPIRegistryKeys {
-    public static final ResourceKey<Registry<DataComponentType<?>>> EFFECT = ResourceKey.createRegistryKey(EffectAPI.asResource("effect"));
-    public static final ResourceKey<Registry<MapCodec<? extends EffectAPIEntityEffect>>> ENTITY_EFFECT = ResourceKey.createRegistryKey(EffectAPI.asResource("entity_effect"));
+    public static final ResourceKey<Registry<DataComponentType<?>>> EFFECT_TYPE = ResourceKey.createRegistryKey(EffectAPI.asResource("effect_type"));
+    public static final ResourceKey<Registry<MapCodec<? extends EffectAPIEntityEffect>>> ENTITY_EFFECT_TYPE = ResourceKey.createRegistryKey(EffectAPI.asResource("entity_effect_type"));
     public static final ResourceKey<Registry<Codec<?>>> RESOURCE_TYPE = ResourceKey.createRegistryKey(EffectAPI.asResource("resource_type"));
 }
