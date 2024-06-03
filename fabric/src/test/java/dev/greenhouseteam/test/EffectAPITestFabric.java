@@ -52,10 +52,5 @@ public class EffectAPITestFabric implements ModInitializer {
             if (entity.hasAttached(POWERS))
                 entity.getAttached(POWERS).refresh();
         });
-
-        ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {
-            if (entity.hasAttached(POWERS))
-                entity.getAttached(POWERS).init(entity);
-        });
     }
 }
