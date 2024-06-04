@@ -42,13 +42,13 @@ public class TestCommand {
                 .literal("add")
                 .then(Commands.argument("target", EntityArgument.entity())
                         .then(Commands.argument("power", ResourceArgument.resource(context, EffectAPITest.POWER))
-                                .executes(TestCommand::grantPower)))
+                                .executes(TestCommand::addPower)))
                 .build();
         LiteralCommandNode<CommandSourceStack> removePowerNode = Commands
                 .literal("remove")
                 .then(Commands.argument("target", EntityArgument.entity())
                         .then(Commands.argument("power", ResourceArgument.resource(context, EffectAPITest.POWER))
-                                .executes(TestCommand::revokePower)))
+                                .executes(TestCommand::removePower)))
                 .build();
         LiteralCommandNode<CommandSourceStack> listPowersNode = Commands
                 .literal("list")
@@ -89,7 +89,7 @@ public class TestCommand {
         dispatcher.getRoot().addChild(testNode);
     }
 
-    private static int grantPower(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+    private static int addPower(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         Entity entity = EntityArgument.getEntity(context, "target");
 
         Holder<Power> power = ResourceArgument.getResource(context, "power", EffectAPITest.POWER);
@@ -101,11 +101,11 @@ public class TestCommand {
         }
         attachment.addPower(power);
 
-        context.getSource().sendSuccess(() -> Component.literal("Granted power '" + power.unwrapKey().map(ResourceKey::location).orElse(null) + "' to entity."), true);
+        context.getSource().sendSuccess(() -> Component.literal("Added power '" + power.unwrapKey().map(ResourceKey::location).orElse(null) + "' to entity."), true);
         return 1;
     }
 
-    private static int revokePower(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+    private static int removePower(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         Entity entity = EntityArgument.getEntity(context, "target");
 
         Holder<Power> power = ResourceArgument.getResource(context, "power", EffectAPITest.POWER);
