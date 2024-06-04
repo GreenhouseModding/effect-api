@@ -9,6 +9,13 @@ import net.minecraft.world.entity.Entity;
 
 import java.util.List;
 
+/**
+ * This class provides some common hooks for the entity effects attachment.
+ * <br>
+ * The attachment is a way to have entity effects work across different
+ * modded implementations, so you don't have to struggle with compatibility with one
+ * mod's effects that is only handled through its own code.
+ */
 public class EntityEffectAttachmentUtil {
     /**
      * Obtains an entity's active effects.
