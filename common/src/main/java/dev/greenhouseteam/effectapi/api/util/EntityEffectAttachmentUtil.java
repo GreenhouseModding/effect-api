@@ -1,5 +1,6 @@
 package dev.greenhouseteam.effectapi.api.util;
 
+import dev.greenhouseteam.effectapi.api.attachment.EntityEffectsAttachment;
 import dev.greenhouseteam.effectapi.api.effect.EffectAPIEffect;
 import dev.greenhouseteam.effectapi.impl.EffectAPI;
 import net.minecraft.core.component.DataComponentType;
@@ -8,7 +9,7 @@ import net.minecraft.world.entity.Entity;
 
 import java.util.List;
 
-public class EffectEntityUtil {
+public class EntityEffectAttachmentUtil {
     /**
      * Obtains an entity's active effects.
      *
@@ -18,7 +19,17 @@ public class EffectEntityUtil {
      * @param <T>       The effect class.
      */
     public static <T extends EffectAPIEffect> List<T> getEntityEffects(Entity entity, DataComponentType<List<T>> type) {
+        EntityEffectsAttachment attachment = EffectAPI.getHelper().getEntityEffects(entity);
+        if (attachment == null)
+            return List.of();
         return EffectAPI.getHelper().getEntityEffects(entity).getEffects(type);
+    }
+
+    public static boolean hasEffectType(Entity entity, DataComponentType<?> type) {
+        EntityEffectsAttachment attachment = EffectAPI.getHelper().getEntityEffects(entity);
+        if (attachment == null)
+            return false;
+        return !attachment.getEffects((DataComponentType)type).isEmpty();
     }
 
     /**
