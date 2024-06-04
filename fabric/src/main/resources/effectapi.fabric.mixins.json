@@ -1,11 +1,13 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "dev.greenhouseteam.test.mixin",
+  "package": "dev.greenhouseteam.effectapi.mixin",
   "refmap": "${mod_id}.refmap.json",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "EntityMixin"
+    "EntityMixin",
+    "ServerEntityMixin",
+    "ServerLevelEntityCallbacksMixin"
   ],
   "client": [
   ],

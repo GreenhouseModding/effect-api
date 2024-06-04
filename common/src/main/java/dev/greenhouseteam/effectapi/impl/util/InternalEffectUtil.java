@@ -1,4 +1,4 @@
-package dev.greenhouseteam.effectapi.api.util;
+package dev.greenhouseteam.effectapi.impl.util;
 
 import dev.greenhouseteam.effectapi.api.EffectAPIEffectTypes;
 import dev.greenhouseteam.effectapi.api.effect.EffectAPIConditionalEffect;
@@ -12,6 +12,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public class EffectUtil {
+public class InternalEffectUtil {
     public static void executeOnAllEffects(DataComponentMap map, Consumer<EffectAPIEffect> consumer) {
         for (var entry : map)
             if (entry.type() == EffectAPIEffectTypes.ENTITY_TICK && entry.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect)
@@ -31,19 +32,14 @@ public class EffectUtil {
         return (T) ((EffectAPIConditionalEffect)effect).effect();
     }
 
-    public static DataComponentMap getActive(Entity entity, DataComponentMap map, LootContext lootContext) {
-        if (entity == null || map == DataComponentMap.EMPTY)
-            return DataComponentMap.EMPTY;
-
+    public static DataComponentMap generateActiveEffects(LootContext context, LootContextParamSet paramSet, DataComponentMap map) {
         Map<DataComponentType<?>, List<EffectAPIEffect>> newMap = new Reference2ObjectArrayMap<>();
 
         for (TypedDataComponent<?> component : map) {
             if (component.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect)
-                for (EffectAPIEffect effect : ((List<EffectAPIEffect>)list)) {
-                    if (effect.paramSet() == EffectAPILootContextParamSets.ENTITY && effect.isActive(lootContext)) {
+                for (EffectAPIEffect effect : ((List<EffectAPIEffect>) list))
+                    if (effect.paramSet() == paramSet && effect.isActive(context))
                         newMap.computeIfAbsent(component.type(), type -> new ArrayList<>()).add(effect);
-                    }
-                }
         }
 
         DataComponentMap.Builder builder = DataComponentMap.builder();

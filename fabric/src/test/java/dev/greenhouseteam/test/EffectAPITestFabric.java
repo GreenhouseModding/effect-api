@@ -8,7 +8,6 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.registry.DynamicRegistries;
 import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
@@ -41,16 +40,6 @@ public class EffectAPITestFabric implements ModInitializer {
                 entity.getAttached(POWERS).init(entity);
                 entity.getAttached(POWERS).sync();
             }
-        });
-
-        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
-            if (newPlayer.hasAttached(POWERS))
-                newPlayer.getAttached(POWERS).refresh();
-        });
-
-        ServerEntityEvents.ENTITY_UNLOAD.register((entity, world) -> {
-            if (entity.hasAttached(POWERS))
-                entity.getAttached(POWERS).refresh();
         });
     }
 }
