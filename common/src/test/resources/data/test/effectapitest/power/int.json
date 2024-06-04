@@ -1,7 +1,7 @@
 {
   "effectapi:resource": [
     {
-      "id": "test:sea_slug",
+      "id": "test:int",
       "resource_type": "effectapi:int",
       "default_value": 1500
     }

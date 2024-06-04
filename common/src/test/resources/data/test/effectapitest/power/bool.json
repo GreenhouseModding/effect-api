@@ -1,7 +1,7 @@
 {
   "effectapi:resource": [
     {
-      "id": "test:shrimp",
+      "id": "test:bool",
       "resource_type": "effectapi:bool",
       "default_value": false
     }
