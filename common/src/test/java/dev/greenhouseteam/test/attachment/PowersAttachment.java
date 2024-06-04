@@ -40,6 +40,10 @@ public class PowersAttachment {
         sync();
     }
 
+    public List<Holder<Power>> getPowers() {
+        return powers;
+    }
+
     public boolean isEmpty() {
         return powers.isEmpty();
     }
