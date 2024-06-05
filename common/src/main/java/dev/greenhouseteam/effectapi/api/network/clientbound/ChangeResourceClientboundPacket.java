@@ -21,17 +21,23 @@ public class ChangeResourceClientboundPacket<T> implements CustomPacketPayload {
 
     private final int entityId;
     private final ResourceEffect<T> resourceEffect;
+    private final Optional<ResourceLocation> source;
     private final Optional<T> value;
 
-    public ChangeResourceClientboundPacket(int entityId, ResourceEffect<T> resourceEffect, Optional<T> value) {
+    public ChangeResourceClientboundPacket(int entityId, ResourceEffect<T> resourceEffect, Optional<ResourceLocation> source, Optional<T> value) {
         this.entityId = entityId;
         this.resourceEffect = resourceEffect;
+        this.source = source;
         this.value = value;
     }
 
     public ChangeResourceClientboundPacket(RegistryFriendlyByteBuf buf) {
         this.entityId = buf.readInt();
         this.resourceEffect = ResourceEffect.getEffectFromId(buf.readResourceLocation());
+        if (buf.readBoolean())
+            this.source = Optional.of(buf.readResourceLocation());
+        else
+            this.source = Optional.empty();
         if (buf.readBoolean())
             this.value = Optional.of(resourceEffect.getResourceTypeCodec().fieldOf("value").codec().decode(RegistryOps.create(NbtOps.INSTANCE, buf.registryAccess()), buf.readNbt()).getOrThrow().getFirst());
         else
@@ -41,18 +47,19 @@ public class ChangeResourceClientboundPacket<T> implements CustomPacketPayload {
     public static void write(RegistryFriendlyByteBuf buf, ChangeResourceClientboundPacket<?> packet) {
         buf.writeInt(packet.entityId);
         buf.writeResourceLocation(packet.resourceEffect.getId());
+        buf.writeBoolean(packet.source.isPresent());
+        packet.source.ifPresent(buf::writeResourceLocation);
         buf.writeBoolean(packet.value.isPresent());
-        if (packet.value.isPresent())
-            buf.writeNbt(((Codec<Object>)packet.resourceEffect.getResourceTypeCodec()).fieldOf("value").codec().encodeStart(RegistryOps.create(NbtOps.INSTANCE, buf.registryAccess()), packet.value.get()).getOrThrow());
+        packet.value.ifPresent(object -> buf.writeNbt(((Codec<Object>) packet.resourceEffect.getResourceTypeCodec()).fieldOf("value").codec().encodeStart(RegistryOps.create(NbtOps.INSTANCE, buf.registryAccess()), object).getOrThrow()));
     }
 
     public void handle() {
         Minecraft.getInstance().execute(() -> {
             Entity entity = Minecraft.getInstance().level.getEntity(entityId);
             if (value.isEmpty())
-                EffectAPI.getHelper().removeResource(entity, resourceEffect.getId());
+                EffectAPI.getHelper().removeResource(entity, resourceEffect.getId(), source.orElse(null));
             else
-                EffectAPI.getHelper().setResource(entity, resourceEffect.getId(), value.get());
+                EffectAPI.getHelper().setResource(entity, resourceEffect.getId(), value.get(), source.orElse(null));
         });
     }
 

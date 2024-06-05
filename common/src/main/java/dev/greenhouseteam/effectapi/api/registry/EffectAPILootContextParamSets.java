@@ -7,5 +7,6 @@ public class EffectAPILootContextParamSets {
     public static final LootContextParamSet ENTITY = LootContextParamSet.builder()
             .required(LootContextParams.THIS_ENTITY)
             .required(LootContextParams.ORIGIN)
+            .optional(EffectAPILootContextParams.SOURCE)
             .build();
 }

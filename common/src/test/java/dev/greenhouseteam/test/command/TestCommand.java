@@ -64,14 +64,14 @@ public class TestCommand {
         LiteralCommandNode<CommandSourceStack> setResourceNode = Commands
                 .literal("set")
                 .then(Commands.argument("targets", EntityArgument.entities())
-                        .then(Commands.argument("key", DataResourceArgument.resource("targets"))
-                                .then(Commands.argument("value", DataResourceValueArgument.value("key","effectapi resource set <target>"))
+                        .then(Commands.argument("key", DataResourceArgument.resource("targets", "effectapi resource set", PowersAttachment.ID))
+                                .then(Commands.argument("value", DataResourceValueArgument.value("key","effectapi resource set <targets>"))
                                     .executes(TestCommand::setResource))))
                 .build();
         LiteralCommandNode<CommandSourceStack> getResourceNode = Commands
                 .literal("get")
                 .then(Commands.argument("target", EntityArgument.entity())
-                        .then(Commands.argument("key", DataResourceArgument.resource("target"))
+                        .then(Commands.argument("key", DataResourceArgument.resource("target", "effectapi resource get", PowersAttachment.ID))
                                 .executes(TestCommand::getResource)))
                 .build();
 
@@ -172,7 +172,7 @@ public class TestCommand {
 
         for (Entity entity : entities) {
             if (EffectAPI.getHelper().getResources(entity) != null && EffectAPI.getHelper().getResources(entity).resources().containsKey(resource.getId())) {
-                EffectAPI.getHelper().setResource(entity, resource.getId(), value);
+                EffectAPI.getHelper().setResource(entity, resource.getId(), value, null);
                 ++successes;
             }
         }
@@ -199,35 +199,14 @@ public class TestCommand {
             return 0;
         }
 
-        String value = EffectAPI.getHelper().getResources(entity).getValue(resource.getId()).toString();
+        Object value = EffectAPI.getHelper().getResources(entity).getValue(resource.getId());
 
-        context.getSource().sendSuccess(() -> Component.literal("Resource '" + resource.getId() + "' is " + value + "."), true);
+        context.getSource().sendSuccess(() -> Component.literal("Resource '" + resource.getId() + "' is " + value.toString() + "."), true);
+        if (value instanceof Number number)
+            return number.intValue();
+        if (value instanceof Boolean bool)
+            return bool.booleanValue() ? 1 : 0;
+
         return 1;
-    }
-
-    private static int removeResource(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        Collection<? extends Entity> entities = EntityArgument.getEntities(context, "targets");
-
-        ResourceEffect<Object> resource = DataResourceArgument.getResource(context, "key");
-
-        int successes = 0;
-
-        for (Entity entity : entities) {
-            if (EffectAPI.getHelper().getResources(entity) != null && EffectAPI.getHelper().getResources(entity).resources().containsKey(resource.getId())) {
-                EffectAPI.getHelper().removeResource(entity, resource.getId());
-                ++successes;
-            }
-        }
-
-        if (successes == 0)
-            context.getSource().sendFailure(Component.literal("None of the specified entities have the resource '" + resource.getId() + "'."));
-        else if (successes == 1)
-            context.getSource().sendSuccess(() -> Component.literal("Removed resource '" + resource.getId() + "' from entity."), true);
-        else if (successes > 1) {
-            int finalSuccesses = successes;
-            context.getSource().sendSuccess(() -> Component.literal("Removed resource '" + resource.getId() + "' from " + finalSuccesses + " entities."), true);
-        }
-
-        return successes;
     }
 }

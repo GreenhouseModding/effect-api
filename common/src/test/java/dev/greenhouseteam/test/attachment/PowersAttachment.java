@@ -69,8 +69,8 @@ public class PowersAttachment {
 
     public void removePower(Holder<Power> power) {
         EntityEffectAttachmentUtil.removeEffects(provider, power.value().effects().stream().filter(component -> component.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect).flatMap(component -> ((List<EffectAPIEffect>)component.value()).stream()).toList(), ID);
-        powers.remove(power);
         EntityEffectAttachmentUtil.syncEffects(provider);
+        powers.remove(power);
         sync();
     }
 

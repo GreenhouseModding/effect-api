@@ -92,6 +92,9 @@ public class EntityEffectAttachmentUtil {
      * @param entity    The entity to sync.
      */
     public static void syncEffects(Entity entity) {
-        EffectAPI.getHelper().getEntityEffects(entity).sync();
+        EntityEffectsAttachment attachment = EffectAPI.getHelper().getEntityEffects(entity);
+        if (attachment == null)
+            return;
+        attachment.sync();
     }
 }

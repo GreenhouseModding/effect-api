@@ -30,9 +30,11 @@ public interface EffectAPIPlatformHelper {
     @Nullable
     ResourcesAttachment getResources(Entity entity);
 
-    <T> T setResource(Entity entity, ResourceLocation id, T value);
-
     void setResourcesAttachment(Entity entity, ResourcesAttachment attachment);
+
+    <T> T setResource(Entity entity, ResourceLocation id, T value, @Nullable ResourceLocation source);
+
+    void removeResource(Entity entity, ResourceLocation id, ResourceLocation source);
 
     @Nullable
     EntityEffectsAttachment getEntityEffects(Entity entity);
@@ -42,8 +44,6 @@ public interface EffectAPIPlatformHelper {
     void removeEntityEffect(Entity entity, EffectAPIEffect effect, ResourceLocation source);
 
     void setEntityEffects(Entity entity, Map<ResourceLocation, DataComponentMap> alLComponents, DataComponentMap activeComponents);
-
-    void removeResource(Entity entity, ResourceLocation id);
 
     void sendClientboundTracking(CustomPacketPayload payload, Entity entity);
 }

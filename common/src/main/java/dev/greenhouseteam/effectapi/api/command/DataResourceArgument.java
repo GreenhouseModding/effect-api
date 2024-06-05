@@ -15,6 +15,7 @@ import dev.greenhouseteam.effectapi.impl.client.EntitySelectorUtil;
 import dev.greenhouseteam.effectapi.mixin.EntitySelectorAccessor;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.commands.arguments.selector.EntitySelector;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.network.FriendlyByteBuf;
@@ -28,14 +29,18 @@ import java.util.concurrent.CompletableFuture;
 public class DataResourceArgument implements ArgumentType<ResourceEffect<?>> {
     public static final SimpleCommandExceptionType ERROR_RESOURCE_NOT_PRESENT = new SimpleCommandExceptionType(Component.translatable("argument.effectapi.resource.not_present"));
 
-    String entitiesParam;
+    private final String entitiesParam;
+    private final int whitespaceBeforeEntities;
+    private final ResourceLocation source;
 
-    protected DataResourceArgument(String entitiesParam) {
+    protected DataResourceArgument(String entitiesParam, int whitespaceBeforeEntities, ResourceLocation source) {
         this.entitiesParam = entitiesParam;
+        this.whitespaceBeforeEntities = whitespaceBeforeEntities;
+        this.source = source;
     }
 
-    public static DataResourceArgument resource(String entitiesParam) {
-        return new DataResourceArgument(entitiesParam);
+    public static DataResourceArgument resource(String entitiesParam, String commandUntilEntities, ResourceLocation source) {
+        return new DataResourceArgument(entitiesParam, commandUntilEntities.split(" ").length, source);
     }
 
     public static <T> ResourceEffect<T> getResource(CommandContext<CommandSourceStack> context, String param) {
@@ -48,6 +53,27 @@ public class DataResourceArgument implements ArgumentType<ResourceEffect<?>> {
         ResourceEffect<?> resource = ResourceEffect.getEffectFromId(typeId);
         if (resource == null)
             throw ERROR_RESOURCE_NOT_PRESENT.createWithContext(reader);
+
+        int cursor = reader.getCursor();
+        String string = reader.getString();
+        int currentWhitespaceIndex = 0;
+        int index = 0;
+        while (currentWhitespaceIndex < whitespaceBeforeEntities && index < string.length()) {
+            if (string.charAt(index) == ' ')
+                ++currentWhitespaceIndex;
+            ++index;
+        }
+        reader.setCursor(index);
+        String entitiesString = reader.getRemaining().split(" ", 2)[0];
+        reader.setCursor(cursor);
+
+        StringReader entitiesReader = new StringReader(entitiesString);
+        EntitySelector selector = EntityArgument.entities().parse(entitiesReader);
+        List<? extends Entity> entities = EntitySelectorUtil.findEntities(selector, ((EntitySelectorAccessor)selector).effectapi$getPlayerName(), ((EntitySelectorAccessor)selector).effectapi$getEntityUUID());
+
+        if (!getResourceEffectsFromSource(entities).contains(typeId))
+            throw ERROR_RESOURCE_NOT_PRESENT.createWithContext(reader);
+
         return resource;
     }
 
@@ -57,46 +83,58 @@ public class DataResourceArgument implements ArgumentType<ResourceEffect<?>> {
 
         List<? extends Entity> entities = EntitySelectorUtil.findEntities(selector, ((EntitySelectorAccessor)selector).effectapi$getPlayerName(), ((EntitySelectorAccessor)selector).effectapi$getEntityUUID());
 
-        for (ResourceLocation val : ResourceEffect.getIdMap().keySet().stream()
-                .filter(resourceEffect -> entities.stream().anyMatch(entity -> {
-                    ResourcesAttachment attachment = EffectAPI.getHelper().getResources(entity);
-                    if (attachment == null)
-                        return false;
-                    return attachment.resources().containsKey(resourceEffect);
-                })).toList())
+        for (ResourceLocation val : getResourceEffectsFromSource(entities))
             builder.suggest(val.toString());
 
         return CompletableFuture.completedFuture(builder.build());
+    }
+
+    private List<ResourceLocation> getResourceEffectsFromSource(List<? extends Entity> entities) {
+        return ResourceEffect.getIdMap().keySet().stream().filter(id -> entities.stream().anyMatch(entity -> {
+                    ResourcesAttachment attachment = EffectAPI.getHelper().getResources(entity);
+                    if (attachment == null)
+                        return false;
+                    ResourceEffect.ResourceHolder<?> value = attachment.getResourceHolder(id);
+                    return value != null && value.getSource().equals(source);
+                })).toList();
     }
 
     public static class Info implements ArgumentTypeInfo<DataResourceArgument, DataResourceArgument.Info.Template> {
         @Override
         public void serializeToNetwork(DataResourceArgument.Info.Template template, FriendlyByteBuf friendlyByteBuf) {
             friendlyByteBuf.writeUtf(template.entitiesParam);
+            friendlyByteBuf.writeInt(template.whitespaceBeforeEntities);
+            friendlyByteBuf.writeResourceLocation(template.source);
         }
 
         public DataResourceArgument.Info.Template deserializeFromNetwork(FriendlyByteBuf buf) {
-            return new DataResourceArgument.Info.Template(buf.readUtf());
+            return new DataResourceArgument.Info.Template(buf.readUtf(), buf.readInt(), buf.readResourceLocation());
         }
 
         @Override
         public void serializeToJson(DataResourceArgument.Info.Template template, JsonObject jsonObject) {
             jsonObject.addProperty("entities_param", template.entitiesParam);
+            jsonObject.addProperty("whitespace_before_entities", template.whitespaceBeforeEntities);
+            jsonObject.addProperty("source", template.source.toString());
         }
 
         public DataResourceArgument.Info.Template unpack(DataResourceArgument argument) {
-            return new DataResourceArgument.Info.Template(argument.entitiesParam);
+            return new DataResourceArgument.Info.Template(argument.entitiesParam, argument.whitespaceBeforeEntities, argument.source);
         }
 
         public final class Template implements ArgumentTypeInfo.Template<DataResourceArgument> {
-            String entitiesParam;
+            private final String entitiesParam;
+            private final int whitespaceBeforeEntities;
+            private final ResourceLocation source;
 
-            Template(String entitiesParam) {
+            Template(String entitiesParam, int whitespaceBeforeEntities, ResourceLocation source) {
                 this.entitiesParam = entitiesParam;
+                this.whitespaceBeforeEntities = whitespaceBeforeEntities;
+                this.source = source;
             }
 
             public DataResourceArgument instantiate(CommandBuildContext context) {
-                return new DataResourceArgument(entitiesParam);
+                return new DataResourceArgument(entitiesParam, whitespaceBeforeEntities, source);
             }
 
             @Override

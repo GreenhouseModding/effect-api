@@ -8,6 +8,7 @@ import com.mojang.serialization.MapLike;
 import dev.greenhouseteam.effectapi.api.EffectAPIEffectTypes;
 import dev.greenhouseteam.effectapi.api.network.clientbound.ChangeResourceClientboundPacket;
 import dev.greenhouseteam.effectapi.api.registry.EffectAPILootContextParamSets;
+import dev.greenhouseteam.effectapi.api.registry.EffectAPILootContextParams;
 import dev.greenhouseteam.effectapi.api.registry.EffectAPIRegistries;
 import dev.greenhouseteam.effectapi.impl.EffectAPI;
 import net.minecraft.core.component.DataComponentType;
@@ -44,15 +45,15 @@ public record ResourceEffect<T>(ResourceLocation id, Codec<T> resourceType,
     @Override
     public void onAdded(LootContext lootContext) {
         Entity entity = lootContext.getParam(LootContextParams.THIS_ENTITY);
-        T value = EffectAPI.getHelper().setResource(entity, id, defaultValue);
-        EffectAPI.getHelper().sendClientboundTracking(new ChangeResourceClientboundPacket<>(entity.getId(), this, Optional.of(value)), entity);
+        T value = EffectAPI.getHelper().setResource(entity, id, defaultValue, lootContext.getParamOrNull(EffectAPILootContextParams.SOURCE));
+        EffectAPI.getHelper().sendClientboundTracking(new ChangeResourceClientboundPacket<>(entity.getId(), this, Optional.ofNullable(lootContext.getParamOrNull(EffectAPILootContextParams.SOURCE)), Optional.of(value)), entity);
     }
 
     @Override
     public void onRemoved(LootContext lootContext) {
         Entity entity = lootContext.getParam(LootContextParams.THIS_ENTITY);
-        EffectAPI.getHelper().removeResource(entity, id);
-        EffectAPI.getHelper().sendClientboundTracking(new ChangeResourceClientboundPacket<>(entity.getId(), this, Optional.empty()), entity);
+        EffectAPI.getHelper().removeResource(entity, id, lootContext.getParamOrNull(EffectAPILootContextParams.SOURCE));
+        EffectAPI.getHelper().sendClientboundTracking(new ChangeResourceClientboundPacket<>(entity.getId(), this, Optional.empty(), Optional.empty()), entity);
     }
 
     @Override
@@ -89,10 +90,12 @@ public record ResourceEffect<T>(ResourceLocation id, Codec<T> resourceType,
 
         private final ResourceEffect<T> effect;
         private T value;
+        private final ResourceLocation source;
 
-        public ResourceHolder(ResourceEffect<T> effect) {
+        public ResourceHolder(ResourceEffect<T> effect, ResourceLocation source) {
             this.effect = effect;
             this.value = effect.defaultValue;
+            this.source = source;
         }
 
         public ResourceEffect<T> getEffect() {
@@ -105,6 +108,10 @@ public record ResourceEffect<T>(ResourceLocation id, Codec<T> resourceType,
 
         public void setValue(T value) {
             this.value = value;
+        }
+
+        public ResourceLocation getSource() {
+            return source;
         }
     }
 

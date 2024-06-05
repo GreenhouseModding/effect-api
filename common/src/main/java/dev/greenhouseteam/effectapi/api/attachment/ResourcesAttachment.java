@@ -10,11 +10,7 @@ import dev.greenhouseteam.effectapi.impl.EffectAPI;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 public record ResourcesAttachment(Map<ResourceLocation, ResourceEffect.ResourceHolder<Object>> resources) {
@@ -26,14 +22,25 @@ public record ResourcesAttachment(Map<ResourceLocation, ResourceEffect.ResourceH
         return (T) Optional.ofNullable(resources.get(id)).map(ResourceEffect.ResourceHolder::getValue).orElse(null);
     }
 
-    public <T> T setValue(ResourceLocation id, T value) {
+    public List<ResourceEffect.ResourceHolder<Object>> getAllFromSource(ResourceLocation source) {
+        return resources.values().stream().filter(holder -> holder.getSource().equals(source)).toList();
+    }
+
+    public <T> T setValue(ResourceLocation id, T value, ResourceLocation source) {
         if (!resources.containsKey(id)) {
-            var holder = new ResourceEffect.ResourceHolder<>(ResourceEffect.getEffectFromId(id));
+            var holder = new ResourceEffect.ResourceHolder<>(ResourceEffect.getEffectFromId(id), source);
             holder.setValue(value);
             resources.put(id, holder);
-        } else
+        } else {
             resources.get(id).setValue(value);
+        }
         return value;
+    }
+
+    public void removeValue(ResourceLocation id) {
+        if (!resources.containsKey(id))
+            return;
+        resources.remove(id);
     }
 
     @Nullable
@@ -83,7 +90,13 @@ public record ResourcesAttachment(Map<ResourceLocation, ResourceEffect.ResourceH
                     value = newValue.getOrThrow().getFirst();
                 }
 
-                ResourceEffect.ResourceHolder<Object> holder = new ResourceEffect.ResourceHolder<>(effect);
+                var newSource = ResourceLocation.CODEC.decode(ops, mapLike.getOrThrow().get("source"));
+                if (newSource.isError()) {
+                    errors.add("Failed to decode value to attachment. (Skipping). " + newSource.error().get().message());
+                    continue;
+                }
+
+                ResourceEffect.ResourceHolder<Object> holder = new ResourceEffect.ResourceHolder<>(effect, newSource.getOrThrow().getFirst());
                 holder.setValue(value);
 
                 finalMap.put(id.getOrThrow().getFirst(), holder);
@@ -105,6 +118,7 @@ public record ResourcesAttachment(Map<ResourceLocation, ResourceEffect.ResourceH
                 try {
                     map.put(ops.createString("id"), ResourceLocation.CODEC.encodeStart(ops, entry.getKey()).getOrThrow());
                     map.put(ops.createString("value"), entry.getValue().getEffect().getResourceTypeCodec().encodeStart(ops, entry.getValue().getValue()).getOrThrow());
+                    map.put(ops.createString("source"), ResourceLocation.CODEC.encodeStart(ops, entry.getValue().getSource()).getOrThrow());
                 } catch (Exception ex) {
                     EffectAPI.LOG.error("Failed to encode resource '{}' to attachment. (Skipping).", entry.getKey(), ex);
                 }

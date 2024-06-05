@@ -4,10 +4,12 @@ import dev.greenhouseteam.effectapi.api.EffectAPIEffectTypes;
 import dev.greenhouseteam.effectapi.api.effect.EffectAPIConditionalEffect;
 import dev.greenhouseteam.effectapi.api.effect.EffectAPIEffect;
 import dev.greenhouseteam.effectapi.api.registry.EffectAPILootContextParamSets;
+import dev.greenhouseteam.effectapi.api.registry.EffectAPILootContextParams;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.TypedDataComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -49,7 +51,8 @@ public class InternalEffectUtil {
         return builder.build();
     }
 
-    public static boolean hasUpdatedActives(Entity entity, DataComponentMap newMap, DataComponentMap oldMap) {
+    public static boolean hasUpdatedActives(LootContext context, LootContextParamSet paramSet, DataComponentMap newMap,
+                                            DataComponentMap oldMap, Map<EffectAPIEffect, ResourceLocation> sources) {
         List<?> oldValues = oldMap.stream().flatMap(component -> ((List<?>)component.value()).stream()).toList();
         List<?> newValues = newMap.stream().flatMap(component -> ((List<?>)component.value()).stream()).toList();
 
@@ -58,24 +61,31 @@ public class InternalEffectUtil {
 
         newValues.stream().filter(object -> !oldValues.contains(object)).forEach(value -> {
             if (value instanceof EffectAPIEffect effect)
-                if (effect.paramSet() == EffectAPILootContextParamSets.ENTITY)
-                    effect.onAdded(createEntityOnlyContext(entity));
+                if (effect.paramSet() == paramSet && sources.containsKey(effect)) {
+                    effect.onAdded(createEntityOnlyContext(context.getParam(LootContextParams.THIS_ENTITY), sources.get(effect)));
+                }
         });
         oldValues.stream().filter(object -> !newValues.contains(object)).forEach(value -> {
             if (value instanceof EffectAPIEffect effect)
-                if (effect.paramSet() == EffectAPILootContextParamSets.ENTITY)
-                    effect.onRemoved(createEntityOnlyContext(entity));
+                if (effect.paramSet() == paramSet) {
+                    effect.onRemoved(createEntityOnlyContext(context.getParam(LootContextParams.THIS_ENTITY), sources.getOrDefault(effect, null)));
+                }
         });
 
         return true;
     }
 
     public static LootContext createEntityOnlyContext(Entity entity) {
+        return createEntityOnlyContext(entity, null);
+    }
+
+    public static LootContext createEntityOnlyContext(Entity entity, ResourceLocation source) {
         if (entity.level().isClientSide())
             return null;
         LootParams.Builder params = new LootParams.Builder((ServerLevel) entity.level());
         params.withParameter(LootContextParams.THIS_ENTITY, entity);
         params.withParameter(LootContextParams.ORIGIN, entity.position());
+        params.withOptionalParameter(EffectAPILootContextParams.SOURCE, source);
         return new LootContext.Builder(params.create(EffectAPILootContextParamSets.ENTITY)).create(Optional.empty());
     }
 }

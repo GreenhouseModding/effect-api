@@ -54,9 +54,20 @@ public class EffectAPIPlatformHelperFabric implements EffectAPIPlatformHelper {
     }
 
     @Override
-    public <T> T setResource(Entity entity, ResourceLocation id, T value) {
-        return entity.getAttachedOrCreate(EffectAPIAttachments.RESOURCES).setValue(id, value);
+    public <T> T setResource(Entity entity, ResourceLocation id, T value, ResourceLocation source) {
+        return entity.getAttachedOrCreate(EffectAPIAttachments.RESOURCES).setValue(id, value, source);
     }
+
+    @Override
+    public void removeResource(Entity entity, ResourceLocation id, ResourceLocation source) {
+        ResourcesAttachment attachment = getResources(entity);
+        if (attachment == null)
+            return;
+        attachment.removeValue(id);
+        if (attachment.resources().isEmpty())
+            entity.removeAttached(EffectAPIAttachments.RESOURCES);
+    }
+
 
     @Override
     public @Nullable EntityEffectsAttachment getEntityEffects(Entity entity) {
@@ -86,16 +97,6 @@ public class EffectAPIPlatformHelperFabric implements EffectAPIPlatformHelper {
             entity.removeAttached(EffectAPIAttachments.EFFECTS);
         else
             entity.getAttachedOrCreate(EffectAPIAttachments.EFFECTS).setComponents(alLComponents, activeComponents);
-    }
-
-    @Override
-    public void removeResource(Entity entity, ResourceLocation id) {
-        ResourcesAttachment attachment = getResources(entity);
-        if (attachment == null)
-            return;
-        attachment.resources().remove(id);
-        if (attachment.resources().isEmpty())
-            entity.removeAttached(EffectAPIAttachments.RESOURCES);
     }
 
     @Override
