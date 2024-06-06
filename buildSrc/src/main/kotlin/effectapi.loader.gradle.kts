@@ -49,6 +49,7 @@ dependencies {
             requireCapability("${group}:${Properties.MOD_ID}${getArchivesNameExtension()}")
         }
     }
+    testCompileOnly(project(":${getCommonProjectName()}", "${getCommonProjectName()}TestJava"))
     "${getCommonProjectName()}Java"(project(":${getCommonProjectName()}", "${getCommonProjectName()}Java"))
     "${getCommonProjectName()}TestJava"(project(":${getCommonProjectName()}", "${getCommonProjectName()}TestJava"))
     "${getCommonProjectName()}Resources"(project(":${getCommonProjectName()}", "${getCommonProjectName()}Resources"))

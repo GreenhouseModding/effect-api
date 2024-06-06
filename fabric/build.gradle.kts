@@ -13,6 +13,8 @@ repositories {
     }
 }
 
+val effectModules = setOf("base", "entity")
+
 dependencies {
     minecraft("com.mojang:minecraft:${Versions.INTERNAL_MINECRAFT}")
     mappings(loom.officialMojangMappings())
@@ -21,15 +23,15 @@ dependencies {
     modImplementation("net.fabricmc.fabric-api:fabric-api:${Versions.FABRIC_API}")
     modLocalRuntime("com.terraformersmc:modmenu:${Versions.MOD_MENU}")
 
-    implementation(project(":baseFabric")) {
-        capabilities {
-            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-base")
+    effectModules.forEach {
+        compileOnly(project(":${it}Common")) {
+            capabilities {
+                requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-$it")
+            }
         }
     }
-    implementation(project(":entityFabric")) {
-        capabilities {
-            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-entity")
-        }
+    effectModules.forEach {
+        implementation(project(":${it}Fabric", "namedElements"))
     }
 }
 

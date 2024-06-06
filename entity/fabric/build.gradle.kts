@@ -31,14 +31,6 @@ dependencies {
             requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-base")
         }
     }
-    implementation(project(":baseFabric")) {
-        capabilities {
-            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-base")
-        }
-    }
-    include(project(":baseFabric")) {
-        capabilities {
-            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-base")
-        }
-    }
+    implementation(project(":baseFabric", "namedElements"))
+    include(project(":baseFabric", "namedElements"))
 }
