@@ -21,17 +21,12 @@ plugins {
 
 // This should match the folder name of the project, or else IDEA may complain (see https://youtrack.jetbrains.com/issue/IDEA-317606)
 rootProject.name = "effect-api"
-include("common", "fabric")
-
-includeBuild("base") {
-    dependencySubstitution {
-        substitute(module("dev.greenhouseteam:effectapi-base-common")).using(project(":common"))
-        substitute(module("dev.greenhouseteam:effectapi-base-fabric")).using(project(":fabric"))
-    }
-}
-includeBuild("entity") {
-    dependencySubstitution {
-        substitute(module("dev.greenhouseteam:effectapi-entity-common")).using(project(":common"))
-        substitute(module("dev.greenhouseteam:effectapi-entity-fabric")).using(project(":fabric"))
-    }
-}
+include(
+    "common", "fabric",
+    ":baseCommon", ":baseFabric",
+    ":entityCommon", ":entityFabric"
+)
+project(":baseCommon").projectDir = file("./base/common")
+project(":baseFabric").projectDir = file("./base/fabric")
+project(":entityCommon").projectDir = file("./entity/common")
+project(":entityFabric").projectDir = file("./entity/fabric")

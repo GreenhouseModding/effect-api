@@ -25,31 +25,36 @@ dependencies {
     compileOnly("io.github.llamalad7:mixinextras-common:${Versions.MIXIN_EXTRAS}")
     annotationProcessor("io.github.llamalad7:mixinextras-common:${Versions.MIXIN_EXTRAS}")
     compileOnly("net.fabricmc:sponge-mixin:${Versions.FABRIC_MIXIN}")
-    compileOnly("dev.greenhouseteam:effectapi-base-common:${Versions.MOD}+${Versions.MINECRAFT}")
+
+    compileOnly(project(":baseCommon")) {
+        capabilities {
+            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-base")
+        }
+    }
 }
 
 configurations {
-    register("commonJava") {
+    register("entityCommonJava") {
         isCanBeResolved = false
         isCanBeConsumed = true
     }
-    register("commonTestJava") {
+    register("entityCommonTestJava") {
         isCanBeResolved = false
         isCanBeConsumed = true
     }
-    register("commonResources") {
+    register("entityCommonResources") {
         isCanBeResolved = false
         isCanBeConsumed = true
     }
-    register("commonTestResources") {
+    register("entityCommonTestResources") {
         isCanBeResolved = false
         isCanBeConsumed = true
     }
 }
 
 artifacts {
-    add("commonJava", sourceSets["main"].java.sourceDirectories.singleFile)
-    add("commonTestJava", sourceSets["test"].java.sourceDirectories.singleFile)
-    add("commonResources", sourceSets["main"].resources.sourceDirectories.singleFile)
-    add("commonTestResources", sourceSets["test"].resources.sourceDirectories.singleFile)
+    add("entityCommonJava", sourceSets["main"].java.sourceDirectories.singleFile)
+    add("entityCommonTestJava", sourceSets["test"].java.sourceDirectories.singleFile)
+    add("entityCommonResources", sourceSets["main"].resources.sourceDirectories.singleFile)
+    add("entityCommonTestResources", sourceSets["test"].resources.sourceDirectories.singleFile)
 }

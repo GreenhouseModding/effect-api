@@ -9,15 +9,21 @@ plugins {
 }
 
 fun getArchivesNameExtension() : String {
-    if (!project.hasProperty("effectapi.moduleName"))
+    if (!hasProperty("effectapi.moduleName"))
         return ""
-    val moduleName = project.property("effectapi.moduleName") as String
+    val moduleName = properties["effectapi.moduleName"] as String
     if (moduleName.isEmpty())
         return moduleName;
     return "-$moduleName"
 }
 
-base.archivesName.set(Properties.MOD_ID + getArchivesNameExtension() + "-" + project.name)
+fun getPlatform() : String {
+    if (!hasProperty("effectapi.platformName"))
+        return "common"
+    return properties["effectapi.platformName"] as String
+}
+
+base.archivesName.set(Properties.MOD_ID + getArchivesNameExtension() + "-" + getPlatform())
 group = Properties.GROUP
 version = "${Versions.MOD}+${Versions.MINECRAFT}"
 
@@ -51,13 +57,26 @@ dependencies {
 // Read more about capabilities here: https://docs.gradle.org/current/userguide/component_capabilities.html#sec:declaring-additional-capabilities-for-a-local-component
 setOf("apiElements", "runtimeElements", "sourcesElements", "javadocElements").forEach { variant ->
     configurations.getByName(variant).outgoing {
-        capability("$group:${Properties.MOD_ID}${getArchivesNameExtension()}-${project.name}:$version")
+        capability("$group:${base.archivesName.get()}:$version")
         capability("$group:${Properties.MOD_ID}${getArchivesNameExtension()}:$version")
     }
     publishing.publications.forEach { publication ->
         if (publication is MavenPublication) {
             publication.suppressPomMetadataWarningsFor(variant);
         }
+    }
+}
+
+configurations.all {
+    resolutionStrategy.capabilitiesResolution.withCapability("$group:${Properties.MOD_ID}-base") {
+        val toBeSelected = candidates.first()
+        if (toBeSelected != null)
+            select(toBeSelected)
+    }
+    resolutionStrategy.capabilitiesResolution.withCapability("$group:${Properties.MOD_ID}-entity") {
+        val toBeSelected = candidates.first()
+        if (toBeSelected != null)
+            select(toBeSelected)
     }
 }
 

@@ -20,6 +20,17 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:${Versions.FABRIC_LOADER}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${Versions.FABRIC_API}")
     modLocalRuntime("com.terraformersmc:modmenu:${Versions.MOD_MENU}")
+
+    implementation(project(":baseFabric")) {
+        capabilities {
+            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-base")
+        }
+    }
+    implementation(project(":entityFabric")) {
+        capabilities {
+            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-entity")
+        }
+    }
 }
 
 loom {

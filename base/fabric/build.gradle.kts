@@ -13,16 +13,8 @@ repositories {
     }
 }
 
-dependencies {
-    minecraft("com.mojang:minecraft:${Versions.INTERNAL_MINECRAFT}")
-    mappings(loom.officialMojangMappings())
-
-    modImplementation("net.fabricmc:fabric-loader:${Versions.FABRIC_LOADER}")
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${Versions.FABRIC_API}")
-}
-
 loom {
-    val aw = project(":common").file("src/main/resources/${Properties.MOD_ID}-base.accesswidener");
+    val aw = project(":baseCommon").file("src/main/resources/${Properties.MOD_ID}-base.accesswidener");
     if (aw.exists())
         accessWidenerPath.set(aw)
     mixin {
@@ -30,4 +22,12 @@ loom {
     }
     runs {
     }
+}
+
+dependencies {
+    minecraft("com.mojang:minecraft:${Versions.INTERNAL_MINECRAFT}")
+    mappings(loom.officialMojangMappings())
+
+    modImplementation("net.fabricmc:fabric-loader:${Versions.FABRIC_LOADER}")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:${Versions.FABRIC_API}")
 }

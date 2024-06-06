@@ -1,9 +1,9 @@
 package dev.greenhouseteam.effectapi.impl.client;
 
-import dev.greenhouseteam.effectapi.api.effect.EntityResourceEffect;
-import dev.greenhouseteam.effectapi.api.network.clientbound.ChangeResourceClientboundPacket;
-import dev.greenhouseteam.effectapi.api.network.clientbound.SyncEffectsAttachmentClientboundPacket;
-import dev.greenhouseteam.effectapi.api.network.clientbound.SyncResourcesAttachmentClientboundPacket;
+import dev.greenhouseteam.effectapi.api.entity.effect.EntityResourceEffect;
+import dev.greenhouseteam.effectapi.api.entity.network.clientbound.ChangeResourceClientboundPacket;
+import dev.greenhouseteam.effectapi.api.entity.network.clientbound.SyncEffectsAttachmentClientboundPacket;
+import dev.greenhouseteam.effectapi.api.entity.network.clientbound.SyncResourcesAttachmentClientboundPacket;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;

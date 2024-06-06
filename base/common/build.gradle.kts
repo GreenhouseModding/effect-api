@@ -28,27 +28,27 @@ dependencies {
 }
 
 configurations {
-    register("commonJava") {
+    register("baseCommonJava") {
         isCanBeResolved = false
         isCanBeConsumed = true
     }
-    register("commonTestJava") {
+    register("baseCommonTestJava") {
         isCanBeResolved = false
         isCanBeConsumed = true
     }
-    register("commonResources") {
+    register("baseCommonResources") {
         isCanBeResolved = false
         isCanBeConsumed = true
     }
-    register("commonTestResources") {
+    register("baseCommonTestResources") {
         isCanBeResolved = false
         isCanBeConsumed = true
     }
 }
 
 artifacts {
-    add("commonJava", sourceSets["main"].java.sourceDirectories.singleFile)
-    add("commonTestJava", sourceSets["test"].java.sourceDirectories.singleFile)
-    add("commonResources", sourceSets["main"].resources.sourceDirectories.singleFile)
-    add("commonTestResources", sourceSets["test"].resources.sourceDirectories.singleFile)
+    add("baseCommonJava", sourceSets["main"].java.sourceDirectories.singleFile)
+    add("baseCommonTestJava", sourceSets["test"].java.sourceDirectories.singleFile)
+    add("baseCommonResources", sourceSets["main"].resources.sourceDirectories.singleFile)
+    add("baseCommonTestResources", sourceSets["test"].resources.sourceDirectories.singleFile)
 }

@@ -4,10 +4,10 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import dev.greenhouseteam.effectapi.api.command.DataResourceArgument;
-import dev.greenhouseteam.effectapi.api.command.DataResourceValueArgument;
-import dev.greenhouseteam.effectapi.api.effect.ResourceEffect;
-import dev.greenhouseteam.effectapi.impl.EffectAPI;
+import dev.greenhouseteam.effectapi.api.entity.command.EntityResourceArgument;
+import dev.greenhouseteam.effectapi.api.entity.command.EntityResourceValueArgument;
+import dev.greenhouseteam.effectapi.api.entity.effect.EntityResourceEffect;
+import dev.greenhouseteam.effectapi.impl.entity.EffectAPIEntity;
 import dev.greenhouseteam.test.EffectAPITest;
 import dev.greenhouseteam.test.Power;
 import dev.greenhouseteam.test.attachment.PowersAttachment;
@@ -64,14 +64,14 @@ public class TestCommand {
         LiteralCommandNode<CommandSourceStack> setResourceNode = Commands
                 .literal("set")
                 .then(Commands.argument("targets", EntityArgument.entities())
-                        .then(Commands.argument("key", DataResourceArgument.resource("targets", "effectapi resource set", PowersAttachment.ID))
-                                .then(Commands.argument("value", DataResourceValueArgument.value("key","effectapi resource set <targets>"))
+                        .then(Commands.argument("key", EntityResourceArgument.resource("targets", "effectapi resource set", PowersAttachment.ID))
+                                .then(Commands.argument("value", EntityResourceValueArgument.value("key","effectapi resource set <targets>"))
                                     .executes(TestCommand::setResource))))
                 .build();
         LiteralCommandNode<CommandSourceStack> getResourceNode = Commands
                 .literal("get")
                 .then(Commands.argument("target", EntityArgument.entity())
-                        .then(Commands.argument("key", DataResourceArgument.resource("target", "effectapi resource get", PowersAttachment.ID))
+                        .then(Commands.argument("key", EntityResourceArgument.resource("target", "effectapi resource get", PowersAttachment.ID))
                                 .executes(TestCommand::getResource)))
                 .build();
 
@@ -165,14 +165,14 @@ public class TestCommand {
     private static int setResource(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         Collection<? extends Entity> entities = EntityArgument.getEntities(context, "targets");
 
-        ResourceEffect<Object> resource = DataResourceArgument.getResource(context, "key");
-        Object value = DataResourceValueArgument.getResourceValue(context, "value");
+        EntityResourceEffect<Object> resource = EntityResourceArgument.getResource(context, "key");
+        Object value = EntityResourceValueArgument.getResourceValue(context, "value");
 
         int successes = 0;
 
         for (Entity entity : entities) {
-            if (EffectAPI.getHelper().getResources(entity) != null && EffectAPI.getHelper().getResources(entity).resources().containsKey(resource.getId())) {
-                EffectAPI.getHelper().setResource(entity, resource.getId(), value, null);
+            if (EffectAPIEntity.getHelper().getResources(entity) != null && EffectAPIEntity.getHelper().getResources(entity).resources().containsKey(resource.getId())) {
+                EffectAPIEntity.getHelper().setResource(entity, resource.getId(), value, null);
                 ++successes;
             }
         }
@@ -192,14 +192,14 @@ public class TestCommand {
     private static int getResource(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         Entity entity = EntityArgument.getEntity(context, "target");
 
-        ResourceEffect<Object> resource = DataResourceArgument.getResource(context, "key");
+        EntityResourceEffect<Object> resource = EntityResourceArgument.getResource(context, "key");
 
-        if (EffectAPI.getHelper().getResources(entity) == null || !EffectAPI.getHelper().getResources(entity).resources().containsKey(resource.getId())) {
+        if (EffectAPIEntity.getHelper().getResources(entity) == null || !EffectAPIEntity.getHelper().getResources(entity).resources().containsKey(resource.getId())) {
             context.getSource().sendFailure(Component.literal("Entity does not have resource '" + resource.getId() + "'."));
             return 0;
         }
 
-        Object value = EffectAPI.getHelper().getResources(entity).getValue(resource.getId());
+        Object value = EffectAPIEntity.getHelper().getResources(entity).getValue(resource.getId());
 
         context.getSource().sendSuccess(() -> Component.literal("Resource '" + resource.getId() + "' is " + value.toString() + "."), true);
         if (value instanceof Number number)

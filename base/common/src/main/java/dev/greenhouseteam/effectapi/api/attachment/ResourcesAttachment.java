@@ -14,14 +14,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.stream.Stream;
 
-public class ResourcesAttachment {
+public record ResourcesAttachment(Map<ResourceLocation, ResourceEffect.ResourceHolder<Object>> resources) {
     public static final Codec<ResourcesAttachment> CODEC = new AttachmentCodec();
-
-    private Map<ResourceLocation, ResourceEffect.ResourceHolder<Object>> resources;
-
-    public ResourcesAttachment(Map<ResourceLocation, ResourceEffect.ResourceHolder<Object>> resources) {
-        this.resources = resources;
-    }
 
     @Nullable
     public <T> T getValue(ResourceLocation id) {

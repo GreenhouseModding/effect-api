@@ -33,7 +33,6 @@
         "${mod_id}-entity.mixins.json",
         "${mod_id}-entity.fabric.mixins.json"
     ],
-    "accessWidener": "${mod_id}-entity.accesswidener",
     "depends": {
         "fabricloader": "${fabric_loader_range}",
         "fabric-api": "*",

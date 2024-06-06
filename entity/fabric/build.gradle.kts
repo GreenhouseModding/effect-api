@@ -3,7 +3,20 @@ import dev.greenhouseteam.effectapi.gradle.Versions
 
 plugins {
     id("effectapi.loader")
-    id("fabric-loom") version "1.6-SNAPSHOT"
+    id("fabric-loom") version "1.6-SNAPSHOT" apply true
+}
+
+apply(plugin = "fabric-loom")
+
+loom {
+    val aw = project(":entityCommon").file("src/main/resources/${Properties.MOD_ID}-entity.accesswidener");
+    if (aw.exists())
+        accessWidenerPath.set(aw)
+    mixin {
+        defaultRefmapName.set("${Properties.MOD_ID}-entity.refmap.json")
+    }
+    runs {
+    }
 }
 
 dependencies {
@@ -12,15 +25,20 @@ dependencies {
 
     modImplementation("net.fabricmc:fabric-loader:${Versions.FABRIC_LOADER}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${Versions.FABRIC_API}")
-}
 
-loom {
-    val aw = project(":common").file("src/main/resources/${Properties.MOD_ID}-entity.accesswidener");
-    if (aw.exists())
-        accessWidenerPath.set(aw)
-    mixin {
-        defaultRefmapName.set("${Properties.MOD_ID}-entity.refmap.json")
+    compileOnly(project(":baseCommon")) {
+        capabilities {
+            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-base")
+        }
     }
-    runs {
+    implementation(project(":baseFabric")) {
+        capabilities {
+            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-base")
+        }
+    }
+    include(project(":baseFabric")) {
+        capabilities {
+            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-base")
+        }
     }
 }

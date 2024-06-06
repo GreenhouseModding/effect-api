@@ -26,8 +26,16 @@ dependencies {
     annotationProcessor("io.github.llamalad7:mixinextras-common:${Versions.MIXIN_EXTRAS}")
     compileOnly("net.fabricmc:sponge-mixin:${Versions.FABRIC_MIXIN}")
 
-    compileOnly("dev.greenhouseteam:effectapi-base-common:${Versions.MOD}+${Versions.MINECRAFT}")
-    compileOnly("dev.greenhouseteam:effectapi-entity-common:${Versions.MOD}+${Versions.MINECRAFT}")
+    testCompileOnly(project(":baseCommon")) {
+        capabilities {
+            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-base-common")
+        }
+    }
+    testCompileOnly(project(":entityCommon")) {
+        capabilities {
+            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-entity-common")
+        }
+    }
 }
 
 configurations {
@@ -54,8 +62,4 @@ artifacts {
     add("commonTestJava", sourceSets["test"].java.sourceDirectories.singleFile)
     add("commonResources", sourceSets["main"].resources.sourceDirectories.singleFile)
     add("commonTestResources", sourceSets["test"].resources.sourceDirectories.singleFile)
-}
-
-tasks.named("assemble").configure {
-    dependsOn(gradle.includedBuild("base").task(":common:build"))
 }

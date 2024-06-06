@@ -1,13 +1,13 @@
 package dev.greenhouseteam.effectapi.impl;
 
-import dev.greenhouseteam.effectapi.api.EffectAPIEffectTypes;
-import dev.greenhouseteam.effectapi.api.EffectAPIInstancedEffectTypes;
 import dev.greenhouseteam.effectapi.api.EffectAPIResourceTypes;
-import dev.greenhouseteam.effectapi.api.command.EntityResourceArgument;
-import dev.greenhouseteam.effectapi.api.command.EntityResourceValueArgument;
-import dev.greenhouseteam.effectapi.api.network.clientbound.ChangeResourceClientboundPacket;
-import dev.greenhouseteam.effectapi.api.network.clientbound.SyncEffectsAttachmentClientboundPacket;
-import dev.greenhouseteam.effectapi.api.network.clientbound.SyncResourcesAttachmentClientboundPacket;
+import dev.greenhouseteam.effectapi.api.entity.EffectAPIEntityEffectTypes;
+import dev.greenhouseteam.effectapi.api.entity.EffectAPIEntityInstancedEffectTypes;
+import dev.greenhouseteam.effectapi.api.entity.command.EntityResourceArgument;
+import dev.greenhouseteam.effectapi.api.entity.command.EntityResourceValueArgument;
+import dev.greenhouseteam.effectapi.api.entity.network.clientbound.ChangeResourceClientboundPacket;
+import dev.greenhouseteam.effectapi.api.entity.network.clientbound.SyncEffectsAttachmentClientboundPacket;
+import dev.greenhouseteam.effectapi.api.entity.network.clientbound.SyncResourcesAttachmentClientboundPacket;
 import dev.greenhouseteam.effectapi.impl.registry.EffectAPIEntityAttachments;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
@@ -25,8 +25,8 @@ public class EffectAPIFabric implements ModInitializer {
 
     public static void registerContents() {
         EffectAPIEntityAttachments.init();
-        EffectAPIEffectTypes.registerAll(Registry::register);
-        EffectAPIInstancedEffectTypes.registerAll(Registry::register);
+        EffectAPIEntityEffectTypes.registerAll(Registry::register);
+        EffectAPIEntityInstancedEffectTypes.registerAll(Registry::register);
         EffectAPIResourceTypes.registerAll(Registry::register);
 
         PayloadTypeRegistry.playS2C().register(ChangeResourceClientboundPacket.TYPE, ChangeResourceClientboundPacket.STREAM_CODEC);
