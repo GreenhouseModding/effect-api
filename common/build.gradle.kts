@@ -1,5 +1,5 @@
-import dev.greenhouseteam.bovinesandbuttercups.gradle.Properties
-import dev.greenhouseteam.bovinesandbuttercups.gradle.Versions
+import dev.greenhouseteam.effectapi.gradle.Properties
+import dev.greenhouseteam.effectapi.gradle.Versions
 
 plugins {
     id("effectapi.common")
@@ -25,6 +25,9 @@ dependencies {
     compileOnly("io.github.llamalad7:mixinextras-common:${Versions.MIXIN_EXTRAS}")
     annotationProcessor("io.github.llamalad7:mixinextras-common:${Versions.MIXIN_EXTRAS}")
     compileOnly("net.fabricmc:sponge-mixin:${Versions.FABRIC_MIXIN}")
+
+    compileOnly("dev.greenhouseteam:effectapi-base-common:${Versions.MOD}+${Versions.MINECRAFT}")
+    compileOnly("dev.greenhouseteam:effectapi-entity-common:${Versions.MOD}+${Versions.MINECRAFT}")
 }
 
 configurations {
@@ -50,6 +53,9 @@ artifacts {
     add("commonJava", sourceSets["main"].java.sourceDirectories.singleFile)
     add("commonTestJava", sourceSets["test"].java.sourceDirectories.singleFile)
     add("commonResources", sourceSets["main"].resources.sourceDirectories.singleFile)
-    add("commonResources", sourceSets["generated"].resources.sourceDirectories.singleFile)
     add("commonTestResources", sourceSets["test"].resources.sourceDirectories.singleFile)
+}
+
+tasks.named("assemble").configure {
+    dependsOn(gradle.includedBuild("base").task(":common:build"))
 }

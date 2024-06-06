@@ -1,5 +1,5 @@
-import dev.greenhouseteam.bovinesandbuttercups.gradle.Properties
-import dev.greenhouseteam.bovinesandbuttercups.gradle.Versions
+import dev.greenhouseteam.effectapi.gradle.Properties
+import dev.greenhouseteam.effectapi.gradle.Versions
 
 plugins {
     id("effectapi.loader")
@@ -23,12 +23,6 @@ dependencies {
 }
 
 loom {
-    val aw = project(":common").file("src/main/resources/${Properties.MOD_ID}.accesswidener");
-    if (aw.exists())
-        accessWidenerPath.set(aw)
-    mixin {
-        defaultRefmapName.set("${Properties.MOD_ID}.refmap.json")
-    }
     mods {
         register(Properties.MOD_ID) {
             sourceSet(sourceSets["main"])

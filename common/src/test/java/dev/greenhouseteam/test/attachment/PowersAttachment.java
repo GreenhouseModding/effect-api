@@ -1,9 +1,6 @@
 package dev.greenhouseteam.test.attachment;
 
 import com.mojang.serialization.Codec;
-import dev.greenhouseteam.effectapi.api.effect.EffectAPIEffect;
-import dev.greenhouseteam.effectapi.api.util.EntityEffectAttachmentUtil;
-import dev.greenhouseteam.effectapi.impl.EffectAPI;
 import dev.greenhouseteam.test.EffectAPITest;
 import dev.greenhouseteam.test.Power;
 import dev.greenhouseteam.test.network.clientbound.SyncPowerAttachmentClientboundPacket;
@@ -58,8 +55,8 @@ public class PowersAttachment {
 
     public void addPower(Holder<Power> power) {
         EntityEffectAttachmentUtil.addEffects(provider, power.value().effects().stream().filter(component -> component.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect).flatMap(component -> ((List<EffectAPIEffect>)component.value()).stream()).toList(), ID);
-        powers.add(power);
         EntityEffectAttachmentUtil.syncEffects(provider);
+        powers.add(power);
         sync();
     }
 

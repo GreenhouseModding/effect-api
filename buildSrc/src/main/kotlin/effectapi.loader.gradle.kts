@@ -1,7 +1,16 @@
-import dev.greenhouseteam.bovinesandbuttercups.gradle.Properties
+import dev.greenhouseteam.effectapi.gradle.Properties
 
 plugins {
     id("effectapi.common")
+}
+
+fun getArchivesNameExtension() : String {
+    if (!project.hasProperty("effectapi.moduleName"))
+        return ""
+    val moduleName = project.property("effectapi.moduleName") as String
+    if (moduleName.isEmpty())
+        return moduleName;
+    return "-$moduleName"
 }
 
 configurations {
@@ -22,12 +31,12 @@ configurations {
 dependencies {
     compileOnly(project(":common")) {
         capabilities {
-            requireCapability("$group:${Properties.MOD_ID}")
+            requireCapability("${group}:${Properties.MOD_ID}${getArchivesNameExtension()}")
         }
     }
     testCompileOnly(project(":common")) {
         capabilities {
-            requireCapability("$group:${Properties.MOD_ID}")
+            requireCapability("${group}:${Properties.MOD_ID}${getArchivesNameExtension()}")
         }
     }
     testCompileOnly(project(":common", "commonTestJava"))

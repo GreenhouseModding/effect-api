@@ -1,0 +1,44 @@
+{
+    "schemaVersion": 1,
+    "id": "${mod_id}-entity",
+    "version": "${version}",
+    "name": "${mod_name}",
+    "description": "${mod_description}",
+    "authors": [
+        "${mod_author}"
+    ],
+    "contributors": [
+        ${fabric_mod_contributors}
+    ],
+    "contact": {
+        "homepage": "${homepage}",
+        "issues": "${issues}",
+        "sources": "${sources}"
+    },
+    "license": "${mod_license}",
+    "icon": "${mod_id}.png",
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+            "dev.greenhouseteam.effectapi.impl.EffectAPIFabric"
+        ],
+        "client": [
+            "dev.greenhouseteam.effectapi.impl.client.EffectAPIEntityFabricClient"
+        ],
+        "preLaunch": [
+            "dev.greenhouseteam.effectapi.impl.EffectAPIFabricPre"
+        ]
+    },
+    "mixins": [
+        "${mod_id}-entity.mixins.json",
+        "${mod_id}-entity.fabric.mixins.json"
+    ],
+    "accessWidener": "${mod_id}-entity.accesswidener",
+    "depends": {
+        "fabricloader": "${fabric_loader_range}",
+        "fabric-api": "*",
+        "minecraft": "${fabric_minecraft_version_range}",
+        "java": ">=${java_version}",
+        "${mod_id}-base": ">=${version}"
+    }
+}
