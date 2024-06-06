@@ -22,11 +22,13 @@ plugins {
 // This should match the folder name of the project, or else IDEA may complain (see https://youtrack.jetbrains.com/issue/IDEA-317606)
 rootProject.name = "effect-api"
 include(
-    "common", "fabric",
-    ":baseCommon", ":baseFabric",
-    ":entityCommon", ":entityFabric"
+    "common", "fabric"
 )
-project(":baseCommon").projectDir = file("./base/common")
-project(":baseFabric").projectDir = file("./base/fabric")
-project(":entityCommon").projectDir = file("./entity/common")
-project(":entityFabric").projectDir = file("./entity/fabric")
+
+val s = setOf("base", "entity")
+s.forEach {
+    include(":${it}:common", ":${it}:fabric")
+    project(":${it}").children.forEach { m ->
+        m.name = "${it}-${m.name}"
+    }
+}

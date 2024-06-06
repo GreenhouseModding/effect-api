@@ -1,4 +1,4 @@
-package dev.greenhouseteam.effectapi.impl.entity.client;
+package dev.greenhouseteam.effectapi.impl.entity.client.util;
 
 import dev.greenhouseteam.effectapi.mixin.EntitySelectorAccessor;
 import dev.greenhouseteam.effectapi.mixin.client.ClientLevelAccessor;
@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-// TODO: This will crash on the server. Make server logic for this.
 public class ClientEntitySelectorUtil {
     public static List<? extends Entity> findEntities(EntitySelector selector, @Nullable String playerName, @Nullable UUID uuid) {
         if (playerName != null)

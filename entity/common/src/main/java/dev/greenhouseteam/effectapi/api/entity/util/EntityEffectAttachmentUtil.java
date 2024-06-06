@@ -2,13 +2,20 @@ package dev.greenhouseteam.effectapi.api.entity.util;
 
 import dev.greenhouseteam.effectapi.api.effect.EffectAPIEffect;
 import dev.greenhouseteam.effectapi.api.entity.attachment.EntityEffectsAttachment;
-import dev.greenhouseteam.effectapi.api.entity.effect.EffectAPIConditionalEffect;
+import dev.greenhouseteam.effectapi.api.entity.registry.EffectAPIEntityLootContextParamSets;
+import dev.greenhouseteam.effectapi.api.registry.EffectAPILootContextParams;
 import dev.greenhouseteam.effectapi.impl.entity.EffectAPIEntity;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * This class provides some common hooks for the entity effects attachment.
@@ -33,6 +40,14 @@ public class EntityEffectAttachmentUtil {
         return EffectAPIEntity.getHelper().getEntityEffects(entity).getEffects(type);
     }
 
+    /**
+     * Checks if an entity has a specific effect type active.
+     * For checking specific effects, or checking if multiple are active, use {@link EntityEffectAttachmentUtil#getEntityEffects(Entity, DataComponentType)}
+     *
+     * @param entity    The entity to check.
+     * @param type      The type of effect to check.
+     * @return          True if the entity has an instance of the effect, false if not.
+     */
     public static boolean hasEffectType(Entity entity, DataComponentType<?> type) {
         EntityEffectsAttachment attachment = EffectAPIEntity.getHelper().getEntityEffects(entity);
         if (attachment == null)
@@ -88,7 +103,7 @@ public class EntityEffectAttachmentUtil {
     }
 
     /**
-     * Syncs an entity's effects with any clients surrounding it.
+     * Syncs an entity's effects with any players surrounding it.
      *
      * @param entity    The entity to sync.
      */
@@ -97,5 +112,33 @@ public class EntityEffectAttachmentUtil {
         if (attachment == null)
             return;
         attachment.sync();
+    }
+
+    /**
+     * Creates a {@link LootContext} based on the entity provided, without an effect source.
+     * Please use {@link EntityEffectAttachmentUtil#createEntityOnlyContext(Entity, ResourceLocation)} in contexts where you need an effect source.
+     *
+     * @param entity    The provided entity.
+     * @return          A {@link LootContext} with the entity's position and the entity.
+     */
+    public static LootContext createEntityOnlyContext(Entity entity) {
+        return createEntityOnlyContext(entity, null);
+    }
+
+    /**
+     *`Creates a {@link LootContext} based on the entity provided, with an effect source.
+     *
+     * @param entity    The provided entity.
+     * @param source    An effect source, passed as {@link EffectAPILootContextParams#SOURCE}.
+     * @return          A {@link LootContext} with the entity's position, the entity, and the effect source.
+     */
+    public static LootContext createEntityOnlyContext(Entity entity, @Nullable ResourceLocation source) {
+        if (entity.level().isClientSide())
+            return null;
+        LootParams.Builder params = new LootParams.Builder((ServerLevel) entity.level());
+        params.withParameter(LootContextParams.THIS_ENTITY, entity);
+        params.withParameter(LootContextParams.ORIGIN, entity.position());
+        params.withOptionalParameter(EffectAPILootContextParams.SOURCE, source);
+        return new LootContext.Builder(params.create(EffectAPIEntityLootContextParamSets.ENTITY)).create(Optional.empty());
     }
 }

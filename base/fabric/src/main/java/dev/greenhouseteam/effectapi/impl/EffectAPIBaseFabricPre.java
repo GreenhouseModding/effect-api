@@ -9,4 +9,5 @@ public class EffectAPIBaseFabricPre implements PreLaunchEntrypoint {
     public void onPreLaunch() {
         EffectAPI.init(new EffectAPIBasePlatformHelperFabric());
     }
+
 }

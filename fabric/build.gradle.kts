@@ -23,15 +23,15 @@ dependencies {
     modImplementation("net.fabricmc.fabric-api:fabric-api:${Versions.FABRIC_API}")
     modLocalRuntime("com.terraformersmc:modmenu:${Versions.MOD_MENU}")
 
+    testCompileOnly(project(":common", "commonTestJava"))
+
     effectModules.forEach {
-        compileOnly(project(":${it}Common")) {
+        compileOnly(project(":${it}:${it}-common")) {
             capabilities {
                 requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-$it")
             }
         }
-    }
-    effectModules.forEach {
-        implementation(project(":${it}Fabric", "namedElements"))
+        implementation(project(":${it}:${it}-fabric", "namedElements"))
     }
 }
 
@@ -58,16 +58,6 @@ loom {
             setSource(sourceSets["test"])
             ideConfigGenerated(true)
             vmArgs("-Dmixin.debug.verbose=true", "-Dmixin.debug.export=true")
-        }
-        register("datagen") {
-            server()
-            configName = "Fabric Datagen"
-            setSource(sourceSets["test"])
-            ideConfigGenerated(true)
-            vmArg("-Dfabric-api.datagen")
-            vmArg("-Dfabric-api.datagen.output-dir=${file("../common/src/generated/resources")}")
-            vmArg("-Dfabric-api.datagen.modid=${Properties.MOD_ID}")
-            runDir("build/datagen")
         }
     }
 }

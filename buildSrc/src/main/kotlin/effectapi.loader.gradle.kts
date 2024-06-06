@@ -6,83 +6,99 @@ plugins {
 
 fun getCommonProjectName() : String {
     if (!project.hasProperty("effectapi.moduleName"))
-        return "common"
+        return ":common"
     val moduleName = project.property("effectapi.moduleName") as String
     if (moduleName.isEmpty())
-        return "common"
-    return moduleName + "Common"
+        return ":common"
+    return getProjectNameExtension() + getProjectNameExtension() + "-common"
 }
 
-
-fun getArchivesNameExtension() : String {
+fun getProjectNameExtension() : String {
     if (!hasProperty("effectapi.moduleName"))
         return ""
     val moduleName = properties["effectapi.moduleName"] as String
     if (moduleName.isEmpty())
-        return moduleName;
+        return moduleName
+    return ":$moduleName"
+}
+
+fun getConfigurationsNameExtension() : String {
+    if (!project.hasProperty("effectapi.moduleName"))
+        return "common"
+    val moduleName = project.property("effectapi.moduleName") as String
+    if (moduleName.isEmpty())
+        return "common"
+    return "${moduleName}Common"
+}
+
+fun getCapabilityNameExtension() : String {
+    if (!hasProperty("effectapi.moduleName"))
+        return ""
+    val moduleName = properties["effectapi.moduleName"] as String
+    if (moduleName.isEmpty())
+        return moduleName
     return "-$moduleName"
 }
 
 configurations {
-    register("${getCommonProjectName()}Java") {
+    register("${getConfigurationsNameExtension()}Java") {
         isCanBeResolved = true
     }
-    register("${getCommonProjectName()}TestJava") {
+    register("${getConfigurationsNameExtension()}TestJava") {
         isCanBeResolved = true
     }
-    register("${getCommonProjectName()}Resources") {
+    register("${getConfigurationsNameExtension()}Resources") {
         isCanBeResolved = true
     }
-    register("${getCommonProjectName()}TestResources") {
+    register("${getConfigurationsNameExtension()}TestResources") {
         isCanBeResolved = true
     }
 }
 
 dependencies {
-    compileOnly(project(":${getCommonProjectName()}")) {
+    compileOnly(project(getCommonProjectName())) {
         capabilities {
-            requireCapability("${group}:${Properties.MOD_ID}${getArchivesNameExtension()}")
+            requireCapability("${group}:${Properties.MOD_ID}${getCapabilityNameExtension()}")
         }
     }
-    testCompileOnly(project(":${getCommonProjectName()}")) {
+    testCompileOnly(project(getCommonProjectName())) {
         capabilities {
-            requireCapability("${group}:${Properties.MOD_ID}${getArchivesNameExtension()}")
+            requireCapability("${group}:${Properties.MOD_ID}${getCapabilityNameExtension()}")
         }
     }
-    testCompileOnly(project(":${getCommonProjectName()}", "${getCommonProjectName()}TestJava"))
-    "${getCommonProjectName()}Java"(project(":${getCommonProjectName()}", "${getCommonProjectName()}Java"))
-    "${getCommonProjectName()}TestJava"(project(":${getCommonProjectName()}", "${getCommonProjectName()}TestJava"))
-    "${getCommonProjectName()}Resources"(project(":${getCommonProjectName()}", "${getCommonProjectName()}Resources"))
-    "${getCommonProjectName()}TestResources"(project(":${getCommonProjectName()}", "${getCommonProjectName()}TestResources"))
+    "${getConfigurationsNameExtension()}Java"(project(getCommonProjectName(), "${getConfigurationsNameExtension()}Java"))
+    "${getConfigurationsNameExtension()}TestJava"(project(getCommonProjectName(), "${getConfigurationsNameExtension()}TestJava"))
+    "${getConfigurationsNameExtension()}Resources"(project(getCommonProjectName(), "${getConfigurationsNameExtension()}Resources"))
+    "${getConfigurationsNameExtension()}TestResources"(project(getCommonProjectName(), "${getConfigurationsNameExtension()}TestResources"))
 }
 
 tasks {
     named<JavaCompile>("compileJava").configure {
-        dependsOn(configurations.getByName("${getCommonProjectName()}Java"))
-        source(configurations.getByName("${getCommonProjectName()}Java"))
+        dependsOn(configurations.getByName("${getConfigurationsNameExtension()}Java"))
+        source(configurations.getByName("${getConfigurationsNameExtension()}Java"))
     }
     named<JavaCompile>("compileTestJava").configure {
-        dependsOn(configurations.getByName("${getCommonProjectName()}TestJava"))
-        source(configurations.getByName("${getCommonProjectName()}TestJava"))
+        dependsOn(configurations.getByName("${getConfigurationsNameExtension()}TestJava"))
+        source(configurations.getByName("${getConfigurationsNameExtension()}TestJava"))
     }
     named<ProcessResources>("processResources").configure {
-        dependsOn(configurations.getByName("${getCommonProjectName()}Resources"))
-        from(configurations.getByName("${getCommonProjectName()}Resources"))
-        from(configurations.getByName("${getCommonProjectName()}Resources"))
+        dependsOn(configurations.getByName("${getConfigurationsNameExtension()}Resources"))
+        from(configurations.getByName("${getConfigurationsNameExtension()}Resources"))
+        from(configurations.getByName("${getConfigurationsNameExtension()}Resources"))
     }
     named<ProcessResources>("processTestResources").configure {
-        dependsOn(configurations.getByName("${getCommonProjectName()}TestResources"))
-        from(configurations.getByName("${getCommonProjectName()}TestResources"))
-        from(configurations.getByName("${getCommonProjectName()}TestResources"))
+        dependsOn(configurations.getByName("${getConfigurationsNameExtension()}TestResources"))
+        from(configurations.getByName("${getConfigurationsNameExtension()}TestResources"))
+        from(configurations.getByName("${getConfigurationsNameExtension()}TestResources"))
     }
     named<Javadoc>("javadoc").configure {
-        dependsOn(configurations.getByName("${getCommonProjectName()}Java"))
-        source(configurations.getByName("${getCommonProjectName()}Java"))
+        dependsOn(configurations.getByName("${getConfigurationsNameExtension()}Java"))
+        source(configurations.getByName("${getConfigurationsNameExtension()}Java"))
     }
     named<Jar>("sourcesJar").configure {
-        dependsOn(configurations.getByName("${getCommonProjectName()}Java"))
-        from(configurations.getByName("${getCommonProjectName()}Java"))
-        dependsOn(configurations.getByName("${getCommonProjectName()}Resources"))
-        from(configurations.getByName("${getCommonProjectName()}Resources"))
+        dependsOn(configurations.getByName("${getConfigurationsNameExtension()}Java"))
+        from(configurations.getByName("${getConfigurationsNameExtension()}Java"))
+        dependsOn(configurations.getByName("${getConfigurationsNameExtension()}Resources"))
+        from(configurations.getByName("${getConfigurationsNameExtension()}Resources"))
     }
 }

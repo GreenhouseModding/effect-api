@@ -10,9 +10,10 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import dev.greenhouseteam.effectapi.api.attachment.ResourcesAttachment;
 import dev.greenhouseteam.effectapi.api.effect.ResourceEffect;
-import dev.greenhouseteam.effectapi.api.entity.effect.EntityResourceEffect;
 import dev.greenhouseteam.effectapi.impl.entity.EffectAPIEntity;
-import dev.greenhouseteam.effectapi.impl.entity.client.ClientEntitySelectorUtil;
+import dev.greenhouseteam.effectapi.impl.entity.client.util.ClientEntitySelectorUtil;
+import dev.greenhouseteam.effectapi.impl.entity.effect.EntityResourceEffect;
+import dev.greenhouseteam.effectapi.impl.util.InternalResourceUtil;
 import dev.greenhouseteam.effectapi.mixin.EntitySelectorAccessor;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
@@ -27,7 +28,7 @@ import net.minecraft.world.entity.Entity;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class EntityResourceArgument implements ArgumentType<EntityResourceEffect<?>> {
+public class EntityResourceArgument implements ArgumentType<ResourceEffect<?>> {
     public static final SimpleCommandExceptionType ERROR_RESOURCE_NOT_PRESENT = new SimpleCommandExceptionType(Component.translatable("argument.effectapi.resource.not_present"));
 
     private final String entitiesParam;
@@ -49,9 +50,10 @@ public class EntityResourceArgument implements ArgumentType<EntityResourceEffect
     }
 
     @Override
-    public EntityResourceEffect<?> parse(StringReader reader) throws CommandSyntaxException {
+    public ResourceEffect<?> parse(StringReader reader) throws CommandSyntaxException {
         ResourceLocation typeId = ResourceLocation.read(reader);
-        EntityResourceEffect<?> resource = EntityResourceEffect.getEffectFromId(typeId);
+        ResourceEffect<?> resource = InternalResourceUtil.getEffectFromId(typeId);
+
         if (resource == null)
             throw ERROR_RESOURCE_NOT_PRESENT.createWithContext(reader);
 
@@ -91,7 +93,7 @@ public class EntityResourceArgument implements ArgumentType<EntityResourceEffect
     }
 
     private List<ResourceLocation> getResourceEffectsFromSource(List<? extends Entity> entities) {
-        return EntityResourceEffect.getIdMap().keySet().stream().filter(id -> entities.stream().anyMatch(entity -> {
+        return InternalResourceUtil.getIdMap().keySet().stream().filter(id -> entities.stream().anyMatch(entity -> {
                     ResourcesAttachment attachment = EffectAPIEntity.getHelper().getResources(entity);
                     if (attachment == null)
                         return false;

@@ -26,14 +26,14 @@ dependencies {
     annotationProcessor("io.github.llamalad7:mixinextras-common:${Versions.MIXIN_EXTRAS}")
     compileOnly("net.fabricmc:sponge-mixin:${Versions.FABRIC_MIXIN}")
 
-    testCompileOnly(project(":baseCommon")) {
+    testCompileOnly(project(":base:base-common")) {
         capabilities {
-            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-base-common")
+            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-base")
         }
     }
-    testCompileOnly(project(":entityCommon")) {
+    testCompileOnly(project(":entity:entity-common")) {
         capabilities {
-            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-entity-common")
+            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-entity")
         }
     }
 }

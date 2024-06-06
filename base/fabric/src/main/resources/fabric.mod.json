@@ -19,19 +19,23 @@
     "icon": "${mod_id}.png",
     "environment": "*",
     "entrypoints": {
+        "main": [
+          "dev.greenhouseteam.effectapi.impl.EffectAPIBaseFabric"
+        ],
+        "client": [
+            "dev.greenhouseteam.effectapi.impl.client.EffectAPIBaseFabricClient"
+        ],
         "preLaunch": [
-          "dev.greenhouseteam.effectapi.impl.EffectAPIBaseFabricPre"
+            "dev.greenhouseteam.effectapi.impl.EffectAPIBaseFabricPre"
         ]
     },
     "mixins": [
         "${mod_id}-base.mixins.json"
     ],
-    "accessWidener": "${mod_id}-base.accesswidener",
     "depends": {
         "fabricloader": "${fabric_loader_range}",
         "fabric-api": "*",
         "minecraft": "${fabric_minecraft_version_range}",
-        "java": ">=${java_version}",
-        "${mod_id}-base": ">=${version}"
+        "java": ">=${java_version}"
     }
 }

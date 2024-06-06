@@ -1,4 +1,4 @@
-package dev.greenhouseteam.effectapi.api.effect.entity;
+package dev.greenhouseteam.effectapi.api.effect.instanced;
 
 import com.mojang.serialization.MapCodec;
 import net.minecraft.world.level.storage.loot.LootContext;

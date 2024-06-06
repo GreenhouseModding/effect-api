@@ -3,12 +3,13 @@ package dev.greenhouseteam.effectapi.api.entity.attachment;
 import com.google.common.collect.ImmutableList;
 import dev.greenhouseteam.effectapi.api.effect.EffectAPIEffect;
 import dev.greenhouseteam.effectapi.api.entity.EffectAPIEntityEffectTypes;
-import dev.greenhouseteam.effectapi.api.entity.effect.EntityTickEffect;
-import dev.greenhouseteam.effectapi.api.entity.network.clientbound.SyncEffectsAttachmentClientboundPacket;
-import dev.greenhouseteam.effectapi.api.entity.registry.EffectAPILootContextParamSets;
+import dev.greenhouseteam.effectapi.api.entity.registry.EffectAPIEntityLootContextParamSets;
+import dev.greenhouseteam.effectapi.api.entity.util.EntityEffectAttachmentUtil;
 import dev.greenhouseteam.effectapi.impl.EffectAPI;
 import dev.greenhouseteam.effectapi.impl.entity.EffectAPIEntity;
-import dev.greenhouseteam.effectapi.impl.entity.util.InternalEffectUtil;
+import dev.greenhouseteam.effectapi.impl.entity.effect.EntityTickEffect;
+import dev.greenhouseteam.effectapi.impl.entity.network.clientbound.SyncEffectsAttachmentClientboundPacket;
+import dev.greenhouseteam.effectapi.impl.util.InternalEffectUtil;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
@@ -18,6 +19,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 import java.util.*;
 
+// TODO: Move to generic effect attachment class.
 public class EntityEffectsAttachment {
     public static final ResourceLocation ID = EffectAPIEntity.asResource("entity_effects");
 
@@ -49,20 +51,19 @@ public class EntityEffectsAttachment {
         updateActiveComponents(true);
         InternalEffectUtil.executeOnAllEffects(activeComponents, effect -> {
             if (effect.type() == EffectAPIEntityEffectTypes.ENTITY_TICK)
-                InternalEffectUtil.<EntityTickEffect<?>>castConditional(effect).tick(InternalEffectUtil.createEntityOnlyContext(provider));
+                InternalEffectUtil.<EntityTickEffect<?>>castConditional(effect).tick(EntityEffectAttachmentUtil.createEntityOnlyContext(provider, componentSourcesForUpdating.getOrDefault(effect, null)));
         });
     }
 
     public void refresh() {
-        InternalEffectUtil.executeOnAllEffects(activeComponents, effect -> {
-            effect.onRefreshed(InternalEffectUtil.createEntityOnlyContext(provider));
-        });
+        InternalEffectUtil.executeOnAllEffects(activeComponents, effect ->
+                effect.onRefreshed(EntityEffectAttachmentUtil.createEntityOnlyContext(provider)));
     }
 
     private void updateActiveComponents(boolean sync) {
         DataComponentMap previous = activeComponents;
-        DataComponentMap potential = InternalEffectUtil.generateActiveEffects(InternalEffectUtil.createEntityOnlyContext(provider), EffectAPILootContextParamSets.ENTITY, combinedComponents);
-        if (InternalEffectUtil.hasUpdatedActives(InternalEffectUtil.createEntityOnlyContext(provider, null), EffectAPILootContextParamSets.ENTITY, potential, previous, componentSourcesForUpdating)) {
+        DataComponentMap potential = InternalEffectUtil.generateActiveEffects(EntityEffectAttachmentUtil.createEntityOnlyContext(provider), EffectAPIEntityLootContextParamSets.ENTITY, combinedComponents, componentSourcesForUpdating);
+        if (InternalEffectUtil.hasUpdatedActives(EntityEffectAttachmentUtil.createEntityOnlyContext(provider), EffectAPIEntityLootContextParamSets.ENTITY, potential, previous, componentSourcesForUpdating)) {
             activeComponents = potential;
             if (sync)
                 sync();

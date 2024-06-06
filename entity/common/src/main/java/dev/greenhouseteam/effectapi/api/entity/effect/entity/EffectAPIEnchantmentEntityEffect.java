@@ -2,7 +2,7 @@ package dev.greenhouseteam.effectapi.api.entity.effect.entity;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import dev.greenhouseteam.effectapi.api.effect.entity.EffectAPIInstancedEffect;
+import dev.greenhouseteam.effectapi.api.effect.instanced.EffectAPIInstancedEffect;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;

@@ -1,7 +1,7 @@
 package dev.greenhouseteam.effectapi.api.entity;
 
 import com.mojang.serialization.MapCodec;
-import dev.greenhouseteam.effectapi.api.effect.entity.EffectAPIInstancedEffect;
+import dev.greenhouseteam.effectapi.api.effect.instanced.EffectAPIInstancedEffect;
 import dev.greenhouseteam.effectapi.api.entity.effect.entity.EffectAPIEnchantmentEntityEffect;
 import dev.greenhouseteam.effectapi.api.registry.EffectAPIRegistries;
 import dev.greenhouseteam.effectapi.impl.entity.EffectAPIEntity;

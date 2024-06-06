@@ -1,5 +1,6 @@
 package dev.greenhouseteam.effectapi.platform;
 
+import dev.greenhouseteam.effectapi.impl.EffectAPIBaseFabric;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -7,6 +8,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.Registry;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 
@@ -31,6 +33,11 @@ public class EffectAPIBasePlatformHelperFabric implements EffectAPIBasePlatformH
     @Override
     public <T> Registry<T> createRegistry(ResourceKey<Registry<T>> registryKey) {
         return FabricRegistryBuilder.createSimple(registryKey).buildAndRegister();
+    }
+
+    @Override
+    public MinecraftServer getServer() {
+        return EffectAPIBaseFabric.getServer();
     }
 
     @Override

@@ -6,6 +6,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapLike;
 import dev.greenhouseteam.effectapi.api.registry.EffectAPIRegistries;
+import dev.greenhouseteam.effectapi.impl.util.InternalResourceUtil;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.commons.lang3.tuple.Triple;
 
@@ -16,16 +17,16 @@ import java.util.Map;
 import java.util.function.Function;
 
 public abstract class ResourceEffect<T> implements EffectAPIEffect {
-
-    private ResourceLocation id;
-    private Codec<T> resourceType;
-    private T defaultValue;
+    protected final ResourceLocation id;
+    protected final Codec<T> resourceType;
+    protected final T defaultValue;
 
     public ResourceEffect(ResourceLocation id, Codec<T> resourceType,
                           T defaultValue) {
         this.id = id;
         this.resourceType = resourceType;
         this.defaultValue = defaultValue;
+        InternalResourceUtil.putInEffectMap(id, this);
     }
     public ResourceLocation getId() {
         return id;
@@ -68,18 +69,18 @@ public abstract class ResourceEffect<T> implements EffectAPIEffect {
         }
     }
 
-    public static class ResourceEffectCodec<E extends ResourceEffect, V> implements Codec<ResourceEffect<?>> {
+    public static class ResourceEffectCodec<E extends ResourceEffect<?>> implements Codec<ResourceEffect<?>> {
         private static boolean registryPhase = false;
         private static final List<ResourceLocation> LOADED_IDS = new ArrayList<>();
 
-        private Function<Triple<ResourceLocation, Codec<Object>, Object>, E> constructor;
+        private final Function<Triple<ResourceLocation, Codec<Object>, Object>, E> constructor;
 
         protected ResourceEffectCodec(Function<Triple<ResourceLocation, Codec<Object>, Object>, E> constructor) {
             this.constructor = constructor;
         }
 
 
-        public static <E extends ResourceEffect<Object>> ResourceEffectCodec create(Function<Triple<ResourceLocation, Codec<Object>, Object>, E> constructor) {
+        public static <E extends ResourceEffect<?>> Codec<E> create(Function<Triple<ResourceLocation, Codec<Object>, Object>, E> constructor) {
             return new ResourceEffectCodec(constructor);
         }
 
@@ -113,7 +114,7 @@ public abstract class ResourceEffect<T> implements EffectAPIEffect {
             if (defaultValue.isError())
                 return DataResult.error(() -> "Failed to decode 'default_value' field for `effectapi:resource` effect." + resourceType.error().get().message());
 
-            ResourceEffect<Object> effect = constructor.apply(Triple.of(id.getOrThrow().getFirst(), resourceTypeCodec, defaultValue.getOrThrow().getFirst()));
+            E effect = constructor.apply(Triple.of(id.getOrThrow().getFirst(), resourceTypeCodec, defaultValue.getOrThrow().getFirst()));
             if (registryPhase)
                 LOADED_IDS.add(id.getOrThrow().getFirst());
             return DataResult.success(Pair.of(effect, input));

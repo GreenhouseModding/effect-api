@@ -1,4 +1,4 @@
-package dev.greenhouseteam.effectapi.api.entity.network.clientbound;
+package dev.greenhouseteam.effectapi.impl.entity.network.clientbound;
 
 import dev.greenhouseteam.effectapi.api.attachment.ResourcesAttachment;
 import dev.greenhouseteam.effectapi.impl.entity.EffectAPIEntity;

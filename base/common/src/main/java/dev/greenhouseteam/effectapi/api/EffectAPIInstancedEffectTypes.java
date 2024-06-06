@@ -2,7 +2,7 @@ package dev.greenhouseteam.effectapi.api;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import dev.greenhouseteam.effectapi.api.effect.entity.EffectAPIInstancedEffect;
+import dev.greenhouseteam.effectapi.api.effect.instanced.EffectAPIInstancedEffect;
 import dev.greenhouseteam.effectapi.api.registry.EffectAPIRegistries;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;

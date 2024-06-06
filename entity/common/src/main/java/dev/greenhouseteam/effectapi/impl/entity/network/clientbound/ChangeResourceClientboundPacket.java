@@ -1,8 +1,9 @@
-package dev.greenhouseteam.effectapi.api.entity.network.clientbound;
+package dev.greenhouseteam.effectapi.impl.entity.network.clientbound;
 
 import com.mojang.serialization.Codec;
-import dev.greenhouseteam.effectapi.api.entity.effect.EntityResourceEffect;
+import dev.greenhouseteam.effectapi.api.effect.ResourceEffect;
 import dev.greenhouseteam.effectapi.impl.entity.EffectAPIEntity;
+import dev.greenhouseteam.effectapi.impl.util.InternalResourceUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -20,11 +21,11 @@ public class ChangeResourceClientboundPacket<T> implements CustomPacketPayload {
     public static final StreamCodec<RegistryFriendlyByteBuf, ChangeResourceClientboundPacket<?>> STREAM_CODEC = StreamCodec.of(ChangeResourceClientboundPacket::write, ChangeResourceClientboundPacket::new);
 
     private final int entityId;
-    private final EntityResourceEffect<T> resourceEffect;
+    private final ResourceEffect<T> resourceEffect;
     private final Optional<ResourceLocation> source;
     private final Optional<T> value;
 
-    public ChangeResourceClientboundPacket(int entityId, EntityResourceEffect<T> resourceEffect, Optional<ResourceLocation> source, Optional<T> value) {
+    public ChangeResourceClientboundPacket(int entityId, ResourceEffect<T> resourceEffect, Optional<ResourceLocation> source, Optional<T> value) {
         this.entityId = entityId;
         this.resourceEffect = resourceEffect;
         this.source = source;
@@ -33,7 +34,7 @@ public class ChangeResourceClientboundPacket<T> implements CustomPacketPayload {
 
     public ChangeResourceClientboundPacket(RegistryFriendlyByteBuf buf) {
         this.entityId = buf.readInt();
-        this.resourceEffect = EntityResourceEffect.getEffectFromId(buf.readResourceLocation());
+        this.resourceEffect = InternalResourceUtil.getEffectFromId(buf.readResourceLocation());
         if (buf.readBoolean())
             this.source = Optional.of(buf.readResourceLocation());
         else

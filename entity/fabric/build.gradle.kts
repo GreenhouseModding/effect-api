@@ -9,7 +9,7 @@ plugins {
 apply(plugin = "fabric-loom")
 
 loom {
-    val aw = project(":entityCommon").file("src/main/resources/${Properties.MOD_ID}-entity.accesswidener");
+    val aw = project(":entity:entity-common").file("src/main/resources/${Properties.MOD_ID}-entity.accesswidener");
     if (aw.exists())
         accessWidenerPath.set(aw)
     mixin {
@@ -26,11 +26,11 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:${Versions.FABRIC_LOADER}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${Versions.FABRIC_API}")
 
-    compileOnly(project(":baseCommon")) {
+    compileOnly(project(":base:base-common")) {
         capabilities {
             requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-base")
         }
     }
-    implementation(project(":baseFabric", "namedElements"))
-    include(project(":baseFabric", "namedElements"))
+    implementation(project(":base:base-fabric", "namedElements"))
+    include(project(":base:base-fabric", "namedElements"))
 }

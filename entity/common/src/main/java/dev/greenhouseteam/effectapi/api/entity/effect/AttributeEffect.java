@@ -5,7 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dev.greenhouseteam.effectapi.api.effect.EffectAPIEffect;
 import dev.greenhouseteam.effectapi.api.entity.EffectAPIEntityEffectTypes;
-import dev.greenhouseteam.effectapi.api.entity.registry.EffectAPILootContextParamSets;
+import dev.greenhouseteam.effectapi.api.entity.registry.EffectAPIEntityLootContextParamSets;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.resources.ResourceLocation;
@@ -51,6 +51,6 @@ public record AttributeEffect(ResourceLocation id, Holder<Attribute> attribute, 
 
     @Override
     public LootContextParamSet paramSet() {
-        return EffectAPILootContextParamSets.ENTITY;
+        return EffectAPIEntityLootContextParamSets.ENTITY;
     }
 }

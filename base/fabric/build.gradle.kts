@@ -14,7 +14,7 @@ repositories {
 }
 
 loom {
-    val aw = project(":baseCommon").file("src/main/resources/${Properties.MOD_ID}-base.accesswidener");
+    val aw = project(":base:base-common").file("src/main/resources/${Properties.MOD_ID}-base.accesswidener");
     if (aw.exists())
         accessWidenerPath.set(aw)
     mixin {

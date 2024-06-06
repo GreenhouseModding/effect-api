@@ -2,7 +2,7 @@ package dev.greenhouseteam.effectapi.api.registry;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import dev.greenhouseteam.effectapi.api.effect.entity.EffectAPIInstancedEffect;
+import dev.greenhouseteam.effectapi.api.effect.instanced.EffectAPIInstancedEffect;
 import dev.greenhouseteam.effectapi.impl.EffectAPI;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;

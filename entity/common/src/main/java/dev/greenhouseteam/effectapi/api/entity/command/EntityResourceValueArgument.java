@@ -9,7 +9,9 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import dev.greenhouseteam.effectapi.api.EffectAPIResourceTypes;
-import dev.greenhouseteam.effectapi.api.entity.effect.EntityResourceEffect;
+import dev.greenhouseteam.effectapi.api.effect.ResourceEffect;
+import dev.greenhouseteam.effectapi.impl.entity.effect.EntityResourceEffect;
+import dev.greenhouseteam.effectapi.impl.util.InternalResourceUtil;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
@@ -55,7 +57,7 @@ public class EntityResourceValueArgument implements ArgumentType<Object> {
         }
         reader.setCursor(index);
         String typeId = reader.getRemaining().split(" ", 2)[0];
-        EntityResourceEffect<Object> resource = EntityResourceEffect.getEffectFromId(ResourceLocation.parse(typeId));
+        ResourceEffect<Object> resource = InternalResourceUtil.getEffectFromId(ResourceLocation.parse(typeId));
         if (resource == null)
             throw ERROR_RESOURCE_NOT_PRESENT.createWithContext(reader);;
         reader.setCursor(valueStart);

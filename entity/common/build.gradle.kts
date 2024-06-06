@@ -26,7 +26,7 @@ dependencies {
     annotationProcessor("io.github.llamalad7:mixinextras-common:${Versions.MIXIN_EXTRAS}")
     compileOnly("net.fabricmc:sponge-mixin:${Versions.FABRIC_MIXIN}")
 
-    compileOnly(project(":baseCommon")) {
+    compileOnly(project(":base:base-common")) {
         capabilities {
             requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-base")
         }

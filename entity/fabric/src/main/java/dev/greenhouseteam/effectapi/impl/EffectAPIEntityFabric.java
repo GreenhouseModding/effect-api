@@ -1,13 +1,12 @@
 package dev.greenhouseteam.effectapi.impl;
 
-import dev.greenhouseteam.effectapi.api.EffectAPIResourceTypes;
 import dev.greenhouseteam.effectapi.api.entity.EffectAPIEntityEffectTypes;
 import dev.greenhouseteam.effectapi.api.entity.EffectAPIEntityInstancedEffectTypes;
 import dev.greenhouseteam.effectapi.api.entity.command.EntityResourceArgument;
 import dev.greenhouseteam.effectapi.api.entity.command.EntityResourceValueArgument;
-import dev.greenhouseteam.effectapi.api.entity.network.clientbound.ChangeResourceClientboundPacket;
-import dev.greenhouseteam.effectapi.api.entity.network.clientbound.SyncEffectsAttachmentClientboundPacket;
-import dev.greenhouseteam.effectapi.api.entity.network.clientbound.SyncResourcesAttachmentClientboundPacket;
+import dev.greenhouseteam.effectapi.impl.entity.network.clientbound.ChangeResourceClientboundPacket;
+import dev.greenhouseteam.effectapi.impl.entity.network.clientbound.SyncEffectsAttachmentClientboundPacket;
+import dev.greenhouseteam.effectapi.impl.entity.network.clientbound.SyncResourcesAttachmentClientboundPacket;
 import dev.greenhouseteam.effectapi.impl.registry.EffectAPIEntityAttachments;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
@@ -16,7 +15,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.core.Registry;
 
-public class EffectAPIFabric implements ModInitializer {
+public class EffectAPIEntityFabric implements ModInitializer {
     
     @Override
     public void onInitialize() {
@@ -27,7 +26,6 @@ public class EffectAPIFabric implements ModInitializer {
         EffectAPIEntityAttachments.init();
         EffectAPIEntityEffectTypes.registerAll(Registry::register);
         EffectAPIEntityInstancedEffectTypes.registerAll(Registry::register);
-        EffectAPIResourceTypes.registerAll(Registry::register);
 
         PayloadTypeRegistry.playS2C().register(ChangeResourceClientboundPacket.TYPE, ChangeResourceClientboundPacket.STREAM_CODEC);
         PayloadTypeRegistry.playS2C().register(SyncEffectsAttachmentClientboundPacket.TYPE, SyncEffectsAttachmentClientboundPacket.STREAM_CODEC);
