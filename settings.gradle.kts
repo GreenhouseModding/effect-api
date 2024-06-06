@@ -26,16 +26,12 @@ include("common", "fabric")
 includeBuild("base") {
     dependencySubstitution {
         substitute(module("dev.greenhouseteam:effectapi-base-common")).using(project(":common"))
-    }
-    dependencySubstitution {
         substitute(module("dev.greenhouseteam:effectapi-base-fabric")).using(project(":fabric"))
     }
 }
 includeBuild("entity") {
     dependencySubstitution {
         substitute(module("dev.greenhouseteam:effectapi-entity-common")).using(project(":common"))
-    }
-    dependencySubstitution {
         substitute(module("dev.greenhouseteam:effectapi-entity-fabric")).using(project(":fabric"))
     }
 }
