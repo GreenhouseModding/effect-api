@@ -13,6 +13,7 @@ import dev.greenhouseteam.effectapi.api.effect.ResourceEffect;
 import dev.greenhouseteam.effectapi.impl.entity.EffectAPIEntity;
 import dev.greenhouseteam.effectapi.impl.entity.client.util.ClientEntitySelectorUtil;
 import dev.greenhouseteam.effectapi.impl.entity.effect.EntityResourceEffect;
+import dev.greenhouseteam.effectapi.impl.entity.util.EntitySelectorUtil;
 import dev.greenhouseteam.effectapi.impl.util.InternalResourceUtil;
 import dev.greenhouseteam.effectapi.mixin.EntitySelectorAccessor;
 import net.minecraft.commands.CommandBuildContext;
@@ -72,7 +73,7 @@ public class EntityResourceArgument implements ArgumentType<ResourceEffect<?>> {
 
         StringReader entitiesReader = new StringReader(entitiesString);
         EntitySelector selector = EntityArgument.entities().parse(entitiesReader);
-        List<? extends Entity> entities = ClientEntitySelectorUtil.findEntities(selector, ((EntitySelectorAccessor)selector).effectapi$getPlayerName(), ((EntitySelectorAccessor)selector).effectapi$getEntityUUID());
+        List<? extends Entity> entities = EntitySelectorUtil.findEntitiesServer(selector, ((EntitySelectorAccessor)selector).effectapi$getPlayerName(), ((EntitySelectorAccessor)selector).effectapi$getEntityUUID());
 
         if (!getResourceEffectsFromSource(entities).contains(typeId))
             throw ERROR_RESOURCE_NOT_PRESENT.createWithContext(reader);
@@ -84,7 +85,7 @@ public class EntityResourceArgument implements ArgumentType<ResourceEffect<?>> {
     public <S> CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {
         EntitySelector selector = context.getArgument(entitiesParam, EntitySelector.class);
 
-        List<? extends Entity> entities = ClientEntitySelectorUtil.findEntities(selector, ((EntitySelectorAccessor)selector).effectapi$getPlayerName(), ((EntitySelectorAccessor)selector).effectapi$getEntityUUID());
+        List<? extends Entity> entities = ClientEntitySelectorUtil.findEntitiesClient(selector, ((EntitySelectorAccessor)selector).effectapi$getPlayerName(), ((EntitySelectorAccessor)selector).effectapi$getEntityUUID());
 
         for (ResourceLocation val : getResourceEffectsFromSource(entities))
             builder.suggest(val.toString());
@@ -98,7 +99,7 @@ public class EntityResourceArgument implements ArgumentType<ResourceEffect<?>> {
                     if (attachment == null)
                         return false;
                     ResourceEffect.ResourceHolder<?> value = attachment.getResourceHolder(id);
-                    return value != null && value.getSource().equals(source);
+                    return value != null && value.getSource() != null && value.getSource().equals(source);
                 })).toList();
     }
 

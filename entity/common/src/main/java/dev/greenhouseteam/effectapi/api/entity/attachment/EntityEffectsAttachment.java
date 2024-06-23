@@ -96,7 +96,6 @@ public class EntityEffectsAttachment {
         allComponents = Map.copyOf(finalMap);
         combineComponents();
         updateActiveComponents(false);
-        componentSourcesForUpdating.put(effect, source);
     }
 
     public void removeEffect(EffectAPIEffect effect, ResourceLocation source) {
@@ -127,6 +126,8 @@ public class EntityEffectsAttachment {
     }
 
     private void setComponentSourcesForUpdating(EffectAPIEffect effect, ResourceLocation source) {
+        if (componentSourcesForUpdating.containsKey(effect))
+            return;
         componentSourcesForUpdating.put(effect, source);
     }
 

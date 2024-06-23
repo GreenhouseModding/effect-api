@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class ClientEntitySelectorUtil {
-    public static List<? extends Entity> findEntities(EntitySelector selector, @Nullable String playerName, @Nullable UUID uuid) {
+    public static List<? extends Entity> findEntitiesClient(EntitySelector selector, @Nullable String playerName, @Nullable UUID uuid) {
         if (playerName != null)
             return Minecraft.getInstance().level.players().stream().filter(p -> p.getGameProfile().getName().equals(playerName)).findFirst().map(p -> List.of(p)).orElse(List.of());
         if (uuid != null)

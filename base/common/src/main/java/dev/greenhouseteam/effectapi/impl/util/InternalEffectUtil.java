@@ -38,7 +38,7 @@ public class InternalEffectUtil {
             if (component.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect)
                 for (EffectAPIEffect effect : ((List<EffectAPIEffect>) list)) {
                     LootParams.Builder paramBuilder = LootContextUtil.copyIntoParamBuilder(context);
-                    if (paramSet.isAllowed(EffectAPILootContextParams.SOURCE) && context.hasParam(EffectAPILootContextParams.SOURCE))
+                    if (paramSet.isAllowed(EffectAPILootContextParams.SOURCE) && !context.hasParam(EffectAPILootContextParams.SOURCE))
                         paramBuilder.withOptionalParameter(EffectAPILootContextParams.SOURCE, sources.get(effect));
                     LootContext context1 = new LootContext.Builder(paramBuilder.create(paramSet)).create(Optional.empty());
                     if (effect.paramSet() == paramSet && effect.isActive(context1))
@@ -63,14 +63,19 @@ public class InternalEffectUtil {
 
         newValues.stream().filter(object -> !oldValues.contains(object)).forEach(value -> {
             if (value instanceof EffectAPIEffect effect)
-                if (effect.paramSet() == paramSet && sources.containsKey(effect))
-                    effect.onAdded(context);
+                if (effect.paramSet() == paramSet && sources.containsKey(effect)) {
+                    LootParams.Builder paramBuilder = LootContextUtil.copyIntoParamBuilder(context);
+                    if (paramSet.isAllowed(EffectAPILootContextParams.SOURCE) && !context.hasParam(EffectAPILootContextParams.SOURCE))
+                        paramBuilder.withOptionalParameter(EffectAPILootContextParams.SOURCE, sources.get(effect));
+                    LootContext context1 = new LootContext.Builder(paramBuilder.create(paramSet)).create(Optional.empty());
+                    effect.onAdded(context1);
+                }
         });
         oldValues.stream().filter(object -> !newValues.contains(object)).forEach(value -> {
             if (value instanceof EffectAPIEffect effect)
                 if (effect.paramSet() == paramSet) {
                     LootParams.Builder paramBuilder = LootContextUtil.copyIntoParamBuilder(context);
-                    if (paramSet.isAllowed(EffectAPILootContextParams.SOURCE) && context.hasParam(EffectAPILootContextParams.SOURCE))
+                    if (paramSet.isAllowed(EffectAPILootContextParams.SOURCE) && !context.hasParam(EffectAPILootContextParams.SOURCE))
                         paramBuilder.withOptionalParameter(EffectAPILootContextParams.SOURCE, sources.get(effect));
                     LootContext context1 = new LootContext.Builder(paramBuilder.create(paramSet)).create(Optional.empty());
                     effect.onRemoved(context1);
