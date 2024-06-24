@@ -21,7 +21,7 @@ public class EffectAPIEffectTypes {
     private static final Codec<DataComponentType<?>> COMPONENT_CODEC = EffectAPIRegistries.EFFECT_TYPE.byNameCodec();
 
     public static Codec<DataComponentMap> codec(LootContextParamSet paramSet) {
-        return Codec.dispatchedMap(COMPONENT_CODEC, DataComponentType::codecOrThrow).flatXmap(dataComponentMap -> encodeComponents(paramSet, dataComponentMap), map -> (DataResult) decodeComponents(map));
+        return Codec.lazyInitialized(() -> Codec.dispatchedMap(COMPONENT_CODEC, DataComponentType::codecOrThrow).flatXmap(dataComponentMap -> encodeComponents(paramSet, dataComponentMap), map -> (DataResult) decodeComponents(map)));
     }
 
     private static DataResult<DataComponentMap> encodeComponents(LootContextParamSet paramSet, Map<DataComponentType<?>, ?> componentTypes) {

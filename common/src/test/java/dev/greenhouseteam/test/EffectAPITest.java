@@ -6,7 +6,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
 public class EffectAPITest {
-    public static final String MOD_ID = "effectapitest";
+    public static final String MOD_ID = "effectapi_test";
 
     private static EffectAPITestHelper helper;
 

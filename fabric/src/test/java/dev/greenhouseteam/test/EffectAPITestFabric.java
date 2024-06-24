@@ -3,7 +3,6 @@ package dev.greenhouseteam.test;
 import dev.greenhouseteam.test.attachment.PowersAttachment;
 import dev.greenhouseteam.test.command.TestCommand;
 import dev.greenhouseteam.test.network.clientbound.SyncPowerAttachmentClientboundPacket;
-import dev.greenhouseteam.test.platform.EffectAPITestHelperFabric;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
@@ -22,7 +21,6 @@ public class EffectAPITestFabric implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        EffectAPITest.init(new EffectAPITestHelperFabric());
         DynamicRegistries.registerSynced(EffectAPITest.POWER, Power.DIRECT_CODEC);
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> TestCommand.register(dispatcher, registryAccess));
 

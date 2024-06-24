@@ -4,9 +4,9 @@ issueTrackerURL = "${issues}"
 license="${mod_license}"
 
 [[mods]]
-modId="${mod_id}_base"
+modId="${mod_id}_test"
 version="${version}"
-displayName="${mod_name}"
+displayName="${mod_name} Test"
 logoFile="${mod_id}.png"
 logoBlur=false
 authors="${mod_author}"
@@ -15,22 +15,31 @@ description='''
 ${mod_description}
 '''
 
-[[mixins]]
-config = "${mod_id}_base.mixins.json"
-
-[[accessTransformers]]
-file = "${mod_id}_base.cfg"
-
-[[dependencies.${mod_id}_base]]
+[[dependencies.${mod_id}_test]]
 modId="neoforge"
 mandatory=true
 versionRange="${neoforge_loader_version_range}"
 ordering="NONE"
 side="BOTH"
 
-[[dependencies.${mod_id}_base]]
+[[dependencies.${mod_id}_test]]
 modId="minecraft"
 mandatory=true
 versionRange="${neoforge_minecraft_version_range}"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.${mod_id}_test]]
+modId="effectapi_base"
+mandatory=true
+versionRange="[${version},)"
+ordering="NONE"
+side="BOTH"
+
+
+[[dependencies.${mod_id}_test]]
+modId="effectapi_entity"
+mandatory=true
+versionRange="[${version},)"
 ordering="NONE"
 side="BOTH"

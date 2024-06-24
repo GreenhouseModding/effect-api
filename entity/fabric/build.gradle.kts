@@ -3,17 +3,17 @@ import dev.greenhouseteam.effectapi.gradle.Versions
 
 plugins {
     id("effectapi.loader")
-    id("fabric-loom") version "1.6-SNAPSHOT" apply true
+    id("fabric-loom")
 }
 
 apply(plugin = "fabric-loom")
 
 loom {
-    val aw = project(":entity:entity-common").file("src/main/resources/${Properties.MOD_ID}-entity.accesswidener");
+    val aw = project(":entity:entity-common").file("src/main/resources/${Properties.MOD_ID}_entity.accesswidener");
     if (aw.exists())
         accessWidenerPath.set(aw)
     mixin {
-        defaultRefmapName.set("${Properties.MOD_ID}-entity.refmap.json")
+        defaultRefmapName.set("${Properties.MOD_ID}_entity.refmap.json")
     }
     runs {
     }
@@ -31,6 +31,5 @@ dependencies {
             requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-base")
         }
     }
-    implementation(project(":base:base-fabric", "namedElements"))
-    include(project(":base:base-fabric", "namedElements"))
+    compileOnly(project(":base:base-fabric", "namedElements"))
 }

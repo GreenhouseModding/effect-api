@@ -10,15 +10,15 @@ import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import java.util.HashMap;
 
 public class EffectAPIEntityAttachments {
+    public static final AttachmentType<EntityEffectsAttachment> EFFECTS = AttachmentRegistry.<EntityEffectsAttachment>builder()
+            .initializer(EntityEffectsAttachment::new)
+            .copyOnDeath()
+            .buildAndRegister(EntityEffectsAttachment.ID);
     public static final AttachmentType<ResourcesAttachment> RESOURCES = AttachmentRegistry.<ResourcesAttachment>builder()
             .initializer(() -> new ResourcesAttachment(new HashMap<>()))
             .persistent(ResourcesAttachment.CODEC)
             .copyOnDeath()
             .buildAndRegister(EffectAPI.asResource("entity_resources"));
-    public static final AttachmentType<EntityEffectsAttachment> EFFECTS = AttachmentRegistry.<EntityEffectsAttachment>builder()
-            .initializer(EntityEffectsAttachment::new)
-            .copyOnDeath()
-            .buildAndRegister(EntityEffectsAttachment.ID);
 
     public static void init() {
 

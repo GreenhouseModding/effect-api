@@ -57,7 +57,7 @@ public class EntityEffectAttachmentUtil {
 
     /**
      * Adds an effect to an entity.
-     * This does not always mean that it is active (see: {@link EffectAPIConditionalEffect})
+     * This does not always mean that it is active (see: {@link dev.greenhouseteam.effectapi.api.effect.EffectAPIConditionalEffect})
      *
      * @param entity    The entity to add the effect to.
      * @param effect    The effect to add.

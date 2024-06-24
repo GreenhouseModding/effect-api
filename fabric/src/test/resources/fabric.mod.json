@@ -1,6 +1,6 @@
 {
     "schemaVersion": 1,
-    "id": "${mod_id}test",
+    "id": "${mod_id}_test",
     "version": "${version}",
     "name": "${mod_name} Test",
     "description": "${mod_description}",
@@ -24,12 +24,17 @@
         ],
         "client": [
             "dev.greenhouseteam.test.client.EffectAPITestFabricClient"
+        ],
+        "preLaunch": [
+            "dev.greenhouseteam.test.EffectAPITestFabricPre"
         ]
     },
     "depends": {
         "fabricloader": "${fabric_loader_range}",
         "fabric-api": "*",
         "minecraft": "${fabric_minecraft_version_range}",
-        "java": ">=${java_version}"
+        "java": ">=${java_version}",
+        "effectapi_base": ">=${version}",
+        "effectapi_entity": ">=${version}"
     }
 }

@@ -1,6 +1,6 @@
 {
     "schemaVersion": 1,
-    "id": "${mod_id}_entity",
+    "id": "${mod_id}",
     "version": "${version}",
     "name": "${mod_name}",
     "description": "${mod_description}",
@@ -18,26 +18,10 @@
     "license": "${mod_license}",
     "icon": "${mod_id}.png",
     "environment": "*",
-    "entrypoints": {
-        "main": [
-            "dev.greenhouseteam.effectapi.impl.EffectAPIEntityFabric"
-        ],
-        "client": [
-            "dev.greenhouseteam.effectapi.impl.client.EffectAPIEntityFabricClient"
-        ],
-        "preLaunch": [
-            "dev.greenhouseteam.effectapi.impl.EffectAPIEntityFabricPre"
-        ]
-    },
-    "mixins": [
-        "${mod_id}_entity.mixins.json",
-        "${mod_id}_entity.fabric.mixins.json"
-    ],
     "depends": {
         "fabricloader": "${fabric_loader_range}",
         "fabric-api": "*",
         "minecraft": "${fabric_minecraft_version_range}",
-        "java": ">=${java_version}",
-        "${mod_id}_base": ">=${version}"
+        "java": ">=${java_version}"
     }
 }

@@ -1,6 +1,6 @@
 {
     "schemaVersion": 1,
-    "id": "${mod_id}-base",
+    "id": "${mod_id}_base",
     "version": "${version}",
     "name": "${mod_name}",
     "description": "${mod_description}",
@@ -30,8 +30,9 @@
         ]
     },
     "mixins": [
-        "${mod_id}-base.mixins.json"
+        "${mod_id}_base.mixins.json"
     ],
+    "accessWidener": "${mod_id}_base.accesswidener",
     "depends": {
         "fabricloader": "${fabric_loader_range}",
         "fabric-api": "*",

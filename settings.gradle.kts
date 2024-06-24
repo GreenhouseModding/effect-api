@@ -22,12 +22,12 @@ plugins {
 // This should match the folder name of the project, or else IDEA may complain (see https://youtrack.jetbrains.com/issue/IDEA-317606)
 rootProject.name = "effect-api"
 include(
-    "common", "fabric"
+    "common", "fabric", "neoforge"
 )
 
-val s = setOf("base", "entity")
-s.forEach {
-    include(":${it}:common", ":${it}:fabric")
+val modules = setOf("base", "entity")
+modules.forEach {
+    include(":${it}:common", ":${it}:fabric", ":${it}:neoforge")
     project(":${it}").children.forEach { m ->
         m.name = "${it}-${m.name}"
     }

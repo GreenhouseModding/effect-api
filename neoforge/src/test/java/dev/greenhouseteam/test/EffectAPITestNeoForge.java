@@ -11,9 +11,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -59,18 +57,6 @@ public class EffectAPITestNeoForge {
         }
 
         @SubscribeEvent
-        public static void onEntityLeaveLevel(EntityLeaveLevelEvent event) {
-            if (event.getEntity().hasData(POWERS))
-                event.getEntity().getData(POWERS).refresh();
-        }
-
-        @SubscribeEvent
-        public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
-            if (event.getEntity().hasData(POWERS))
-                event.getEntity().getData(POWERS).refresh();
-        }
-
-        @SubscribeEvent
         public static void onStartTracking(PlayerEvent.StartTracking event) {
             if (event.getTarget().hasData(POWERS)) {
                 event.getTarget().getData(POWERS).init(event.getTarget());
@@ -81,12 +67,6 @@ public class EffectAPITestNeoForge {
         @SubscribeEvent
         public static void registerCommands(RegisterCommandsEvent event) {
             TestCommand.register(event.getDispatcher(), event.getBuildContext());
-        }
-
-        @SubscribeEvent
-        public static void onEntityTick(EntityTickEvent.Post event) {
-            if (!event.getEntity().level().isClientSide() && event.getEntity().hasData(POWERS))
-                event.getEntity().getData(POWERS).tick();
         }
     }
 }

@@ -3,7 +3,7 @@ import dev.greenhouseteam.effectapi.gradle.Versions
 
 plugins {
     id("effectapi.loader")
-    id("fabric-loom") version "1.6-SNAPSHOT"
+    id("fabric-loom")
 }
 
 repositories {
@@ -26,12 +26,13 @@ dependencies {
     testCompileOnly(project(":common", "commonTestJava"))
 
     effectModules.forEach {
-        compileOnly(project(":${it}:${it}-common")) {
+        implementation(project(":${it}:${it}-common")) {
             capabilities {
                 requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-$it")
             }
         }
-        implementation(project(":${it}:${it}-fabric", "namedElements"))
+        implementation(project(":${it}:${it}-fabric"))
+        include(project(":${it}:${it}-fabric"))
     }
 }
 
@@ -39,9 +40,18 @@ loom {
     mods {
         register(Properties.MOD_ID) {
             sourceSet(sourceSets["main"])
-        }
-        register(Properties.MOD_ID + "test") {
             sourceSet(sourceSets["test"])
+            sourceSet(project(":base:base-fabric").sourceSets["main"])
+            sourceSet(project(":entity:entity-fabric").sourceSets["main"])
+        }
+        register(Properties.MOD_ID + "_test") {
+            sourceSet(sourceSets["test"])
+        }
+        register(Properties.MOD_ID + "_base") {
+            sourceSet(project(":base:base-fabric").sourceSets["main"])
+        }
+        register(Properties.MOD_ID + "_entity") {
+            sourceSet(project(":entity:entity-fabric").sourceSets["main"])
         }
     }
     runs {

@@ -10,13 +10,26 @@ plugins {
 neoForge {
     version = Versions.NEOFORGE
 
-    val at = project(":base:base-common").file("src/main/resources/${Properties.MOD_ID}_base.cfg")
+    val at = project(":entity:entity-common").file("src/main/resources/${Properties.MOD_ID}_base.cfg")
     if (at.exists())
         accessTransformers.add(at.absolutePath)
 
     mods {
-        register("${Properties.MOD_ID}_base") {
+        register("effectapi_entity") {
             sourceSet(sourceSets["main"])
+        }
+    }
+}
+
+dependencies {
+    compileOnly(project(":base:base-common")) {
+        capabilities {
+            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-base")
+        }
+    }
+    compileOnly(project(":base:base-neoforge")) {
+        capabilities {
+            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-base")
         }
     }
 }

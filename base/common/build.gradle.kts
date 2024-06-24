@@ -3,7 +3,7 @@ import dev.greenhouseteam.effectapi.gradle.Versions
 
 plugins {
     id("effectapi.common")
-    id("org.spongepowered.gradle.vanilla") version "0.2.1-SNAPSHOT"
+    id("net.neoforged.moddev")
 }
 
 sourceSets {
@@ -14,11 +14,12 @@ sourceSets {
     }
 }
 
-minecraft {
-    version(Versions.INTERNAL_MINECRAFT)
-    val aw = file("src/main/resources/${Properties.MOD_ID}-base.accesswidener")
-    if (aw.exists())
-        accessWideners(aw)
+neoForge {
+    neoFormVersion = Versions.NEOFORM
+
+    val at = file("src/main/resources/${Properties.MOD_ID}_base.cfg")
+    if (at.exists())
+        accessTransformers.add(at.absolutePath)
 }
 
 dependencies {

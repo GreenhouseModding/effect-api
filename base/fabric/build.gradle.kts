@@ -3,7 +3,7 @@ import dev.greenhouseteam.effectapi.gradle.Versions
 
 plugins {
     id("effectapi.loader")
-    id("fabric-loom") version "1.6-SNAPSHOT"
+    id("fabric-loom")
 }
 
 repositories {
@@ -14,7 +14,7 @@ repositories {
 }
 
 loom {
-    val aw = project(":base:base-common").file("src/main/resources/${Properties.MOD_ID}-base.accesswidener");
+    val aw = file("src/main/resources/${Properties.MOD_ID}_base.accesswidener");
     if (aw.exists())
         accessWidenerPath.set(aw)
     mixin {
