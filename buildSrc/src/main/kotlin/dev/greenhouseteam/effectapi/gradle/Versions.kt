@@ -1,7 +1,7 @@
 package dev.greenhouseteam.effectapi.gradle
 
 object Versions {
-    const val MOD = "1.0.0-alpha.1"
+    const val MOD = "1.0.0"
 
     const val MINECRAFT = "1.21"
     const val INTERNAL_MINECRAFT = "1.21"
@@ -16,6 +16,7 @@ object Versions {
     const val NEOFORGE = "21.0.30-beta"
     const val NEOFORGE_LOADER_RANGE = "[3,)"
     const val NEOFORGE_MINECRAFT_RANGE = "[1.21,)"
+    const val NEOFORGE_MOD_RANGE = "[1.0.0,)"
 
     const val FABRIC_MIXIN = "0.14.0+mixin.0.8.6"
     const val MIXIN_EXTRAS = "0.3.6"

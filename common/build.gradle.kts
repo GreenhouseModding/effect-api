@@ -30,12 +30,12 @@ dependencies {
 
     testCompileOnly(project(":base:base-common")) {
         capabilities {
-            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-base")
+            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-base-common")
         }
     }
     testCompileOnly(project(":entity:entity-common")) {
         capabilities {
-            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-entity")
+            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-entity-common")
         }
     }
 }

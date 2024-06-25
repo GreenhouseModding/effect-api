@@ -12,8 +12,6 @@ fun getArchivesNameExtension() : String {
     if (!hasProperty("effectapi.moduleName"))
         return ""
     val moduleName = properties["effectapi.moduleName"] as String
-    if (moduleName.isEmpty())
-        return moduleName;
     return "-$moduleName"
 }
 
@@ -23,7 +21,7 @@ fun getPlatform() : String {
     return properties["effectapi.platformName"] as String
 }
 
-base.archivesName.set(Properties.MOD_ID + getArchivesNameExtension() + "-" + getPlatform())
+base.archivesName.set("${Properties.MOD_ID}${getArchivesNameExtension()}-${getPlatform()}")
 group = Properties.GROUP
 version = "${Versions.MOD}+${Versions.MINECRAFT}"
 
@@ -58,25 +56,12 @@ dependencies {
 setOf("apiElements", "runtimeElements", "sourcesElements", "javadocElements").forEach { variant ->
     configurations.getByName(variant).outgoing {
         capability("$group:${base.archivesName.get()}:$version")
-        capability("$group:${Properties.MOD_ID}${getArchivesNameExtension()}:$version")
+        capability("$group:${Properties.MOD_ID}${getArchivesNameExtension()}-${getPlatform()}:$version")
     }
     publishing.publications.forEach { publication ->
         if (publication is MavenPublication) {
             publication.suppressPomMetadataWarningsFor(variant);
         }
-    }
-}
-
-configurations.all {
-    resolutionStrategy.capabilitiesResolution.withCapability("$group:${Properties.MOD_ID}-base") {
-        val toBeSelected = candidates.first()
-        if (toBeSelected != null)
-            select(toBeSelected)
-    }
-    resolutionStrategy.capabilitiesResolution.withCapability("$group:${Properties.MOD_ID}-entity") {
-        val toBeSelected = candidates.first()
-        if (toBeSelected != null)
-            select(toBeSelected)
     }
 }
 
@@ -120,6 +105,7 @@ tasks {
         "neoforge_version" to Versions.NEOFORGE,
         "neoforge_minecraft_version_range" to Versions.NEOFORGE_MINECRAFT_RANGE,
         "neoforge_loader_version_range" to Versions.NEOFORGE_LOADER_RANGE,
+        "neoforge_mod_version_range" to Versions.NEOFORGE_MOD_RANGE,
         "java_version" to Versions.JAVA,
         "homepage" to Properties.HOMEPAGE,
         "issues" to Properties.ISSUE_TRACKER,

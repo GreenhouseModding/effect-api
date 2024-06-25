@@ -29,33 +29,33 @@ dependencies {
 
     compileOnly(project(":base:base-common")) {
         capabilities {
-            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-base")
+            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-base-common")
         }
     }
 }
 
 configurations {
-    register("entityCommonJava") {
+    register("commonJava") {
         isCanBeResolved = false
         isCanBeConsumed = true
     }
-    register("entityCommonTestJava") {
+    register("commonTestJava") {
         isCanBeResolved = false
         isCanBeConsumed = true
     }
-    register("entityCommonResources") {
+    register("commonResources") {
         isCanBeResolved = false
         isCanBeConsumed = true
     }
-    register("entityCommonTestResources") {
+    register("commonTestResources") {
         isCanBeResolved = false
         isCanBeConsumed = true
     }
 }
 
 artifacts {
-    add("entityCommonJava", sourceSets["main"].java.sourceDirectories.singleFile)
-    add("entityCommonTestJava", sourceSets["test"].java.sourceDirectories.singleFile)
-    add("entityCommonResources", sourceSets["main"].resources.sourceDirectories.singleFile)
-    add("entityCommonTestResources", sourceSets["test"].resources.sourceDirectories.singleFile)
+    add("commonJava", sourceSets["main"].java.sourceDirectories.singleFile)
+    add("commonTestJava", sourceSets["test"].java.sourceDirectories.singleFile)
+    add("commonResources", sourceSets["main"].resources.sourceDirectories.singleFile)
+    add("commonTestResources", sourceSets["test"].resources.sourceDirectories.singleFile)
 }

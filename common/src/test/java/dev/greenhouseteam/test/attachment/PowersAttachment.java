@@ -2,7 +2,7 @@ package dev.greenhouseteam.test.attachment;
 
 import com.mojang.serialization.Codec;
 import dev.greenhouseteam.effectapi.api.effect.EffectAPIEffect;
-import dev.greenhouseteam.effectapi.api.entity.util.EntityEffectAttachmentUtil;
+import dev.greenhouseteam.effectapi.entity.api.entity.util.EntityEffectAttachmentUtil;
 import dev.greenhouseteam.effectapi.impl.EffectAPI;
 import dev.greenhouseteam.test.EffectAPITest;
 import dev.greenhouseteam.test.Power;

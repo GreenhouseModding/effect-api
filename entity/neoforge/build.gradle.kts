@@ -13,23 +13,17 @@ neoForge {
     val at = project(":entity:entity-common").file("src/main/resources/${Properties.MOD_ID}_base.cfg")
     if (at.exists())
         accessTransformers.add(at.absolutePath)
-
-    mods {
-        register("effectapi_entity") {
-            sourceSet(sourceSets["main"])
-        }
-    }
 }
 
 dependencies {
     compileOnly(project(":base:base-common")) {
         capabilities {
-            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-base")
+            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-base-common")
         }
     }
     compileOnly(project(":base:base-neoforge")) {
         capabilities {
-            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-base")
+            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-base-neoforge")
         }
     }
 }

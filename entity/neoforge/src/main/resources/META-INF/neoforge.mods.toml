@@ -35,6 +35,6 @@ side="BOTH"
 [[dependencies.${mod_id}_entity]]
 modId="${mod_id}_base"
 mandatory=true
-versionRange="(${version},]"
+versionRange="${neoforge_mod_version_range}"
 ordering="NONE"
 side="BOTH"

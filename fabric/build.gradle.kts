@@ -28,7 +28,7 @@ dependencies {
     effectModules.forEach {
         implementation(project(":${it}:${it}-common")) {
             capabilities {
-                requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-$it")
+                requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-$it-common")
             }
         }
         implementation(project(":${it}:${it}-fabric"))
@@ -40,9 +40,6 @@ loom {
     mods {
         register(Properties.MOD_ID) {
             sourceSet(sourceSets["main"])
-            sourceSet(sourceSets["test"])
-            sourceSet(project(":base:base-fabric").sourceSets["main"])
-            sourceSet(project(":entity:entity-fabric").sourceSets["main"])
         }
         register(Properties.MOD_ID + "_test") {
             sourceSet(sourceSets["test"])

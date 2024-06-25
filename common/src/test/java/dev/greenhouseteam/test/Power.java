@@ -2,7 +2,7 @@ package dev.greenhouseteam.test;
 
 import com.mojang.serialization.Codec;
 import dev.greenhouseteam.effectapi.api.EffectAPIEffectTypes;
-import dev.greenhouseteam.effectapi.api.entity.registry.EffectAPIEntityLootContextParamSets;
+import dev.greenhouseteam.effectapi.entity.api.entity.registry.EffectAPIEntityLootContextParamSets;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.resources.RegistryFixedCodec;

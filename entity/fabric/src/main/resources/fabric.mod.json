@@ -20,13 +20,13 @@
     "environment": "*",
     "entrypoints": {
         "main": [
-            "dev.greenhouseteam.effectapi.impl.EffectAPIEntityFabric"
+            "dev.greenhouseteam.effectapi.entity.impl.EffectAPIEntityFabric"
         ],
         "client": [
-            "dev.greenhouseteam.effectapi.impl.client.EffectAPIEntityFabricClient"
+            "dev.greenhouseteam.effectapi.entity.impl.client.EffectAPIEntityFabricClient"
         ],
         "preLaunch": [
-            "dev.greenhouseteam.effectapi.impl.EffectAPIEntityFabricPre"
+            "dev.greenhouseteam.effectapi.entity.impl.EffectAPIEntityFabricPre"
         ]
     },
     "mixins": [

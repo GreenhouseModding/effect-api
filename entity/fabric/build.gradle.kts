@@ -28,7 +28,7 @@ dependencies {
 
     compileOnly(project(":base:base-common")) {
         capabilities {
-            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-base")
+            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-base-common")
         }
     }
     compileOnly(project(":base:base-fabric", "namedElements"))
