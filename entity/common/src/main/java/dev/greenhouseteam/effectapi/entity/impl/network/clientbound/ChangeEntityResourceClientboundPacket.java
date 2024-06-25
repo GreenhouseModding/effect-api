@@ -3,6 +3,7 @@ package dev.greenhouseteam.effectapi.entity.impl.network.clientbound;
 import com.mojang.serialization.Codec;
 import dev.greenhouseteam.effectapi.api.effect.ResourceEffect;
 import dev.greenhouseteam.effectapi.entity.impl.EffectAPIEntity;
+import dev.greenhouseteam.effectapi.impl.EffectAPI;
 import dev.greenhouseteam.effectapi.impl.util.InternalResourceUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NbtOps;
@@ -15,24 +16,24 @@ import net.minecraft.world.entity.Entity;
 
 import java.util.Optional;
 
-public class ChangeResourceClientboundPacket<T> implements CustomPacketPayload {
-    public static final ResourceLocation ID = EffectAPIEntity.asResource("change_resource");
-    public static final Type<ChangeResourceClientboundPacket<?>> TYPE = new Type<>(ID);
-    public static final StreamCodec<RegistryFriendlyByteBuf, ChangeResourceClientboundPacket<?>> STREAM_CODEC = StreamCodec.of(ChangeResourceClientboundPacket::write, ChangeResourceClientboundPacket::new);
+public class ChangeEntityResourceClientboundPacket<T> implements CustomPacketPayload {
+    public static final ResourceLocation ID = EffectAPI.asResource("change_entity_resource");
+    public static final Type<ChangeEntityResourceClientboundPacket<?>> TYPE = new Type<>(ID);
+    public static final StreamCodec<RegistryFriendlyByteBuf, ChangeEntityResourceClientboundPacket<?>> STREAM_CODEC = StreamCodec.of(ChangeEntityResourceClientboundPacket::write, ChangeEntityResourceClientboundPacket::new);
 
     private final int entityId;
     private final ResourceEffect<T> resourceEffect;
     private final Optional<ResourceLocation> source;
     private final Optional<T> value;
 
-    public ChangeResourceClientboundPacket(int entityId, ResourceEffect<T> resourceEffect, Optional<ResourceLocation> source, Optional<T> value) {
+    public ChangeEntityResourceClientboundPacket(int entityId, ResourceEffect<T> resourceEffect, Optional<ResourceLocation> source, Optional<T> value) {
         this.entityId = entityId;
         this.resourceEffect = resourceEffect;
         this.source = source;
         this.value = value;
     }
 
-    public ChangeResourceClientboundPacket(RegistryFriendlyByteBuf buf) {
+    public ChangeEntityResourceClientboundPacket(RegistryFriendlyByteBuf buf) {
         this.entityId = buf.readInt();
         this.resourceEffect = InternalResourceUtil.getEffectFromId(buf.readResourceLocation());
         if (buf.readBoolean())
@@ -45,7 +46,7 @@ public class ChangeResourceClientboundPacket<T> implements CustomPacketPayload {
             this.value = Optional.empty();
     }
 
-    public static void write(RegistryFriendlyByteBuf buf, ChangeResourceClientboundPacket<?> packet) {
+    public static void write(RegistryFriendlyByteBuf buf, ChangeEntityResourceClientboundPacket<?> packet) {
         buf.writeInt(packet.entityId);
         buf.writeResourceLocation(packet.resourceEffect.getId());
         buf.writeBoolean(packet.source.isPresent());

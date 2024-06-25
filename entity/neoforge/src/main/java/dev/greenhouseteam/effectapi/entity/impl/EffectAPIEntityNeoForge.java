@@ -3,9 +3,9 @@ package dev.greenhouseteam.effectapi.entity.impl;
 import dev.greenhouseteam.effectapi.api.EffectAPIResourceTypes;
 import dev.greenhouseteam.effectapi.entity.api.command.EntityResourceArgument;
 import dev.greenhouseteam.effectapi.entity.api.command.EntityResourceValueArgument;
-import dev.greenhouseteam.effectapi.entity.impl.network.clientbound.ChangeResourceClientboundPacket;
-import dev.greenhouseteam.effectapi.entity.impl.network.clientbound.SyncEffectsAttachmentClientboundPacket;
-import dev.greenhouseteam.effectapi.entity.impl.network.clientbound.SyncResourcesAttachmentClientboundPacket;
+import dev.greenhouseteam.effectapi.entity.impl.network.clientbound.ChangeEntityResourceClientboundPacket;
+import dev.greenhouseteam.effectapi.entity.impl.network.clientbound.SyncEntityEffectsAttachmentClientboundPacket;
+import dev.greenhouseteam.effectapi.entity.impl.network.clientbound.SyncEntityResourcesAttachmentClientboundPacket;
 import dev.greenhouseteam.effectapi.entity.platform.EffectAPIEntityPlatformHelperNeoForge;
 import dev.greenhouseteam.effectapi.impl.EffectAPI;
 import dev.greenhouseteam.effectapi.impl.registry.EffectAPIAttachments;
@@ -45,9 +45,9 @@ public class EffectAPIEntityNeoForge {
         @SubscribeEvent
         public static void registerPackets(RegisterPayloadHandlersEvent event) {
             event.registrar("1.0.0")
-                    .playToClient(SyncResourcesAttachmentClientboundPacket.TYPE, SyncResourcesAttachmentClientboundPacket.STREAM_CODEC, (payload, context) -> payload.handle())
-                    .playToClient(SyncEffectsAttachmentClientboundPacket.TYPE, SyncEffectsAttachmentClientboundPacket.STREAM_CODEC, (payload, context) -> payload.handle())
-                    .playToClient(ChangeResourceClientboundPacket.TYPE, ChangeResourceClientboundPacket.STREAM_CODEC, (payload, context) -> payload.handle());
+                    .playToClient(SyncEntityResourcesAttachmentClientboundPacket.TYPE, SyncEntityResourcesAttachmentClientboundPacket.STREAM_CODEC, (payload, context) -> payload.handle())
+                    .playToClient(SyncEntityEffectsAttachmentClientboundPacket.TYPE, SyncEntityEffectsAttachmentClientboundPacket.STREAM_CODEC, (payload, context) -> payload.handle())
+                    .playToClient(ChangeEntityResourceClientboundPacket.TYPE, ChangeEntityResourceClientboundPacket.STREAM_CODEC, (payload, context) -> payload.handle());
         }
     }
 
@@ -56,7 +56,7 @@ public class EffectAPIEntityNeoForge {
         @SubscribeEvent
         public static void onStartTracking(PlayerEvent.StartTracking event) {
             if (event.getTarget().hasData(EffectAPIAttachments.RESOURCES))
-                EffectAPI.getHelper().sendClientboundTracking(new SyncResourcesAttachmentClientboundPacket(event.getTarget().getId(), event.getTarget().getData(EffectAPIAttachments.RESOURCES)), event.getTarget());
+                EffectAPI.getHelper().sendClientboundTracking(new SyncEntityResourcesAttachmentClientboundPacket(event.getTarget().getId(), event.getTarget().getData(EffectAPIAttachments.RESOURCES)), event.getTarget());
         }
     }
 }

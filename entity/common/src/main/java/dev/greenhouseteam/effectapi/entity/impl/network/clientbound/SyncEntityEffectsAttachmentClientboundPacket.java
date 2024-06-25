@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import dev.greenhouseteam.effectapi.api.EffectAPIEffectTypes;
 import dev.greenhouseteam.effectapi.entity.api.registry.EffectAPIEntityLootContextParamSets;
 import dev.greenhouseteam.effectapi.entity.impl.EffectAPIEntity;
+import dev.greenhouseteam.effectapi.impl.EffectAPI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.nbt.NbtOps;
@@ -17,16 +18,16 @@ import net.minecraft.world.entity.Entity;
 
 import java.util.Map;
 
-public record SyncEffectsAttachmentClientboundPacket(int entityId, Map<ResourceLocation, DataComponentMap> alLComponents, DataComponentMap activeComponents) implements CustomPacketPayload {
-    public static final ResourceLocation ID = EffectAPIEntity.asResource("sync_effects_attachment");
-    public static final Type<SyncEffectsAttachmentClientboundPacket> TYPE = new Type<>(ID);
-    public static final StreamCodec<RegistryFriendlyByteBuf, SyncEffectsAttachmentClientboundPacket> STREAM_CODEC = StreamCodec.of(SyncEffectsAttachmentClientboundPacket::write, SyncEffectsAttachmentClientboundPacket::new);
+public record SyncEntityEffectsAttachmentClientboundPacket(int entityId, Map<ResourceLocation, DataComponentMap> alLComponents, DataComponentMap activeComponents) implements CustomPacketPayload {
+    public static final ResourceLocation ID = EffectAPI.asResource("sync_entity_effects_attachment");
+    public static final Type<SyncEntityEffectsAttachmentClientboundPacket> TYPE = new Type<>(ID);
+    public static final StreamCodec<RegistryFriendlyByteBuf, SyncEntityEffectsAttachmentClientboundPacket> STREAM_CODEC = StreamCodec.of(SyncEntityEffectsAttachmentClientboundPacket::write, SyncEntityEffectsAttachmentClientboundPacket::new);
 
-    public SyncEffectsAttachmentClientboundPacket(RegistryFriendlyByteBuf buf) {
+    public SyncEntityEffectsAttachmentClientboundPacket(RegistryFriendlyByteBuf buf) {
         this(buf.readInt(), Codec.unboundedMap(ResourceLocation.CODEC, EffectAPIEffectTypes.codec(EffectAPIEntityLootContextParamSets.ENTITY)).decode(RegistryOps.create(NbtOps.INSTANCE, buf.registryAccess()), buf.readNbt()).getOrThrow().getFirst(), EffectAPIEffectTypes.codec(EffectAPIEntityLootContextParamSets.ENTITY).decode(RegistryOps.create(NbtOps.INSTANCE, buf.registryAccess()), buf.readNbt()).getOrThrow().getFirst());
     }
 
-    public static void write(RegistryFriendlyByteBuf buf, SyncEffectsAttachmentClientboundPacket packet) {
+    public static void write(RegistryFriendlyByteBuf buf, SyncEntityEffectsAttachmentClientboundPacket packet) {
         buf.writeInt(packet.entityId);
         RegistryOps<Tag> ops = RegistryOps.create(NbtOps.INSTANCE, buf.registryAccess());
         buf.writeNbt(Codec.unboundedMap(ResourceLocation.CODEC, EffectAPIEffectTypes.codec(EffectAPIEntityLootContextParamSets.ENTITY)).encodeStart(ops, packet.alLComponents).getOrThrow());

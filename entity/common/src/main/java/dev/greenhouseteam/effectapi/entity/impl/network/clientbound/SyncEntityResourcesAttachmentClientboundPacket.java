@@ -2,6 +2,7 @@ package dev.greenhouseteam.effectapi.entity.impl.network.clientbound;
 
 import dev.greenhouseteam.effectapi.api.attachment.ResourcesAttachment;
 import dev.greenhouseteam.effectapi.entity.impl.EffectAPIEntity;
+import dev.greenhouseteam.effectapi.impl.EffectAPI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -11,16 +12,16 @@ import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 
-public record SyncResourcesAttachmentClientboundPacket(int entityId, ResourcesAttachment attachment) implements CustomPacketPayload {
-    public static final ResourceLocation ID = EffectAPIEntity.asResource("sync_resources_attachment");
-    public static final Type<SyncResourcesAttachmentClientboundPacket> TYPE = new Type<>(ID);
-    public static final StreamCodec<RegistryFriendlyByteBuf, SyncResourcesAttachmentClientboundPacket> STREAM_CODEC = StreamCodec.of(SyncResourcesAttachmentClientboundPacket::write, SyncResourcesAttachmentClientboundPacket::new);
+public record SyncEntityResourcesAttachmentClientboundPacket(int entityId, ResourcesAttachment attachment) implements CustomPacketPayload {
+    public static final ResourceLocation ID = EffectAPI.asResource("sync_entity_resources_attachment");
+    public static final Type<SyncEntityResourcesAttachmentClientboundPacket> TYPE = new Type<>(ID);
+    public static final StreamCodec<RegistryFriendlyByteBuf, SyncEntityResourcesAttachmentClientboundPacket> STREAM_CODEC = StreamCodec.of(SyncEntityResourcesAttachmentClientboundPacket::write, SyncEntityResourcesAttachmentClientboundPacket::new);
 
-    public SyncResourcesAttachmentClientboundPacket(RegistryFriendlyByteBuf buf) {
+    public SyncEntityResourcesAttachmentClientboundPacket(RegistryFriendlyByteBuf buf) {
         this(buf.readInt(), ResourcesAttachment.CODEC.decode(RegistryOps.create(NbtOps.INSTANCE, buf.registryAccess()), buf.readNbt()).getOrThrow().getFirst());
     }
 
-    public static void write(RegistryFriendlyByteBuf buf, SyncResourcesAttachmentClientboundPacket packet) {
+    public static void write(RegistryFriendlyByteBuf buf, SyncEntityResourcesAttachmentClientboundPacket packet) {
         buf.writeInt(packet.entityId);
         buf.writeNbt(ResourcesAttachment.CODEC.encodeStart(RegistryOps.create(NbtOps.INSTANCE, buf.registryAccess()), packet.attachment).getOrThrow());
     }

@@ -32,6 +32,7 @@ neoForge {
         }
     }
 
+    // TODO: Fix NeoForge runs.
     mods {
         register("effectapi") {
             sourceSet(sourceSets["main"])
@@ -40,11 +41,9 @@ neoForge {
             sourceSet(sourceSets["test"])
         }
         register("effectapi_base") {
-            dependency(project(":base:base-common"))
             dependency(project(":base:base-neoforge"))
         }
         register("effectapi_entity") {
-            dependency(project(":entity:entity-common"))
             dependency(project(":entity:entity-neoforge"))
         }
     }
@@ -61,14 +60,9 @@ dependencies {
                 requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-$it-common")
             }
         }
-        testCompileOnly(project(":$it:$it-common")) {
+        testImplementation(project(":$it:$it-common")) {
             capabilities {
                 requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-$it-common")
-            }
-        }
-        testCompileOnly(project(":$it:$it-neoforge")) {
-            capabilities {
-                requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-$it-neoforge")
             }
         }
         jarJar(project(":$it:$it-neoforge")) {

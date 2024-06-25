@@ -1,5 +1,5 @@
 {
-  "effectapi:resource": [
+  "effectapi:entity_resource": [
     {
       "id": "test:int",
       "resource_type": "effectapi:int",

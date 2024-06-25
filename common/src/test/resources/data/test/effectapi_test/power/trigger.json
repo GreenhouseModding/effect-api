@@ -1,8 +1,8 @@
 {
-  "effectapi:trigger": [
+  "effectapi:entity_trigger": [
     {
       "effect": {
-        "on_activation": {
+        "on_added": {
           "type": "effectapi:enchantment_effect",
           "effect": {
             "type": "minecraft:apply_mob_effect",
@@ -13,7 +13,7 @@
             "max_amplifier": 0
           }
         },
-        "on_deactivation": {
+        "on_removed": {
           "type": "effectapi:enchantment_effect",
           "effect": {
             "type": "minecraft:apply_mob_effect",

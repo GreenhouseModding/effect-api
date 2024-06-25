@@ -1,5 +1,5 @@
 {
-  "effectapi:attribute": [
+  "effectapi:entity_attribute": [
     {
       "effect": {
         "id": "test:funny_inchling_sugar",

@@ -6,7 +6,7 @@ import dev.greenhouseteam.effectapi.api.registry.EffectAPILootContextParams;
 import dev.greenhouseteam.effectapi.entity.api.EffectAPIEntityEffectTypes;
 import dev.greenhouseteam.effectapi.entity.api.registry.EffectAPIEntityLootContextParamSets;
 import dev.greenhouseteam.effectapi.entity.impl.EffectAPIEntity;
-import dev.greenhouseteam.effectapi.entity.impl.network.clientbound.ChangeResourceClientboundPacket;
+import dev.greenhouseteam.effectapi.entity.impl.network.clientbound.ChangeEntityResourceClientboundPacket;
 import dev.greenhouseteam.effectapi.impl.EffectAPI;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.resources.ResourceLocation;
@@ -33,14 +33,14 @@ public class EntityResourceEffect<T> extends ResourceEffect<T> {
             value = EffectAPIEntity.getHelper().getResources(entity).getValue(id);
         else
             value = EffectAPIEntity.getHelper().setResource(entity, id, defaultValue, lootContext.getParamOrNull(EffectAPILootContextParams.SOURCE));
-        EffectAPI.getHelper().sendClientboundTracking(new ChangeResourceClientboundPacket<>(entity.getId(), this, Optional.ofNullable(lootContext.getParamOrNull(EffectAPILootContextParams.SOURCE)), Optional.of(value)), entity);
+        EffectAPI.getHelper().sendClientboundTracking(new ChangeEntityResourceClientboundPacket<>(entity.getId(), this, Optional.ofNullable(lootContext.getParamOrNull(EffectAPILootContextParams.SOURCE)), Optional.of(value)), entity);
     }
 
     @Override
     public void onRemoved(LootContext lootContext) {
         Entity entity = lootContext.getParam(LootContextParams.THIS_ENTITY);
         EffectAPIEntity.getHelper().removeResource(entity, id, lootContext.getParamOrNull(EffectAPILootContextParams.SOURCE));
-        EffectAPI.getHelper().sendClientboundTracking(new ChangeResourceClientboundPacket<>(entity.getId(), this, Optional.empty(), Optional.empty()), entity);
+        EffectAPI.getHelper().sendClientboundTracking(new ChangeEntityResourceClientboundPacket<>(entity.getId(), this, Optional.empty(), Optional.empty()), entity);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class EntityResourceEffect<T> extends ResourceEffect<T> {
 
     @Override
     public DataComponentType<?> type() {
-        return EffectAPIEntityEffectTypes.RESOURCE;
+        return EffectAPIEntityEffectTypes.ENTITY_RESOURCE;
     }
 
     @Override

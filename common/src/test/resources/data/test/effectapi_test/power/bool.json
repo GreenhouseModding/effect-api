@@ -1,5 +1,5 @@
 {
-  "effectapi:resource": [
+  "effectapi:entity_resource": [
     {
       "id": "test:bool",
       "resource_type": "effectapi:bool",

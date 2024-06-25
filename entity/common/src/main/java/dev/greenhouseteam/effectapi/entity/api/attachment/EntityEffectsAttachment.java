@@ -5,9 +5,8 @@ import dev.greenhouseteam.effectapi.api.effect.EffectAPIEffect;
 import dev.greenhouseteam.effectapi.entity.api.EffectAPIEntityEffectTypes;
 import dev.greenhouseteam.effectapi.entity.api.EntityEffectAttachmentUtil;
 import dev.greenhouseteam.effectapi.entity.api.registry.EffectAPIEntityLootContextParamSets;
-import dev.greenhouseteam.effectapi.entity.impl.EffectAPIEntity;
 import dev.greenhouseteam.effectapi.entity.impl.effect.EntityTickEffect;
-import dev.greenhouseteam.effectapi.entity.impl.network.clientbound.SyncEffectsAttachmentClientboundPacket;
+import dev.greenhouseteam.effectapi.entity.impl.network.clientbound.SyncEntityEffectsAttachmentClientboundPacket;
 import dev.greenhouseteam.effectapi.impl.EffectAPI;
 import dev.greenhouseteam.effectapi.impl.util.InternalEffectUtil;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
@@ -21,7 +20,7 @@ import java.util.*;
 
 // TODO: Move to generic effect attachment class.
 public class EntityEffectsAttachment {
-    public static final ResourceLocation ID = EffectAPIEntity.asResource("entity_effects");
+    public static final ResourceLocation ID = EffectAPI.asResource("entity_effects");
 
     private Map<ResourceLocation, DataComponentMap> allComponents = new HashMap<>();
     private final Map<EffectAPIEffect, ResourceLocation> componentSourcesForUpdating = new HashMap<>();
@@ -71,7 +70,7 @@ public class EntityEffectsAttachment {
     }
 
     public void sync() {
-        EffectAPI.getHelper().sendClientboundTracking(new SyncEffectsAttachmentClientboundPacket(provider.getId(), allComponents, activeComponents), provider);
+        EffectAPI.getHelper().sendClientboundTracking(new SyncEntityEffectsAttachmentClientboundPacket(provider.getId(), allComponents, activeComponents), provider);
     }
 
     public void addEffect(EffectAPIEffect effect, ResourceLocation source) {

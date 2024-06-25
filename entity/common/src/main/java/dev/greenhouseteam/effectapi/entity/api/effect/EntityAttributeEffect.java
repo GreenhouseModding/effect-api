@@ -18,13 +18,13 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProviders;
 
-public record AttributeEffect(ResourceLocation id, Holder<Attribute> attribute, NumberProvider amount, AttributeModifier.Operation operation) implements EffectAPIEffect {
-    public static final Codec<AttributeEffect> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-            ResourceLocation.CODEC.fieldOf("id").forGetter(AttributeEffect::id),
-            Attribute.CODEC.fieldOf("attribute").forGetter(AttributeEffect::attribute),
-            NumberProviders.CODEC.fieldOf("amount").forGetter(AttributeEffect::amount),
-            AttributeModifier.Operation.CODEC.fieldOf("operation").forGetter(AttributeEffect::operation)
-    ).apply(inst, AttributeEffect::new));
+public record EntityAttributeEffect(ResourceLocation id, Holder<Attribute> attribute, NumberProvider amount, AttributeModifier.Operation operation) implements EffectAPIEffect {
+    public static final Codec<EntityAttributeEffect> CODEC = RecordCodecBuilder.create(inst -> inst.group(
+            ResourceLocation.CODEC.fieldOf("id").forGetter(EntityAttributeEffect::id),
+            Attribute.CODEC.fieldOf("attribute").forGetter(EntityAttributeEffect::attribute),
+            NumberProviders.CODEC.fieldOf("amount").forGetter(EntityAttributeEffect::amount),
+            AttributeModifier.Operation.CODEC.fieldOf("operation").forGetter(EntityAttributeEffect::operation)
+    ).apply(inst, EntityAttributeEffect::new));
 
     @Override
     public void onAdded(LootContext context) {
@@ -46,7 +46,7 @@ public record AttributeEffect(ResourceLocation id, Holder<Attribute> attribute, 
 
     @Override
     public DataComponentType<?> type() {
-        return EffectAPIEntityEffectTypes.ATTRIBUTE;
+        return EffectAPIEntityEffectTypes.ENTITY_ATTRIBUTE;
     }
 
     @Override
