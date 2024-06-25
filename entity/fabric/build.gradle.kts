@@ -13,7 +13,8 @@ loom {
     if (aw.exists())
         accessWidenerPath.set(aw)
     mixin {
-        defaultRefmapName.set("${Properties.MOD_ID}_entity.refmap.json")
+        this.defaultRefmapName.set("${Properties.MOD_ID}_entity.refmap.json")
+        useLegacyMixinAp = false
     }
     runs {
     }

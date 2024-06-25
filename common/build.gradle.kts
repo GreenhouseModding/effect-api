@@ -23,19 +23,23 @@ neoForge {
         accessTransformers.add(at.absolutePath)
 }
 
+val effectModules = setOf("base", "entity")
+
 dependencies {
     compileOnly("io.github.llamalad7:mixinextras-common:${Versions.MIXIN_EXTRAS}")
     annotationProcessor("io.github.llamalad7:mixinextras-common:${Versions.MIXIN_EXTRAS}")
     compileOnly("net.fabricmc:sponge-mixin:${Versions.FABRIC_MIXIN}")
 
-    testCompileOnly(project(":base:base-common")) {
-        capabilities {
-            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-base-common")
+    effectModules.forEach {
+        compileOnly(project(":${it}:${it}-common")) {
+            capabilities {
+                requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-$it-common")
+            }
         }
-    }
-    testCompileOnly(project(":entity:entity-common")) {
-        capabilities {
-            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-entity-common")
+        testCompileOnly(project(":${it}:${it}-common")) {
+            capabilities {
+                requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-$it-common")
+            }
         }
     }
 }

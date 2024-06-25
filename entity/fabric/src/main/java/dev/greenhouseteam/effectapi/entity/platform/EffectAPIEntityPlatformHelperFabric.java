@@ -2,31 +2,38 @@ package dev.greenhouseteam.effectapi.entity.platform;
 
 import dev.greenhouseteam.effectapi.api.attachment.ResourcesAttachment;
 import dev.greenhouseteam.effectapi.api.effect.EffectAPIEffect;
-import dev.greenhouseteam.effectapi.entity.api.entity.attachment.EntityEffectsAttachment;
+import dev.greenhouseteam.effectapi.entity.api.attachment.EntityEffectsAttachment;
 import dev.greenhouseteam.effectapi.entity.impl.registry.EffectAPIEntityAttachments;
+import dev.greenhouseteam.effectapi.impl.registry.EffectAPIAttachments;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+import java.util.Optional;
 
 public class EffectAPIEntityPlatformHelperFabric implements EffectAPIEntityPlatformHelper {
 
     @Override
     @Nullable
     public ResourcesAttachment getResources(Entity entity) {
-        return entity.getAttached(EffectAPIEntityAttachments.RESOURCES);
+        return entity.getAttached(EffectAPIAttachments.RESOURCES);
+    }
+
+    @Override
+    public boolean hasResource(Entity entity, ResourceLocation id) {
+        return Optional.ofNullable(entity.getAttached(EffectAPIAttachments.RESOURCES)).map(attachment -> attachment.getResourceHolder(id) != null).orElse(false);
     }
 
     @Override
     public void setResourcesAttachment(Entity entity, ResourcesAttachment attachment) {
-        entity.setAttached(EffectAPIEntityAttachments.RESOURCES, attachment);
+        entity.setAttached(EffectAPIAttachments.RESOURCES, attachment);
     }
 
     @Override
     public <T> T setResource(Entity entity, ResourceLocation id, T value, ResourceLocation source) {
-        return entity.getAttachedOrCreate(EffectAPIEntityAttachments.RESOURCES).setValue(id, value, source);
+        return entity.getAttachedOrCreate(EffectAPIAttachments.RESOURCES).setValue(id, value, source);
     }
 
     @Override
@@ -36,37 +43,37 @@ public class EffectAPIEntityPlatformHelperFabric implements EffectAPIEntityPlatf
             return;
         attachment.removeValue(id);
         if (attachment.resources().isEmpty())
-            entity.removeAttached(EffectAPIEntityAttachments.RESOURCES);
+            entity.removeAttached(EffectAPIAttachments.RESOURCES);
     }
 
 
     @Override
     public @Nullable EntityEffectsAttachment getEntityEffects(Entity entity) {
-        return entity.getAttached(EffectAPIEntityAttachments.EFFECTS);
+        return entity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS);
     }
 
     @Override
     public void addEntityEffect(Entity entity, EffectAPIEffect effect, ResourceLocation source) {
-        EntityEffectsAttachment attachment =  entity.getAttachedOrCreate(EffectAPIEntityAttachments.EFFECTS);
+        EntityEffectsAttachment attachment =  entity.getAttachedOrCreate(EffectAPIEntityAttachments.ENTITY_EFFECTS);
         attachment.init(entity);
         attachment.addEffect(effect, source);
     }
 
     @Override
     public void removeEntityEffect(Entity entity, EffectAPIEffect effect, ResourceLocation source) {
-        EntityEffectsAttachment attachment =  entity.getAttached(EffectAPIEntityAttachments.EFFECTS);
+        EntityEffectsAttachment attachment =  entity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS);
         if (attachment == null)
             return;
         attachment.removeEffect(effect, source);
         if (attachment.isEmpty())
-            entity.removeAttached(EffectAPIEntityAttachments.EFFECTS);
+            entity.removeAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS);
     }
 
     @Override
     public void setEntityEffects(Entity entity, Map<ResourceLocation, DataComponentMap> alLComponents, DataComponentMap activeComponents) {
         if (alLComponents.isEmpty())
-            entity.removeAttached(EffectAPIEntityAttachments.EFFECTS);
+            entity.removeAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS);
         else
-            entity.getAttachedOrCreate(EffectAPIEntityAttachments.EFFECTS).setComponents(alLComponents, activeComponents);
+            entity.getAttachedOrCreate(EffectAPIEntityAttachments.ENTITY_EFFECTS).setComponents(alLComponents, activeComponents);
     }
 }

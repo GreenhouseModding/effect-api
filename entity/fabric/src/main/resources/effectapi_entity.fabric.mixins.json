@@ -1,16 +1,15 @@
 {
-  "required": true,
-  "minVersion": "0.8",
-  "package": "dev.greenhouseteam.effectapi.entity.mixin",
-  "refmap": "${mod_id}.refmap.json",
-  "compatibilityLevel": "JAVA_21",
-  "mixins": [
-      "EntityMixin",
-      "ServerEntityMixin",
-      "ServerLevelEntityCallbacksMixin"
-  ],
-  "injectors": {
-    "defaultRequire": 1
-  }
+    "required": true,
+    "minVersion": "0.8",
+    "package": "dev.greenhouseteam.effectapi.entity.mixin",
+    "refmap": "${mod_id}_entity.refmap.json",
+    "compatibilityLevel": "JAVA_21",
+    "mixins": [
+        "EntityMixin",
+        "ServerEntityMixin",
+        "ServerLevelEntityCallbacksMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
 }
-  

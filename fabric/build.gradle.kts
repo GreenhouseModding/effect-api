@@ -26,12 +26,17 @@ dependencies {
     testCompileOnly(project(":common", "commonTestJava"))
 
     effectModules.forEach {
-        implementation(project(":${it}:${it}-common")) {
+        compileOnly(project(":${it}:${it}-common")) {
             capabilities {
                 requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-$it-common")
             }
         }
-        implementation(project(":${it}:${it}-fabric"))
+        testCompileOnly(project(":${it}:${it}-common")) {
+            capabilities {
+                requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-$it-common")
+            }
+        }
+        implementation(project(":${it}:${it}-fabric", "namedElements"))
         include(project(":${it}:${it}-fabric"))
     }
 }
@@ -44,12 +49,10 @@ loom {
         register(Properties.MOD_ID + "_test") {
             sourceSet(sourceSets["test"])
         }
-        register(Properties.MOD_ID + "_base") {
-            sourceSet(project(":base:base-fabric").sourceSets["main"])
-        }
-        register(Properties.MOD_ID + "_entity") {
-            sourceSet(project(":entity:entity-fabric").sourceSets["main"])
-        }
+    }
+    mixin {
+        this.defaultRefmapName.set("${Properties.MOD_ID}.refmap.json")
+        useLegacyMixinAp = false
     }
     runs {
         named("client") {

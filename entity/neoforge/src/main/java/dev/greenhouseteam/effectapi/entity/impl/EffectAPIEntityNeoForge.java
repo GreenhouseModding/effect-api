@@ -1,15 +1,14 @@
 package dev.greenhouseteam.effectapi.entity.impl;
 
 import dev.greenhouseteam.effectapi.api.EffectAPIResourceTypes;
-import dev.greenhouseteam.effectapi.entity.api.entity.command.EntityResourceArgument;
-import dev.greenhouseteam.effectapi.entity.api.entity.command.EntityResourceValueArgument;
-import dev.greenhouseteam.effectapi.entity.impl.entity.EffectAPIEntity;
-import dev.greenhouseteam.effectapi.entity.impl.entity.network.clientbound.ChangeResourceClientboundPacket;
-import dev.greenhouseteam.effectapi.entity.impl.entity.network.clientbound.SyncEffectsAttachmentClientboundPacket;
-import dev.greenhouseteam.effectapi.entity.impl.entity.network.clientbound.SyncResourcesAttachmentClientboundPacket;
-import dev.greenhouseteam.effectapi.entity.impl.registry.EffectAPIAttachments;
+import dev.greenhouseteam.effectapi.entity.api.command.EntityResourceArgument;
+import dev.greenhouseteam.effectapi.entity.api.command.EntityResourceValueArgument;
+import dev.greenhouseteam.effectapi.entity.impl.network.clientbound.ChangeResourceClientboundPacket;
+import dev.greenhouseteam.effectapi.entity.impl.network.clientbound.SyncEffectsAttachmentClientboundPacket;
+import dev.greenhouseteam.effectapi.entity.impl.network.clientbound.SyncResourcesAttachmentClientboundPacket;
 import dev.greenhouseteam.effectapi.entity.platform.EffectAPIEntityPlatformHelperNeoForge;
 import dev.greenhouseteam.effectapi.impl.EffectAPI;
+import dev.greenhouseteam.effectapi.impl.registry.EffectAPIAttachments;
 import dev.greenhouseteam.effectapi.impl.registry.internal.RegistrationCallback;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.core.registries.Registries;

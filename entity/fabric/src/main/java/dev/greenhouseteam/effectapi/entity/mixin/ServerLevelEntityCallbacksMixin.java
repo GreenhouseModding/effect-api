@@ -12,9 +12,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ServerLevelEntityCallbacksMixin {
     @Inject(method = "onTrackingStart(Lnet/minecraft/world/entity/Entity;)V", at = @At("TAIL"))
     private void invokeEntityLoadEvent(Entity entity, CallbackInfo ci) {
-        if (entity.hasAttached(EffectAPIEntityAttachments.EFFECTS)) {
-            entity.getAttached(EffectAPIEntityAttachments.EFFECTS).init(entity);
-            entity.getAttached(EffectAPIEntityAttachments.EFFECTS).sync();
+        if (entity.hasAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS)) {
+            entity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS).init(entity);
+            entity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS).sync();
         }
     }
 }

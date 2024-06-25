@@ -3,13 +3,14 @@ package dev.greenhouseteam.effectapi.impl;
 import dev.greenhouseteam.effectapi.api.EffectAPIResourceTypes;
 import dev.greenhouseteam.effectapi.api.effect.ResourceEffect;
 import dev.greenhouseteam.effectapi.api.registry.EffectAPIRegistries;
+import dev.greenhouseteam.effectapi.impl.registry.EffectAPIAttachments;
 import dev.greenhouseteam.effectapi.impl.registry.internal.RegistrationCallback;
 import dev.greenhouseteam.effectapi.platform.EffectAPIBasePlatformHelperNeoForge;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
@@ -26,6 +27,7 @@ public class EffectAPIBaseNeoForge {
         @SubscribeEvent
         public static void registerContent(RegisterEvent event) {
             register(event, EffectAPIResourceTypes::registerAll);
+            register(event, EffectAPIAttachments::registerAll);
         }
 
         private static <T> void register(RegisterEvent event, Consumer<RegistrationCallback<T>> consumer) {
@@ -44,14 +46,8 @@ public class EffectAPIBaseNeoForge {
     @EventBusSubscriber(modid = EffectAPI.MOD_ID + "_base", bus = EventBusSubscriber.Bus.GAME)
     public static class GameEvents {
         @SubscribeEvent
-        public static void onServerStart(ServerStartedEvent event) {
-            ResourceEffect.ResourceEffectCodec.setRegistryPhase(false);
-            ResourceEffect.ResourceEffectCodec.clearLoadedIds();
-        }
-
-        @SubscribeEvent
-        public static void onServerStop(ServerStartedEvent event) {
-            ResourceEffect.ResourceEffectCodec.setRegistryPhase(true);
+        public static void onServerStop(ServerStoppedEvent event) {
+            ResourceEffect.ResourceEffectCodec.clearLoadedEffects();
         }
     }
 }

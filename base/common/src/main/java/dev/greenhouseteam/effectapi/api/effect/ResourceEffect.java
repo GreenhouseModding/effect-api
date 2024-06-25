@@ -10,9 +10,7 @@ import dev.greenhouseteam.effectapi.impl.util.InternalResourceUtil;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.commons.lang3.tuple.Triple;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -71,7 +69,7 @@ public abstract class ResourceEffect<T> implements EffectAPIEffect {
 
     public static class ResourceEffectCodec<E extends ResourceEffect<?>> implements Codec<ResourceEffect<?>> {
         private static boolean registryPhase = false;
-        private static final List<ResourceLocation> LOADED_IDS = new ArrayList<>();
+        private static final Map<ResourceLocation, ResourceEffect<?>> LOADED_EFFECTS = new HashMap<>();
 
         private final Function<Triple<ResourceLocation, Codec<Object>, Object>, E> constructor;
 
@@ -88,8 +86,8 @@ public abstract class ResourceEffect<T> implements EffectAPIEffect {
             registryPhase = value;
         }
 
-        public static void clearLoadedIds() {
-            LOADED_IDS.clear();
+        public static void clearLoadedEffects() {
+            LOADED_EFFECTS.clear();
         }
 
         @Override
@@ -102,8 +100,8 @@ public abstract class ResourceEffect<T> implements EffectAPIEffect {
             if (id.isError())
                 return DataResult.error(() -> "Failed to decode 'id' field for `effectapi:resource` effect." + id.error().get().message());
 
-            if (LOADED_IDS.contains(id.getOrThrow().getFirst()))
-                return DataResult.error(() -> "Attempted to register duplicate resource ID '" + id.getOrThrow().getFirst() + "'.");
+            if (LOADED_EFFECTS.containsKey(id.getOrThrow().getFirst()))
+                return DataResult.success(Pair.of(LOADED_EFFECTS.get(id.getOrThrow().getFirst()), input));
 
             var resourceType = EffectAPIRegistries.RESOURCE_TYPE.byNameCodec().decode(ops, mapLike.getOrThrow().get("resource_type"));
             if (resourceType.isError())
@@ -116,7 +114,7 @@ public abstract class ResourceEffect<T> implements EffectAPIEffect {
 
             E effect = constructor.apply(Triple.of(id.getOrThrow().getFirst(), resourceTypeCodec, defaultValue.getOrThrow().getFirst()));
             if (registryPhase)
-                LOADED_IDS.add(id.getOrThrow().getFirst());
+                LOADED_EFFECTS.put(id.getOrThrow().getFirst(), effect);
             return DataResult.success(Pair.of(effect, input));
         }
 

@@ -2,8 +2,9 @@ package dev.greenhouseteam.effectapi.entity.platform;
 
 import dev.greenhouseteam.effectapi.api.attachment.ResourcesAttachment;
 import dev.greenhouseteam.effectapi.api.effect.EffectAPIEffect;
-import dev.greenhouseteam.effectapi.entity.api.entity.attachment.EntityEffectsAttachment;
-import dev.greenhouseteam.effectapi.entity.impl.registry.EffectAPIAttachments;
+import dev.greenhouseteam.effectapi.entity.api.attachment.EntityEffectsAttachment;
+import dev.greenhouseteam.effectapi.entity.impl.registry.EffectAPIEntityAttachments;
+import dev.greenhouseteam.effectapi.impl.registry.EffectAPIAttachments;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -15,6 +16,11 @@ public class EffectAPIEntityPlatformHelperNeoForge implements EffectAPIEntityPla
     @Override
     public ResourcesAttachment getResources(Entity entity) {
         return entity.getExistingData(EffectAPIAttachments.RESOURCES).orElse(null);
+    }
+
+    @Override
+    public boolean hasResource(Entity entity, ResourceLocation id) {
+        return entity.getExistingData(EffectAPIAttachments.RESOURCES).map(attachment -> attachment.getResourceHolder(id) != null).orElse(false);
     }
 
     @Override
@@ -39,29 +45,29 @@ public class EffectAPIEntityPlatformHelperNeoForge implements EffectAPIEntityPla
 
     @Override
     public @Nullable EntityEffectsAttachment getEntityEffects(Entity entity) {
-        return entity.getExistingData(EffectAPIAttachments.EFFECTS).orElse(null);
+        return entity.getExistingData(EffectAPIEntityAttachments.ENTITY_EFFECTS).orElse(null);
     }
 
     @Override
     public void addEntityEffect(Entity entity, EffectAPIEffect effect, ResourceLocation source) {
-        entity.getData(EffectAPIAttachments.EFFECTS).addEffect(effect, source);
+        entity.getData(EffectAPIEntityAttachments.ENTITY_EFFECTS).addEffect(effect, source);
     }
 
     @Override
     public void removeEntityEffect(Entity entity, EffectAPIEffect effect, ResourceLocation source) {
-        var attachment = entity.getExistingData(EffectAPIAttachments.EFFECTS);
+        var attachment = entity.getExistingData(EffectAPIEntityAttachments.ENTITY_EFFECTS);
         if (attachment.isPresent()) {
             attachment.get().removeEffect(effect, source);
             if (attachment.get().isEmpty())
-                entity.removeData(EffectAPIAttachments.EFFECTS);
+                entity.removeData(EffectAPIEntityAttachments.ENTITY_EFFECTS);
         }
     }
 
     @Override
     public void setEntityEffects(Entity entity, Map<ResourceLocation, DataComponentMap> alLComponents, DataComponentMap activeComponents) {
         if (alLComponents.isEmpty())
-            entity.removeData(EffectAPIAttachments.EFFECTS);
+            entity.removeData(EffectAPIEntityAttachments.ENTITY_EFFECTS);
         else
-            entity.getData(EffectAPIAttachments.EFFECTS).setComponents(alLComponents, activeComponents);
+            entity.getData(EffectAPIEntityAttachments.ENTITY_EFFECTS).setComponents(alLComponents, activeComponents);
     }
 }

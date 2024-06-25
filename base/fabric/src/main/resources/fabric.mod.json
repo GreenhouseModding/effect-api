@@ -2,7 +2,7 @@
     "schemaVersion": 1,
     "id": "${mod_id}_base",
     "version": "${version}",
-    "name": "${mod_name}",
+    "name": "${mod_name} Base",
     "description": "${mod_description}",
     "authors": [
         "${mod_author}"
@@ -38,5 +38,17 @@
         "fabric-api": "*",
         "minecraft": "${fabric_minecraft_version_range}",
         "java": ">=${java_version}"
+    },
+    "custom": {
+        "modmenu": {
+            "badges": [ "library" ],
+            "parent": {
+                "id": "${mod_id}",
+                "name": "${mod_name}",
+                "description": "${mod_description}",
+                "icon": "${mod_id}.png",
+                "badges": [ "library" ]
+            }
+        }
     }
 }

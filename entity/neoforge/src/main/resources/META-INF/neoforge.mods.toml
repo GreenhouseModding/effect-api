@@ -6,7 +6,7 @@ license="${mod_license}"
 [[mods]]
 modId="${mod_id}_entity"
 version="${version}"
-displayName="${mod_name}"
+displayName="${mod_name} Entity"
 logoFile="${mod_id}.png"
 logoBlur=false
 authors="${mod_author}"

@@ -1,6 +1,8 @@
 package dev.greenhouseteam.effectapi.impl;
 
 import dev.greenhouseteam.effectapi.api.EffectAPIResourceTypes;
+import dev.greenhouseteam.effectapi.api.effect.ResourceEffect;
+import dev.greenhouseteam.effectapi.impl.registry.EffectAPIAttachments;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.core.Registry;
@@ -12,9 +14,13 @@ public class EffectAPIBaseFabric implements ModInitializer {
     @Override
     public void onInitialize() {
         EffectAPIResourceTypes.registerAll(Registry::register);
+        EffectAPIAttachments.init();
 
         ServerLifecycleEvents.SERVER_STARTED.register(EffectAPIBaseFabric::setServer);
-        ServerLifecycleEvents.SERVER_STOPPED.register(server1 -> setServer(null));
+        ServerLifecycleEvents.SERVER_STOPPED.register(server1 -> {
+            ResourceEffect.ResourceEffectCodec.clearLoadedEffects();
+            setServer(null);
+        });
     }
 
     public static void setServer(MinecraftServer server) {

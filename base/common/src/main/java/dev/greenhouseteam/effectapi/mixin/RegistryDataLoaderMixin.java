@@ -20,6 +20,5 @@ public class RegistryDataLoaderMixin {
     @Inject(method = "load(Lnet/minecraft/resources/RegistryDataLoader$LoadingFunction;Lnet/minecraft/core/RegistryAccess;Ljava/util/List;)Lnet/minecraft/core/RegistryAccess$Frozen;", at = @At("RETURN"))
     private static void effectapi$resetRegistryPhase(RegistryDataLoader.LoadingFunction loadingFunction, RegistryAccess access, List<RegistryDataLoader.RegistryData<?>> data, CallbackInfoReturnable<RegistryAccess.Frozen> cir) {
         ResourceEffect.ResourceEffectCodec.setRegistryPhase(false);
-        ResourceEffect.ResourceEffectCodec.clearLoadedIds();
     }
 }

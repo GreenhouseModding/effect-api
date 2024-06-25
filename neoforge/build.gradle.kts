@@ -61,12 +61,21 @@ dependencies {
                 requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-$it-common")
             }
         }
+        testCompileOnly(project(":$it:$it-common")) {
+            capabilities {
+                requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-$it-common")
+            }
+        }
         testCompileOnly(project(":$it:$it-neoforge")) {
             capabilities {
                 requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-$it-neoforge")
             }
         }
-        jarJar(project(":$it:$it-neoforge"))
+        jarJar(project(":$it:$it-neoforge")) {
+            capabilities {
+                requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-$it-neoforge")
+            }
+        }
     }
 }
 

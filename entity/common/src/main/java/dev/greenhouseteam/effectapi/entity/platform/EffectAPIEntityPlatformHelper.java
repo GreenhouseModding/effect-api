@@ -2,7 +2,7 @@ package dev.greenhouseteam.effectapi.entity.platform;
 
 import dev.greenhouseteam.effectapi.api.attachment.ResourcesAttachment;
 import dev.greenhouseteam.effectapi.api.effect.EffectAPIEffect;
-import dev.greenhouseteam.effectapi.entity.api.entity.attachment.EntityEffectsAttachment;
+import dev.greenhouseteam.effectapi.entity.api.attachment.EntityEffectsAttachment;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -14,6 +14,8 @@ public interface EffectAPIEntityPlatformHelper {
 
     @Nullable
     ResourcesAttachment getResources(Entity entity);
+
+    boolean hasResource(Entity entity, ResourceLocation id);
 
     void setResourcesAttachment(Entity entity, ResourcesAttachment attachment);
 

@@ -1,12 +1,12 @@
 package dev.greenhouseteam.effectapi.entity.impl;
 
-import dev.greenhouseteam.effectapi.entity.api.entity.EffectAPIEntityEffectTypes;
-import dev.greenhouseteam.effectapi.entity.api.entity.EffectAPIEntityInstancedEffectTypes;
-import dev.greenhouseteam.effectapi.entity.api.entity.command.EntityResourceArgument;
-import dev.greenhouseteam.effectapi.entity.api.entity.command.EntityResourceValueArgument;
-import dev.greenhouseteam.effectapi.entity.impl.entity.network.clientbound.ChangeResourceClientboundPacket;
-import dev.greenhouseteam.effectapi.entity.impl.entity.network.clientbound.SyncEffectsAttachmentClientboundPacket;
-import dev.greenhouseteam.effectapi.entity.impl.entity.network.clientbound.SyncResourcesAttachmentClientboundPacket;
+import dev.greenhouseteam.effectapi.entity.api.EffectAPIEntityEffectTypes;
+import dev.greenhouseteam.effectapi.entity.api.EffectAPIEntityInstancedEffectTypes;
+import dev.greenhouseteam.effectapi.entity.api.command.EntityResourceArgument;
+import dev.greenhouseteam.effectapi.entity.api.command.EntityResourceValueArgument;
+import dev.greenhouseteam.effectapi.entity.impl.network.clientbound.ChangeResourceClientboundPacket;
+import dev.greenhouseteam.effectapi.entity.impl.network.clientbound.SyncEffectsAttachmentClientboundPacket;
+import dev.greenhouseteam.effectapi.entity.impl.network.clientbound.SyncResourcesAttachmentClientboundPacket;
 import dev.greenhouseteam.effectapi.entity.impl.registry.EffectAPIEntityAttachments;
 import dev.greenhouseteam.effectapi.impl.EffectAPI;
 import net.fabricmc.api.ModInitializer;
@@ -33,13 +33,13 @@ public class EffectAPIEntityFabric implements ModInitializer {
         PayloadTypeRegistry.playS2C().register(SyncResourcesAttachmentClientboundPacket.TYPE, SyncResourcesAttachmentClientboundPacket.STREAM_CODEC);
 
         ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
-            if (newPlayer.hasAttached(EffectAPIEntityAttachments.EFFECTS))
-                newPlayer.getAttached(EffectAPIEntityAttachments.EFFECTS).refresh();
+            if (newPlayer.hasAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS))
+                newPlayer.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS).refresh();
         });
 
         ServerEntityEvents.ENTITY_UNLOAD.register((entity, world) -> {
-            if (entity.hasAttached(EffectAPIEntityAttachments.EFFECTS))
-                entity.getAttached(EffectAPIEntityAttachments.EFFECTS).refresh();
+            if (entity.hasAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS))
+                entity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS).refresh();
         });
 
         ArgumentTypeRegistry.registerArgumentType(EffectAPI.asResource("data_resource"), EntityResourceArgument.class, new EntityResourceArgument.Info());

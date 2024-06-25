@@ -18,9 +18,9 @@ public class ServerEntityMixin {
 
     @Inject(method = "addPairing", at = @At("HEAD"))
     private void onStartTracking(ServerPlayer player, CallbackInfo ci) {
-        if (entity.hasAttached(EffectAPIEntityAttachments.EFFECTS)) {
-            entity.getAttached(EffectAPIEntityAttachments.EFFECTS).init(entity);
-            entity.getAttached(EffectAPIEntityAttachments.EFFECTS).sync();
+        if (entity.hasAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS)) {
+            entity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS).init(entity);
+            entity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS).sync();
         }
     }
 }
