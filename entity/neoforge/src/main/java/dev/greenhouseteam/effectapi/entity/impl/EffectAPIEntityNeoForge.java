@@ -1,8 +1,10 @@
 package dev.greenhouseteam.effectapi.entity.impl;
 
-import dev.greenhouseteam.effectapi.api.EffectAPIResourceTypes;
+import dev.greenhouseteam.effectapi.entity.api.EffectAPIEntityEffectTypes;
+import dev.greenhouseteam.effectapi.entity.api.EffectAPIEntityInstancedEffectTypes;
 import dev.greenhouseteam.effectapi.entity.api.command.EntityResourceArgument;
 import dev.greenhouseteam.effectapi.entity.api.command.EntityResourceValueArgument;
+import dev.greenhouseteam.effectapi.entity.api.registry.EffectAPIEntityPredicates;
 import dev.greenhouseteam.effectapi.entity.impl.network.clientbound.ChangeEntityResourceClientboundPacket;
 import dev.greenhouseteam.effectapi.entity.impl.network.clientbound.SyncEntityEffectsAttachmentClientboundPacket;
 import dev.greenhouseteam.effectapi.entity.impl.network.clientbound.SyncEntityResourcesAttachmentClientboundPacket;
@@ -32,7 +34,9 @@ public class EffectAPIEntityNeoForge {
     public static class ModEvents {
         @SubscribeEvent
         public static void registerContent(RegisterEvent event) {
-            register(event, EffectAPIResourceTypes::registerAll);
+            register(event, EffectAPIEntityEffectTypes::registerAll);
+            register(event, EffectAPIEntityInstancedEffectTypes::registerAll);
+            register(event, EffectAPIEntityPredicates::registerAll);
             event.register(Registries.COMMAND_ARGUMENT_TYPE, EffectAPI.asResource("data_resource"), () -> ArgumentTypeInfos.registerByClass(EntityResourceArgument.class, new EntityResourceArgument.Info()));
             event.register(Registries.COMMAND_ARGUMENT_TYPE, EffectAPI.asResource("data_resource_type"), () -> ArgumentTypeInfos.registerByClass(EntityResourceValueArgument.class, new EntityResourceValueArgument.Info()));
         }

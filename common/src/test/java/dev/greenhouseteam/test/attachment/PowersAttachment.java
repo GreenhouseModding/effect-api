@@ -2,7 +2,7 @@ package dev.greenhouseteam.test.attachment;
 
 import com.mojang.serialization.Codec;
 import dev.greenhouseteam.effectapi.api.effect.EffectAPIEffect;
-import dev.greenhouseteam.effectapi.entity.api.EntityEffectAttachmentUtil;
+import dev.greenhouseteam.effectapi.entity.api.EntityEffectUtil;
 import dev.greenhouseteam.effectapi.impl.EffectAPI;
 import dev.greenhouseteam.test.EffectAPITest;
 import dev.greenhouseteam.test.Power;
@@ -57,8 +57,8 @@ public class PowersAttachment {
     }
 
     public void addPower(Holder<Power> power) {
-        EntityEffectAttachmentUtil.addEffects(provider, power.value().effects().stream().filter(component -> component.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect).flatMap(component -> ((List<EffectAPIEffect>)component.value()).stream()).toList(), ID);
-        EntityEffectAttachmentUtil.syncEffects(provider);
+        EntityEffectUtil.addEffects(provider, power.value().effects().stream().filter(component -> component.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect).flatMap(component -> ((List<EffectAPIEffect>)component.value()).stream()).toList(), ID);
+        EntityEffectUtil.syncEffects(provider);
         powers.add(power);
         sync();
     }
@@ -68,8 +68,8 @@ public class PowersAttachment {
     }
 
     public void removePower(Holder<Power> power) {
-        EntityEffectAttachmentUtil.removeEffects(provider, power.value().effects().stream().filter(component -> component.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect).flatMap(component -> ((List<EffectAPIEffect>)component.value()).stream()).toList(), ID);
-        EntityEffectAttachmentUtil.syncEffects(provider);
+        EntityEffectUtil.removeEffects(provider, power.value().effects().stream().filter(component -> component.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect).flatMap(component -> ((List<EffectAPIEffect>)component.value()).stream()).toList(), ID);
+        EntityEffectUtil.syncEffects(provider);
         powers.remove(power);
         sync();
     }

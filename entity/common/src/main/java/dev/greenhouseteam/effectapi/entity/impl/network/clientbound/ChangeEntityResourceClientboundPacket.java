@@ -58,10 +58,10 @@ public class ChangeEntityResourceClientboundPacket<T> implements CustomPacketPay
     public void handle() {
         Minecraft.getInstance().execute(() -> {
             Entity entity = Minecraft.getInstance().level.getEntity(entityId);
-            if (value.isEmpty())
+            if (value.isEmpty() || source.isEmpty())
                 EffectAPIEntity.getHelper().removeResource(entity, resourceEffect.getId(), source.orElse(null));
             else
-                EffectAPIEntity.getHelper().setResource(entity, resourceEffect.getId(), value.get(), source.orElse(null));
+                EffectAPIEntity.getHelper().setResource(entity, resourceEffect.getId(), value.get(), source.get());
         });
     }
 

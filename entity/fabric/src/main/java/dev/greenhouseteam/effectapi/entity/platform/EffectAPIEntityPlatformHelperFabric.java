@@ -23,7 +23,7 @@ public class EffectAPIEntityPlatformHelperFabric implements EffectAPIEntityPlatf
 
     @Override
     public boolean hasResource(Entity entity, ResourceLocation id) {
-        return Optional.ofNullable(entity.getAttached(EffectAPIAttachments.RESOURCES)).map(attachment -> attachment.getResourceHolder(id) != null).orElse(false);
+        return Optional.ofNullable(entity.getAttached(EffectAPIAttachments.RESOURCES)).map(attachment -> attachment.hasResource(id)).orElse(false);
     }
 
     @Override

@@ -11,11 +11,19 @@ import dev.greenhouseteam.effectapi.impl.util.InternalResourceUtil;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public record ResourcesAttachment(Map<ResourceLocation, ResourceEffect.ResourceHolder<Object>> resources) {
     public static final Codec<ResourcesAttachment> CODEC = new AttachmentCodec();
+
+    public boolean hasResource(ResourceLocation id) {
+        return resources.containsKey(id);
+    }
 
     @Nullable
     public <T> T getValue(ResourceLocation id) {

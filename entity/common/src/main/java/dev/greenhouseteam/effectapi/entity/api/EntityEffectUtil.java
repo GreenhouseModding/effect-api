@@ -24,7 +24,7 @@ import java.util.Optional;
  * modded implementations, so you don't have to struggle with compatibility with one
  * mod's effects that is only handled through its own code.
  */
-public class EntityEffectAttachmentUtil {
+public class EntityEffectUtil {
     /**
      * Obtains an entity's active effects.
      *
@@ -42,7 +42,7 @@ public class EntityEffectAttachmentUtil {
 
     /**
      * Checks if an entity has a specific effect type active.
-     * For checking specific effects, or checking if multiple are active, use {@link EntityEffectAttachmentUtil#getEntityEffects(Entity, DataComponentType)}
+     * For checking specific effects, or checking if multiple are active, use {@link EntityEffectUtil#getEntityEffects(Entity, DataComponentType)}
      *
      * @param entity    The entity to check.
      * @param type      The type of effect to check.
@@ -116,7 +116,7 @@ public class EntityEffectAttachmentUtil {
 
     /**
      * Creates a {@link LootContext} based on the entity provided, without an effect source.
-     * Please use {@link EntityEffectAttachmentUtil#createEntityOnlyContext(Entity, ResourceLocation)} in contexts where you need an effect source.
+     * Please use {@link EntityEffectUtil#createEntityOnlyContext(Entity, ResourceLocation)} in contexts where you need an effect source.
      *
      * @param entity    The provided entity.
      * @return          A {@link LootContext} with the entity's position and the entity.

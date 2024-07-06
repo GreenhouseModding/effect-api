@@ -19,7 +19,7 @@ public interface EffectAPIEntityPlatformHelper {
 
     void setResourcesAttachment(Entity entity, ResourcesAttachment attachment);
 
-    <T> T setResource(Entity entity, ResourceLocation id, T value, @Nullable ResourceLocation source);
+    <T> T setResource(Entity entity, ResourceLocation id, T value, ResourceLocation source);
 
     void removeResource(Entity entity, ResourceLocation id, ResourceLocation source);
 

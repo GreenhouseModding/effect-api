@@ -20,7 +20,7 @@ public class EffectAPIEntityPlatformHelperNeoForge implements EffectAPIEntityPla
 
     @Override
     public boolean hasResource(Entity entity, ResourceLocation id) {
-        return entity.getExistingData(EffectAPIAttachments.RESOURCES).map(attachment -> attachment.getResourceHolder(id) != null).orElse(false);
+        return entity.getExistingData(EffectAPIAttachments.RESOURCES).map(attachment -> attachment.hasResource(id)).orElse(false);
     }
 
     @Override

@@ -4,6 +4,7 @@ import dev.greenhouseteam.effectapi.entity.api.EffectAPIEntityEffectTypes;
 import dev.greenhouseteam.effectapi.entity.api.EffectAPIEntityInstancedEffectTypes;
 import dev.greenhouseteam.effectapi.entity.api.command.EntityResourceArgument;
 import dev.greenhouseteam.effectapi.entity.api.command.EntityResourceValueArgument;
+import dev.greenhouseteam.effectapi.entity.api.registry.EffectAPIEntityPredicates;
 import dev.greenhouseteam.effectapi.entity.impl.network.clientbound.ChangeEntityResourceClientboundPacket;
 import dev.greenhouseteam.effectapi.entity.impl.network.clientbound.SyncEntityEffectsAttachmentClientboundPacket;
 import dev.greenhouseteam.effectapi.entity.impl.network.clientbound.SyncEntityResourcesAttachmentClientboundPacket;
@@ -27,6 +28,7 @@ public class EffectAPIEntityFabric implements ModInitializer {
         EffectAPIEntityAttachments.init();
         EffectAPIEntityEffectTypes.registerAll(Registry::register);
         EffectAPIEntityInstancedEffectTypes.registerAll(Registry::register);
+        EffectAPIEntityPredicates.registerAll(Registry::register);
 
         PayloadTypeRegistry.playS2C().register(ChangeEntityResourceClientboundPacket.TYPE, ChangeEntityResourceClientboundPacket.STREAM_CODEC);
         PayloadTypeRegistry.playS2C().register(SyncEntityEffectsAttachmentClientboundPacket.TYPE, SyncEntityEffectsAttachmentClientboundPacket.STREAM_CODEC);
