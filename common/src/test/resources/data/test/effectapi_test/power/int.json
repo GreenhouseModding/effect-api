@@ -1,9 +1,0 @@
-{
-  "effectapi:entity_resource": [
-    {
-      "id": "test:int",
-      "resource_type": "effectapi:int",
-      "default_value": 1500
-    }
-  ]
-}

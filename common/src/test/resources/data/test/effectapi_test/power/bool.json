@@ -1,9 +1,0 @@
-{
-  "effectapi:entity_resource": [
-    {
-      "id": "test:bool",
-      "resource_type": "effectapi:bool",
-      "default_value": false
-    }
-  ]
-}

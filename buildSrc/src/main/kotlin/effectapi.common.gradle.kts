@@ -1,5 +1,5 @@
-import dev.greenhouseteam.effectapi.gradle.Properties
-import dev.greenhouseteam.effectapi.gradle.Versions
+import house.greenhouse.effectapi.gradle.Properties
+import house.greenhouse.effectapi.gradle.Versions
 
 plugins {
     base
@@ -8,20 +8,20 @@ plugins {
     `maven-publish`
 }
 
-fun getArchivesNameExtension() : String {
-    if (!hasProperty("effectapi.moduleName"))
-        return ""
-    val moduleName = properties["effectapi.moduleName"] as String
-    return "-$moduleName"
-}
+lateinit var props: Properties.ModuleProperties
+lateinit var platform: String
 
-fun getPlatform() : String {
-    if (!hasProperty("effectapi.platformName"))
-        return "common"
-    return properties["effectapi.platformName"] as String
+Properties.MODULES.forEach { (name, metadata) ->
+    Properties.PLATFORMS.forEach { platform ->
+        if (project.name == "${name}-${platform}") {
+            props = metadata
+            this.platform = platform
+        }
+    }
 }
+project.ext["props"] = props
 
-base.archivesName.set("${Properties.MOD_ID}${getArchivesNameExtension()}-${getPlatform()}")
+base.archivesName.set("${props.modId}-${platform}")
 group = Properties.GROUP
 version = "${Versions.MOD}+${Versions.MINECRAFT}"
 
@@ -55,8 +55,7 @@ dependencies {
 // Read more about capabilities here: https://docs.gradle.org/current/userguide/component_capabilities.html#sec:declaring-additional-capabilities-for-a-local-component
 setOf("apiElements", "runtimeElements", "sourcesElements", "javadocElements").forEach { variant ->
     configurations.getByName(variant).outgoing {
-        capability("$group:${base.archivesName.get()}:$version")
-        capability("$group:${Properties.MOD_ID}${getArchivesNameExtension()}-${getPlatform()}:$version")
+        capability("$group:${props.modId}-${platform}:$version")
     }
     publishing.publications.forEach { publication ->
         if (publication is MavenPublication) {
@@ -68,22 +67,22 @@ setOf("apiElements", "runtimeElements", "sourcesElements", "javadocElements").fo
 tasks {
     named<Jar>("sourcesJar").configure {
         from(rootProject.file("LICENSE")) {
-            rename { "${it}_${Properties.MOD_NAME}" }
+            rename { "${it}_${props.modName}" }
         }
     }
     named<Jar>("jar").configure {
         from(rootProject.file("LICENSE")) {
-            rename { "${it}_${Properties.MOD_NAME}" }
+            rename { "${it}_${props.modName}" }
         }
 
         manifest {
-            attributes["Specification-Title"] = Properties.MOD_NAME
+            attributes["Specification-Title"] = props.modName
             attributes["Specification-Vendor"] = Properties.MOD_AUTHOR
             attributes["Specification-Version"] = archiveVersion
             attributes["Implementation-Title"] = project.name
             attributes["Implementation-Version"] = archiveVersion
             attributes["Implementation-Vendor"] = Properties.MOD_AUTHOR
-            attributes["Built-On-Minecraft"] = Versions.INTERNAL_MINECRAFT
+            attributes["Built-On-Minecraft"] = Versions.MINECRAFT
         }
     }
 
@@ -95,21 +94,21 @@ tasks {
         "fabric_loader_version" to Versions.FABRIC_LOADER,
         "fabric_minecraft_version_range" to Versions.FABRIC_MINECRAFT_RANGE,
         "fabric_loader_range" to Versions.FABRIC_LOADER_RANGE,
-        "mod_name" to Properties.MOD_NAME,
+        "mod_name" to props.modName,
         "mod_author" to Properties.MOD_AUTHOR,
-        "mod_contributors" to Properties.MOD_CONTRIBUTORS,
-        "fabric_mod_contributors" to createFabricContributors(),
-        "mod_id" to Properties.MOD_ID,
+        "neoforge_mod_contributors" to Properties.MOD_CONTRIBUTORS.joinToString(),
+        "fabric_mod_contributors" to Properties.MOD_CONTRIBUTORS.joinToString(separator = "\",\n\t\t\""),
+        "mod_id" to props.modId,
         "mod_license" to Properties.LICENSE,
-        "mod_description" to Properties.DESCRIPTION,
+        "mod_description" to props.description,
         "neoforge_version" to Versions.NEOFORGE,
         "neoforge_minecraft_version_range" to Versions.NEOFORGE_MINECRAFT_RANGE,
         "neoforge_loader_version_range" to Versions.NEOFORGE_LOADER_RANGE,
         "neoforge_mod_version_range" to Versions.NEOFORGE_MOD_RANGE,
         "java_version" to Versions.JAVA,
         "homepage" to Properties.HOMEPAGE,
-        "issues" to Properties.ISSUE_TRACKER,
-        "sources" to Properties.GITHUB_REPO
+        "issues" to "https://github.com/${Properties.GITHUB_REPO}/issues",
+        "sources" to "https://github.com/${Properties.GITHUB_REPO}"
     )
 
     val processResourcesTasks = listOf("processResources", "processTestResources", "processDatagenResources")
@@ -123,21 +122,6 @@ tasks {
     }
 }
 
-fun createFabricContributors() : String {
-    val string = StringBuilder();
-    val contributors = Properties.MOD_CONTRIBUTORS.split(", ")
-    var count = 0
-    for (contributor in contributors) {
-        if (count > 0)
-            string.append("\t\t")
-        ++count
-        string.append("\"${contributor}\"")
-        if (count < contributors.size)
-            string.append(",\n")
-    }
-    return string.toString()
-}
-
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
@@ -149,7 +133,7 @@ publishing {
     repositories {
         maven {
             name = "Greenhouse"
-            url = uri("https://maven.greenhouseteam.dev/releases")
+            url = uri("https://repo.greenhouse.house/releases")
             credentials {
                 username = System.getenv("MAVEN_USERNAME")
                 password = System.getenv("MAVEN_PASSWORD")

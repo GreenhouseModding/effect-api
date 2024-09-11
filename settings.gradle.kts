@@ -25,10 +25,13 @@ include(
     "common", "fabric", "neoforge"
 )
 
-val modules = setOf("base", "entity")
-modules.forEach {
-    include(":${it}:common", ":${it}:fabric", ":${it}:neoforge")
-    project(":${it}").children.forEach { m ->
-        m.name = "${it}-${m.name}"
+val platforms = setOf("common", "fabric", "neoforge")
+val modules = setOf("core", "entity")
+
+modules.forEach { name ->
+    platforms.forEach { platform ->
+        include(":${name}-${platform}")
+        val proj = project(":${name}-${platform}")
+        proj.projectDir = file("${name}/${platform}")
     }
 }

@@ -1,5 +1,6 @@
-import dev.greenhouseteam.effectapi.gradle.Properties
-import dev.greenhouseteam.effectapi.gradle.Versions
+import house.greenhouse.effectapi.gradle.Properties
+import house.greenhouse.effectapi.gradle.Versions
+import house.greenhouse.effectapi.gradle.props
 
 plugins {
     id("effectapi.common")
@@ -14,12 +15,15 @@ sourceSets {
     }
 }
 
+val core = project(":core-common")
+
 neoForge {
     neoFormVersion = Versions.NEOFORM
 
-    val at = file("src/main/resources/${Properties.MOD_ID}_base.cfg")
+    val at = file("src/main/resources/${props.modId}.cfg")
     if (at.exists())
-        accessTransformers.add(at.absolutePath)
+        setAccessTransformers(at)
+    addModdingDependenciesTo(sourceSets["test"])
 }
 
 dependencies {
@@ -27,9 +31,14 @@ dependencies {
     annotationProcessor("io.github.llamalad7:mixinextras-common:${Versions.MIXIN_EXTRAS}")
     compileOnly("net.fabricmc:sponge-mixin:${Versions.FABRIC_MIXIN}")
 
-    compileOnly(project(":base:base-common")) {
+    compileOnly(project(":core-common")) {
         capabilities {
-            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-base-common")
+            requireCapability("${Properties.GROUP}:${core.props.modId}-common")
+        }
+    }
+    testCompileOnly(project(":core-common")) {
+        capabilities {
+            requireCapability("${Properties.GROUP}:${core.props.modId}-common")
         }
     }
 }

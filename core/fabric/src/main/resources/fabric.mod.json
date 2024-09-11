@@ -1,0 +1,54 @@
+{
+    "schemaVersion": 1,
+    "id": "${mod_id}",
+    "version": "${version}",
+    "name": "${mod_name} Base",
+    "description": "${mod_description}",
+    "authors": [
+        "${mod_author}"
+    ],
+    "contributors": [
+        "${fabric_mod_contributors}"
+    ],
+    "contact": {
+        "homepage": "${homepage}",
+        "issues": "${issues}",
+        "sources": "${sources}"
+    },
+    "license": "${mod_license}",
+    "icon": "${mod_id}.png",
+    "environment": "*",
+    "entrypoints": {
+        "main": [
+            "house.greenhouse.effectapi.impl.EffectAPIBaseFabric"
+        ],
+        "client": [
+            "house.greenhouse.effectapi.impl.client.EffectAPIBaseFabricClient"
+        ],
+        "preLaunch": [
+            "house.greenhouse.effectapi.impl.EffectAPIBaseFabricPre"
+        ]
+    },
+    "mixins": [
+        "${mod_id}.mixins.json"
+    ],
+    "accessWidener": "${mod_id}.accesswidener",
+    "depends": {
+        "fabricloader": "${fabric_loader_range}",
+        "fabric-api": "*",
+        "minecraft": "${fabric_minecraft_version_range}",
+        "java": ">=${java_version}"
+    },
+    "custom": {
+        "modmenu": {
+            "badges": [ "library" ],
+            "parent": {
+                "id": "${mod_id}",
+                "name": "${mod_name}",
+                "description": "${mod_description}",
+                "icon": "${mod_id}.png",
+                "badges": [ "library" ]
+            }
+        }
+    }
+}

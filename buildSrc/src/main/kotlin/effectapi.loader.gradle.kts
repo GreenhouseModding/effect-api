@@ -1,32 +1,20 @@
-import dev.greenhouseteam.effectapi.gradle.Properties
+import house.greenhouse.effectapi.gradle.Properties
 
 plugins {
     id("effectapi.common")
 }
 
+lateinit var props: Properties.ModuleProperties;
+
+Properties.MODULES.forEach { (name, metadata) ->
+    Properties.PLATFORMS.forEach { platform ->
+        if (project.name == "${name}-${platform}")
+            props = metadata
+    }
+}
+
 fun getCommonProjectName() : String {
-    if (!project.hasProperty("effectapi.moduleName"))
-        return ":common"
-    val moduleName = project.property("effectapi.moduleName") as String
-    if (moduleName.isEmpty())
-        return ":common"
-    return getProjectNameExtension() + getProjectNameExtension() + "-common"
-}
-
-fun getProjectNameExtension() : String {
-    if (!hasProperty("effectapi.moduleName"))
-        return ""
-    val moduleName = properties["effectapi.moduleName"] as String
-    if (moduleName.isEmpty())
-        return moduleName
-    return ":$moduleName"
-}
-
-fun getCapabilityNameExtension() : String {
-    if (!hasProperty("effectapi.moduleName"))
-        return ""
-    val moduleName = properties["effectapi.moduleName"] as String
-    return "-$moduleName"
+    return props.moduleName + "-common"
 }
 
 configurations {
@@ -45,20 +33,17 @@ configurations {
 }
 
 dependencies {
-    compileOnly(project(getCommonProjectName())) {
+    compileOnly(project(":${getCommonProjectName()}")) {
         capabilities {
-            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}${getCapabilityNameExtension()}-common")
+            requireCapability("${Properties.GROUP}:${props.modId}-common")
         }
     }
-    testCompileOnly(project(getCommonProjectName())) {
-        capabilities {
-            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}${getCapabilityNameExtension()}-common")
-        }
-    }
-    "commonJava"(project(getCommonProjectName(), "commonJava"))
-    "commonTestJava"(project(getCommonProjectName(), "commonTestJava"))
-    "commonResources"(project(getCommonProjectName(), "commonResources"))
-    "commonTestResources"(project(getCommonProjectName(), "commonTestResources"))
+    testCompileOnly(project(":${getCommonProjectName()}", "commonTestJava"))
+
+    "commonJava"(project(":${getCommonProjectName()}", "commonJava"))
+    "commonTestJava"(project(":${getCommonProjectName()}", "commonTestJava"))
+    "commonResources"(project(":${getCommonProjectName()}", "commonResources"))
+    "commonTestResources"(project(":${getCommonProjectName()}", "commonTestResources"))
 }
 
 tasks {

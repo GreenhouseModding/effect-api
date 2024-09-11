@@ -1,9 +1,0 @@
-{
-  "effectapi:entity_resource": [
-    {
-      "id": "test:string",
-      "resource_type": "effectapi:string",
-      "default_value": "It's that shrimple!"
-    }
-  ]
-}

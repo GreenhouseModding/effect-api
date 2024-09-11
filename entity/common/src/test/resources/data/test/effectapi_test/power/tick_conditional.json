@@ -1,0 +1,24 @@
+{
+  "effect_api:entity_tick": [
+    {
+      "effect": {
+        "type": "effect_api:enchantment_effect",
+        "effect": {
+          "type": "minecraft:ignite",
+          "duration": 4.0
+        }
+      },
+      "requirements": {
+        "condition": "minecraft:entity_properties",
+        "entity": "this",
+        "predicate": {
+          "stepping_on": {
+            "block": {
+              "blocks": "minecraft:magma_block"
+            }
+          }
+        }
+      }
+    }
+  ]
+}

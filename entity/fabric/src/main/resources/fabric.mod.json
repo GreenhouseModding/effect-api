@@ -8,7 +8,7 @@
         "${mod_author}"
     ],
     "contributors": [
-        ${fabric_mod_contributors}
+        "${fabric_mod_contributors}"
     ],
     "contact": {
         "homepage": "${homepage}",
@@ -20,13 +20,13 @@
     "environment": "*",
     "entrypoints": {
         "main": [
-            "dev.greenhouseteam.effectapi.entity.impl.EffectAPIEntityFabric"
+            "house.greenhouse.effectapi.entity.impl.EffectAPIEntityFabric"
         ],
         "client": [
-            "dev.greenhouseteam.effectapi.entity.impl.client.EffectAPIEntityFabricClient"
+            "house.greenhouse.effectapi.entity.impl.client.EffectAPIEntityFabricClient"
         ],
         "preLaunch": [
-            "dev.greenhouseteam.effectapi.entity.impl.EffectAPIEntityFabricPre"
+            "house.greenhouse.effectapi.entity.impl.EffectAPIEntityFabricPre"
         ]
     },
     "mixins": [
