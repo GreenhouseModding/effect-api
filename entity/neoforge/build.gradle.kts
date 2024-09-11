@@ -25,11 +25,15 @@ dependencies {
 
 neoForge {
     version = Versions.NEOFORGE
+    parchment {
+        minecraftVersion = Versions.PARCHMENT_MINECRAFT
+        mappingsVersion = Versions.PARCHMENT
+    }
+    addModdingDependenciesTo(sourceSets["test"])
 
     val at = project(":entity-common").file("src/main/resources/${props.modId}.cfg")
     if (at.exists())
         setAccessTransformers(at)
-    addModdingDependenciesTo(sourceSets["test"])
 
     runs {
         configureEach {

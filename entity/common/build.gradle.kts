@@ -19,6 +19,10 @@ val core = project(":core-common")
 
 neoForge {
     neoFormVersion = Versions.NEOFORM
+    parchment {
+        minecraftVersion = Versions.PARCHMENT_MINECRAFT
+        mappingsVersion = Versions.PARCHMENT
+    }
 
     val at = file("src/main/resources/${props.modId}.cfg")
     if (at.exists())

@@ -10,6 +10,10 @@ plugins {
 
 neoForge {
     version = Versions.NEOFORGE
+    parchment {
+        minecraftVersion = Versions.PARCHMENT_MINECRAFT
+        mappingsVersion = Versions.PARCHMENT
+    }
 
     val at = project(":core-common").file("src/main/resources/${props.modId}.cfg")
     if (at.exists())
