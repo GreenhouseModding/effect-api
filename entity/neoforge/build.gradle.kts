@@ -28,7 +28,7 @@ neoForge {
 
     val at = project(":entity-common").file("src/main/resources/${props.modId}.cfg")
     if (at.exists())
-        accessTransformers.add(at.absolutePath)
+        setAccessTransformers(at)
     addModdingDependenciesTo(sourceSets["test"])
 
     runs {

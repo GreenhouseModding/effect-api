@@ -4,7 +4,7 @@ plugins {
     id("effectapi.common")
 }
 
-lateinit var props: Properties.ModuleProperties;
+lateinit var props: Properties.ModuleProperties
 
 Properties.MODULES.forEach { (name, metadata) ->
     Properties.PLATFORMS.forEach { platform ->
