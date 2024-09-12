@@ -29,15 +29,19 @@ public class InternalEffectUtil {
         return (T) ((EffectAPIConditionalEffect)effect).effect();
     }
 
-    private static final List<EffectAPIEffect> EFFECTS_TO_SKIP = new ArrayList<>();
+    private static final List<EffectAPIEffect> UNCHANGED = new ArrayList<>();
+    private static EffectAPIEffect added;
+    private static EffectAPIEffect removed;
 
-    public static void clearEffectsToSkip() {
-        EFFECTS_TO_SKIP.clear();
+    public static void clearChangedCache() {
+        UNCHANGED.clear();
+        added = null;
+        removed = null;
     }
 
-    public static boolean hasNewActives(LootContext context, LootContextParamSet paramSet,
-                                        DataComponentMap combined, DataComponentMap previousMap,
-                                        Map<EffectAPIEffect, ResourceLocation> sources) {
+    public static boolean haveActivesChanged(LootContext context, LootContextParamSet paramSet,
+                                             DataComponentMap combined, DataComponentMap previousMap,
+                                             Map<EffectAPIEffect, ResourceLocation> sources) {
         return combined.stream().anyMatch(typed -> {
             if (typed.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect)
                 for (EffectAPIEffect effect : (List<EffectAPIEffect>) list) {
@@ -45,12 +49,14 @@ public class InternalEffectUtil {
                     if (paramSet.isAllowed(EffectAPILootContextParams.SOURCE) && !context.hasParam(EffectAPILootContextParams.SOURCE))
                         paramBuilder.withOptionalParameter(EffectAPILootContextParams.SOURCE, sources.get(effect));
                     LootContext context1 = new LootContext.Builder(paramBuilder.create(paramSet)).create(Optional.empty());
-                    if (effect.paramSet() == paramSet && effect.isActive(context1))
+                    if (effect.paramSet() == paramSet && effect.isActive(context1) && previousMap.stream().map(c -> ((List<?>) c.value())).noneMatch(cs -> cs.contains(effect))) {
+                        added = effect;
                         return true;
-                    else if (previousMap.stream().map(c -> ((List<?>) c.value())).anyMatch(cs -> cs.contains(effect)))
+                    } else if (effect.paramSet() == paramSet && !effect.isActive(context1) && previousMap.stream().map(c -> ((List<?>) c.value())).anyMatch(cs -> cs.contains(effect))) {
+                        removed = effect;
                         return true;
-                    else
-                        EFFECTS_TO_SKIP.add(effect);
+                    } else
+                        UNCHANGED.add(effect);
                 }
             return false;
         });
@@ -64,18 +70,28 @@ public class InternalEffectUtil {
         for (TypedDataComponent<?> component : map) {
             if (component.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect)
                 for (EffectAPIEffect effect : ((List<EffectAPIEffect>) list)) {
-                    if (EFFECTS_TO_SKIP.contains(effect))
-                        continue;
                     LootParams.Builder paramBuilder = LootContextUtil.copyIntoParamBuilder(context);
                     if (paramSet.isAllowed(EffectAPILootContextParams.SOURCE) && !context.hasParam(EffectAPILootContextParams.SOURCE))
                         paramBuilder.withOptionalParameter(EffectAPILootContextParams.SOURCE, sources.get(effect));
                     LootContext context1 = new LootContext.Builder(paramBuilder.create(paramSet)).create(Optional.empty());
+                    if (removed == effect) {
+                        effect.onRemoved(context1);
+                        continue;
+                    }
+                    if (added == effect) {
+                        effect.onAdded(context1);
+                        newMap.computeIfAbsent(component.type(), type -> new ArrayList<>()).add(effect);
+                        continue;
+                    }
+                    if (UNCHANGED.contains(effect)) {
+                        newMap.computeIfAbsent(component.type(), type -> new ArrayList<>()).add(effect);
+                        continue;
+                    }
                     if (effect.paramSet() == paramSet && effect.isActive(context1)) {
                         newMap.computeIfAbsent(component.type(), type -> new ArrayList<>()).add(effect);
                         if (previousMap.stream().map(c -> ((List<?>) c.value())).noneMatch(cs -> cs.contains(effect)))
                             effect.onAdded(context1);
-                    } else if (previousMap.stream().map(c -> ((List<?>) c.value())).anyMatch(cs -> cs.contains(effect)))
-                        effect.onRemoved(context1);
+                    }
                 }
         }
 
@@ -83,7 +99,7 @@ public class InternalEffectUtil {
         for (var entry : newMap.entrySet())
             builder.set((DataComponentType<? super List<EffectAPIEffect>>) entry.getKey(), entry.getValue());
 
-        EFFECTS_TO_SKIP.clear();
+        clearChangedCache();
 
         return builder.build();
     }

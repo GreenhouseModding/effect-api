@@ -39,8 +39,7 @@ public record EffectAPIConditionalEffect<T extends EffectAPIEffect>(T effect, Op
 
     @Override
     public void onAdded(LootContext context) {
-        if (isActive(context))
-            effect.onAdded(context);
+        effect.onAdded(context);
     }
 
     @Override

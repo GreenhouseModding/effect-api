@@ -67,8 +67,8 @@ public class EntityEffectsAttachment {
 
     private void updateActiveComponents(boolean sync) {
         DataComponentMap previous = activeComponents;
-        if (!InternalEffectUtil.hasNewActives(EntityEffectUtil.createEntityOnlyContext(provider), EffectAPIEntityLootContextParamSets.ENTITY, combinedComponents, previous, componentSourcesForUpdating)) {
-            InternalEffectUtil.clearEffectsToSkip();
+        if (!InternalEffectUtil.haveActivesChanged(EntityEffectUtil.createEntityOnlyContext(provider), EffectAPIEntityLootContextParamSets.ENTITY, combinedComponents, previous, componentSourcesForUpdating)) {
+            InternalEffectUtil.clearChangedCache();
             return;
         }
         activeComponents = InternalEffectUtil.generateActiveEffects(EntityEffectUtil.createEntityOnlyContext(provider), EffectAPIEntityLootContextParamSets.ENTITY, combinedComponents, previous, componentSourcesForUpdating);
