@@ -63,6 +63,10 @@ dependencies {
         parchment("org.parchmentmc.data:parchment-${Versions.PARCHMENT_MINECRAFT}:${Versions.PARCHMENT}@zip")
     })
 
+    modImplementation("com.terraformersmc:modmenu:${Versions.MOD_MENU}") {
+        exclude("net.fabricmc")
+    }
+
     modImplementation("net.fabricmc:fabric-loader:${Versions.FABRIC_LOADER}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${Versions.FABRIC_API}")
 }

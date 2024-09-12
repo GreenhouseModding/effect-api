@@ -46,6 +46,9 @@ loom {
 
 repositories {
     maven {
+        url = uri("https://maven.terraformersmc.com/")
+    }
+    maven {
         name = "ParchmentMC"
         url = uri("https://maven.parchmentmc.org")
     }
@@ -60,6 +63,10 @@ dependencies {
 
     modImplementation("net.fabricmc:fabric-loader:${Versions.FABRIC_LOADER}")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${Versions.FABRIC_API}")
+
+    modImplementation("com.terraformersmc:modmenu:${Versions.MOD_MENU}") {
+        exclude("net.fabricmc")
+    }
 
     compileOnly(project(":core-common")) {
         capabilities {
