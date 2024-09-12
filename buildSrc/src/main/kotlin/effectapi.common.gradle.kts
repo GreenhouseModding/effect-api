@@ -87,7 +87,7 @@ tasks {
     }
 
     val expandProps = mapOf(
-        "version" to Versions.MOD,
+        "mod_version" to Versions.MOD,
         "group" to project.group, //Else we target the task's group.
         "minecraft_version" to Versions.MINECRAFT,
         "fabric_api_version" to Versions.FABRIC_API,
@@ -104,7 +104,6 @@ tasks {
         "neoforge_version" to Versions.NEOFORGE,
         "neoforge_minecraft_version_range" to Versions.NEOFORGE_MINECRAFT_RANGE,
         "neoforge_loader_version_range" to Versions.NEOFORGE_LOADER_RANGE,
-        "neoforge_mod_version_range" to Versions.NEOFORGE_MOD_RANGE,
         "java_version" to Versions.JAVA,
         "homepage" to Properties.HOMEPAGE,
         "issues" to "https://github.com/${Properties.GITHUB_REPO}/issues",

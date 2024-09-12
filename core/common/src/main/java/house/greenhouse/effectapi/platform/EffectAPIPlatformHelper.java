@@ -6,7 +6,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
 
-public interface EffectAPIBasePlatformHelper {
+public interface EffectAPIPlatformHelper {
 
     EffectAPIPlatform getPlatform();
 

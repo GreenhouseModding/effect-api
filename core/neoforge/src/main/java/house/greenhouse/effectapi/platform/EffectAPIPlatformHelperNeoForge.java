@@ -11,7 +11,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.registries.RegistryBuilder;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
-public class EffectAPIBasePlatformHelperNeoForge implements EffectAPIBasePlatformHelper {
+public class EffectAPIPlatformHelperNeoForge implements EffectAPIPlatformHelper {
 
     @Override
     public EffectAPIPlatform getPlatform() {
@@ -20,13 +20,11 @@ public class EffectAPIBasePlatformHelperNeoForge implements EffectAPIBasePlatfor
 
     @Override
     public boolean isModLoaded(String modId) {
-
         return ModList.get().isLoaded(modId);
     }
 
     @Override
     public boolean isDevelopmentEnvironment() {
-
         return !FMLLoader.isProduction();
     }
 
@@ -42,6 +40,6 @@ public class EffectAPIBasePlatformHelperNeoForge implements EffectAPIBasePlatfor
 
     @Override
     public void sendClientboundTracking(CustomPacketPayload payload, Entity entity, boolean required) {
-        PacketDistributor.sendToPlayersTrackingEntity(entity, payload);
+        PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, payload);
     }
 }

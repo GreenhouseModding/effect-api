@@ -1,6 +1,6 @@
 package house.greenhouse.effectapi.platform;
 
-import house.greenhouse.effectapi.impl.EffectAPIBaseFabric;
+import house.greenhouse.effectapi.impl.EffectAPIFabric;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -12,7 +12,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 
-public class EffectAPIBasePlatformHelperFabric implements EffectAPIBasePlatformHelper {
+public class EffectAPIPlatformHelperFabric implements EffectAPIPlatformHelper {
     @Override
     public EffectAPIPlatform getPlatform() {
         return EffectAPIPlatform.FABRIC;
@@ -20,13 +20,11 @@ public class EffectAPIBasePlatformHelperFabric implements EffectAPIBasePlatformH
 
     @Override
     public boolean isModLoaded(String modId) {
-
         return FabricLoader.getInstance().isModLoaded(modId);
     }
 
     @Override
     public boolean isDevelopmentEnvironment() {
-
         return FabricLoader.getInstance().isDevelopmentEnvironment();
     }
 
@@ -37,7 +35,7 @@ public class EffectAPIBasePlatformHelperFabric implements EffectAPIBasePlatformH
 
     @Override
     public MinecraftServer getServer() {
-        return EffectAPIBaseFabric.getServer();
+        return EffectAPIFabric.getServer();
     }
 
     @Override

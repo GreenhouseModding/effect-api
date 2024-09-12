@@ -9,7 +9,6 @@ import net.neoforged.neoforge.registries.NeoForgeRegistries;
 public class EffectAPIEntityAttachments {
     public static final AttachmentType<EntityEffectsAttachment> ENTITY_EFFECTS = AttachmentType
             .builder(EntityEffectsAttachment::new)
-            .copyOnDeath()
             .build();
 
     public static void registerAll(RegistrationCallback<AttachmentType<?>> callback) {

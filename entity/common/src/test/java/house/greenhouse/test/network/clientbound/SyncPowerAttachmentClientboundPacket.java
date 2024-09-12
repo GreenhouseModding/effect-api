@@ -1,6 +1,6 @@
 package house.greenhouse.test.network.clientbound;
 
-import house.greenhouse.test.EffectAPITest;
+import house.greenhouse.test.EffectAPIEntityTest;
 import house.greenhouse.test.Power;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
@@ -15,7 +15,7 @@ import net.minecraft.world.entity.Entity;
 import java.util.List;
 
 public record SyncPowerAttachmentClientboundPacket(int entityId, List<Holder<Power>> allPowers) implements CustomPacketPayload {
-    public static final ResourceLocation ID = EffectAPITest.asResource("sync_power_attachment");
+    public static final ResourceLocation ID = EffectAPIEntityTest.asResource("sync_power_attachment");
     public static final Type<SyncPowerAttachmentClientboundPacket> TYPE = new Type<>(ID);
     public static final StreamCodec<RegistryFriendlyByteBuf, SyncPowerAttachmentClientboundPacket> STREAM_CODEC = StreamCodec.of(SyncPowerAttachmentClientboundPacket::write, SyncPowerAttachmentClientboundPacket::new);
 
@@ -31,9 +31,9 @@ public record SyncPowerAttachmentClientboundPacket(int entityId, List<Holder<Pow
     public void handle() {
         Minecraft.getInstance().execute(() -> {
             Entity entity = Minecraft.getInstance().level.getEntity(entityId);
-            EffectAPITest.getHelper().getPowers(entity).setFromNetwork(allPowers);
-            if (EffectAPITest.getHelper().getPowers(entity).isEmpty())
-                EffectAPITest.getHelper().removePowerAttachment(entity);
+            EffectAPIEntityTest.getHelper().getPowers(entity).setFromNetwork(allPowers);
+            if (EffectAPIEntityTest.getHelper().getPowers(entity).isEmpty())
+                EffectAPIEntityTest.getHelper().removePowerAttachment(entity);
         });
     }
 

@@ -76,4 +76,5 @@ dependencies {
     implementation(project(":core-fabric", "namedElements")) {
         isTransitive = false
     }
+    include(project(":core-fabric"))
 }

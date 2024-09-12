@@ -1,7 +1,7 @@
 {
     "schemaVersion": 1,
     "id": "${mod_id}",
-    "version": "${version}",
+    "version": "${mod_version}+${minecraft_version}",
     "name": "${mod_name} Base",
     "description": "${mod_description}",
     "authors": [
@@ -20,13 +20,13 @@
     "environment": "*",
     "entrypoints": {
         "main": [
-            "house.greenhouse.effectapi.impl.EffectAPIBaseFabric"
+            "house.greenhouse.effectapi.impl.EffectAPIFabric"
         ],
         "client": [
-            "house.greenhouse.effectapi.impl.client.EffectAPIBaseFabricClient"
+            "house.greenhouse.effectapi.impl.client.EffectAPIFabricClient"
         ],
         "preLaunch": [
-            "house.greenhouse.effectapi.impl.EffectAPIBaseFabricPre"
+            "house.greenhouse.effectapi.impl.EffectAPIFabricPre"
         ]
     },
     "mixins": [

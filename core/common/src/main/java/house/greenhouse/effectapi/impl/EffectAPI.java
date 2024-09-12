@@ -1,6 +1,6 @@
 package house.greenhouse.effectapi.impl;
 
-import house.greenhouse.effectapi.platform.EffectAPIBasePlatformHelper;
+import house.greenhouse.effectapi.platform.EffectAPIPlatformHelper;
 import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,13 +10,13 @@ public class EffectAPI {
     public static final String MOD_NAME = "Effect API";
     public static final Logger LOG = LoggerFactory.getLogger(MOD_NAME);
 
-    private static EffectAPIBasePlatformHelper helper;
+    private static EffectAPIPlatformHelper helper;
 
-    public static void init(EffectAPIBasePlatformHelper helper) {
+    public static void init(EffectAPIPlatformHelper helper) {
         EffectAPI.helper = helper;
     }
 
-    public static EffectAPIBasePlatformHelper getHelper() {
+    public static EffectAPIPlatformHelper getHelper() {
         return helper;
     }
 

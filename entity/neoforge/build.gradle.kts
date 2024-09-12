@@ -16,7 +16,18 @@ dependencies {
             requireCapability("${Properties.GROUP}:${core.props.modId}-common")
         }
     }
-    compileOnly(project(":core-neoforge")) {
+    implementation(project(":core-neoforge")) {
+        capabilities {
+            requireCapability("${Properties.GROUP}:${core.props.modId}-neoforge")
+        }
+    }.let {
+        jarJar(it) {
+            capabilities {
+                requireCapability("${Properties.GROUP}:${core.props.modId}-neoforge")
+            }
+        }
+    }
+    testImplementation(project(":core-neoforge")) {
         capabilities {
             requireCapability("${Properties.GROUP}:${core.props.modId}-neoforge")
         }

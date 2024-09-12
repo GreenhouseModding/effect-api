@@ -5,15 +5,15 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
-public class EffectAPITest {
-    public static final String MOD_ID = "effect_api_test";
+public class EffectAPIEntityTest {
+    public static final String MOD_ID = "effect_api_entity_test";
 
     private static EffectAPITestHelper helper;
 
-    public static final ResourceKey<Registry<Power>> POWER = ResourceKey.createRegistryKey(EffectAPITest.asResource("power"));
+    public static final ResourceKey<Registry<Power>> POWER = ResourceKey.createRegistryKey(EffectAPIEntityTest.asResource("power"));
 
     public static void init(EffectAPITestHelper helper) {
-        EffectAPITest.helper = helper;
+        EffectAPIEntityTest.helper = helper;
     }
 
     public static EffectAPITestHelper getHelper() {

@@ -8,7 +8,7 @@ import house.greenhouse.effectapi.entity.api.command.EntityResourceArgument;
 import house.greenhouse.effectapi.entity.api.command.EntityResourceValueArgument;
 import house.greenhouse.effectapi.entity.impl.EffectAPIEntity;
 import house.greenhouse.effectapi.entity.impl.effect.EntityResourceEffect;
-import house.greenhouse.test.EffectAPITest;
+import house.greenhouse.test.EffectAPIEntityTest;
 import house.greenhouse.test.Power;
 import house.greenhouse.test.attachment.PowersAttachment;
 import net.minecraft.commands.CommandBuildContext;
@@ -41,13 +41,13 @@ public class TestCommand {
         LiteralCommandNode<CommandSourceStack> addPowerNode = Commands
                 .literal("add")
                 .then(Commands.argument("target", EntityArgument.entity())
-                        .then(Commands.argument("power", ResourceArgument.resource(context, EffectAPITest.POWER))
+                        .then(Commands.argument("power", ResourceArgument.resource(context, EffectAPIEntityTest.POWER))
                                 .executes(TestCommand::addPower)))
                 .build();
         LiteralCommandNode<CommandSourceStack> removePowerNode = Commands
                 .literal("remove")
                 .then(Commands.argument("target", EntityArgument.entity())
-                        .then(Commands.argument("power", ResourceArgument.resource(context, EffectAPITest.POWER))
+                        .then(Commands.argument("power", ResourceArgument.resource(context, EffectAPIEntityTest.POWER))
                                 .executes(TestCommand::removePower)))
                 .build();
         LiteralCommandNode<CommandSourceStack> listPowersNode = Commands
@@ -92,9 +92,9 @@ public class TestCommand {
     private static int addPower(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         Entity entity = EntityArgument.getEntity(context, "target");
 
-        Holder<Power> power = ResourceArgument.getResource(context, "power", EffectAPITest.POWER);
+        Holder<Power> power = ResourceArgument.getResource(context, "power", EffectAPIEntityTest.POWER);
 
-        PowersAttachment attachment = EffectAPITest.getHelper().getPowers(entity);
+        PowersAttachment attachment = EffectAPIEntityTest.getHelper().getPowers(entity);
         if (attachment != null && attachment.hasPower(power)) {
             context.getSource().sendFailure(Component.literal("Entity already has power '" + power.unwrapKey().map(ResourceKey::location).orElse(null) + "'."));
             return 0;
@@ -108,9 +108,9 @@ public class TestCommand {
     private static int removePower(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         Entity entity = EntityArgument.getEntity(context, "target");
 
-        Holder<Power> power = ResourceArgument.getResource(context, "power", EffectAPITest.POWER);
+        Holder<Power> power = ResourceArgument.getResource(context, "power", EffectAPIEntityTest.POWER);
 
-        PowersAttachment attachment = EffectAPITest.getHelper().getPowers(entity);
+        PowersAttachment attachment = EffectAPIEntityTest.getHelper().getPowers(entity);
         if (attachment == null || !attachment.hasPower(power)) {
             context.getSource().sendFailure(Component.literal("Entity does not have power '" + power.unwrapKey().map(ResourceKey::location).orElse(null) + "'."));
             return 0;
@@ -119,7 +119,7 @@ public class TestCommand {
         attachment.removePower(power);
 
         if (attachment.totalPowers() == 0)
-            EffectAPITest.getHelper().removePowerAttachment(entity);
+            EffectAPIEntityTest.getHelper().removePowerAttachment(entity);
 
         context.getSource().sendSuccess(() -> Component.literal("Removed power '" + power.unwrapKey().map(ResourceKey::location).orElse(null) + "' from entity."), true);
         return 1;
@@ -128,7 +128,7 @@ public class TestCommand {
     private static int listPowers(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         Entity entity = EntityArgument.getEntity(context, "target");
 
-        PowersAttachment attachment = EffectAPITest.getHelper().getPowers(entity);
+        PowersAttachment attachment = EffectAPIEntityTest.getHelper().getPowers(entity);
         if (attachment == null) {
             context.getSource().sendFailure(Component.literal("Entity does not have any powers."));
             return 0;
@@ -150,13 +150,13 @@ public class TestCommand {
     private static int clearPowers(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         Entity entity = EntityArgument.getEntity(context, "target");
 
-        PowersAttachment attachment = EffectAPITest.getHelper().getPowers(entity);
+        PowersAttachment attachment = EffectAPIEntityTest.getHelper().getPowers(entity);
         if (attachment == null) {
             context.getSource().sendFailure(Component.literal("Entity does not have any powers."));
             return 0;
         }
 
-        EffectAPITest.getHelper().removePowerAttachment(entity);
+        EffectAPIEntityTest.getHelper().removePowerAttachment(entity);
 
         context.getSource().sendSuccess(() -> Component.literal("Removed all powers from entity."), true);
         return 1;

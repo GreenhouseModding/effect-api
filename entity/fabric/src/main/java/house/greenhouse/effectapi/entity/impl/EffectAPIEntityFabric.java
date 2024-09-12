@@ -45,16 +45,10 @@ public class EffectAPIEntityFabric implements ModInitializer {
                 trackedEntity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS).sync();
             }
         });
-        ServerPlayerEvents.AFTER_RESPAWN.addPhaseOrdering(EFFECT_API_BEFORE_EVENT, Event.DEFAULT_PHASE);
-        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
+        ServerPlayerEvents.COPY_FROM.addPhaseOrdering(EFFECT_API_BEFORE_EVENT, Event.DEFAULT_PHASE);
+        ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) -> {
             if (newPlayer.hasAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS))
                 newPlayer.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS).refresh();
-        });
-
-        ServerEntityEvents.ENTITY_UNLOAD.addPhaseOrdering(EFFECT_API_BEFORE_EVENT, Event.DEFAULT_PHASE);
-        ServerEntityEvents.ENTITY_UNLOAD.register((entity, world) -> {
-            if (entity.hasAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS))
-                entity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS).refresh();
         });
 
         ArgumentTypeRegistry.registerArgumentType(EffectAPI.asResource("data_resource"), EntityResourceArgument.class, new EntityResourceArgument.Info());

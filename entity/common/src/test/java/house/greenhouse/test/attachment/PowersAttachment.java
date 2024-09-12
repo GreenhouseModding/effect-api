@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
 import house.greenhouse.effectapi.entity.api.EntityEffectUtil;
 import house.greenhouse.effectapi.impl.EffectAPI;
-import house.greenhouse.test.EffectAPITest;
+import house.greenhouse.test.EffectAPIEntityTest;
 import house.greenhouse.test.Power;
 import house.greenhouse.test.network.clientbound.SyncPowerAttachmentClientboundPacket;
 import net.minecraft.core.Holder;
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PowersAttachment {
-    public static final ResourceLocation ID = EffectAPITest.asResource("powers");
+    public static final ResourceLocation ID = EffectAPIEntityTest.asResource("powers");
     public static final Codec<PowersAttachment> CODEC = Power.CODEC.listOf().xmap(holders -> {
         PowersAttachment attachment = new PowersAttachment();
         for (Holder<Power> power : holders)

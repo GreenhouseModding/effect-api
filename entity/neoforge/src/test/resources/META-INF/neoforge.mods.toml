@@ -5,12 +5,12 @@ license="${mod_license}"
 
 [[mods]]
 modId="${mod_id}_test"
-version="${version}"
+version="${mod_version}+${minecraft_version}"
 displayName="${mod_name} Test"
 logoFile="${mod_id}.png"
 logoBlur=false
 authors="${mod_author}"
-credits="${mod_contributors}"
+credits="${neoforge_mod_contributors}"
 description='''
 ${mod_description}
 '''
@@ -32,7 +32,7 @@ side="BOTH"
 [[dependencies.${mod_id}_test]]
 modId="effect_api"
 mandatory=true
-versionRange="${neoforge_mod_version_range}"
+versionRange="[${mod_version},)"
 ordering="NONE"
 side="BOTH"
 
@@ -40,6 +40,6 @@ side="BOTH"
 [[dependencies.${mod_id}_test]]
 modId="effect_api_entity"
 mandatory=true
-versionRange="${neoforge_mod_version_range}"
+versionRange="[${mod_version},)"
 ordering="NONE"
 side="BOTH"

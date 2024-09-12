@@ -5,18 +5,18 @@ license="${mod_license}"
 
 [[mods]]
 modId="${mod_id}"
-version="${version}"
-displayName="${mod_name} Entity"
+version="${mod_version}+${minecraft_version}"
+displayName="${mod_name}"
 logoFile="${mod_id}.png"
 logoBlur=false
 authors="${mod_author}"
-credits="${mod_contributors}"
+credits="${neoforge_mod_contributors}"
 description='''
 ${mod_description}
 '''
 
 [[mixins]]
-config = "${mod_id}_entity.mixins.json"
+config = "${mod_id}.mixins.json"
 
 [[dependencies.${mod_id}_entity]]
 modId="neoforge"
@@ -35,6 +35,6 @@ side="BOTH"
 [[dependencies.${mod_id}_entity]]
 modId="effect_api"
 mandatory=true
-versionRange="${neoforge_mod_version_range}"
+versionRange="[${mod_version},)"
 ordering="NONE"
 side="BOTH"

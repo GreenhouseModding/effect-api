@@ -4,7 +4,7 @@ import house.greenhouse.test.EffectAPITestNeoForge;
 import house.greenhouse.test.attachment.PowersAttachment;
 import net.minecraft.world.entity.Entity;
 
-public class EffectAPITestHelperFabric implements EffectAPITestHelper {
+public class EffectAPITestHelperNeoForge implements EffectAPITestHelper {
     @Override
     public PowersAttachment getPowers(Entity entity) {
         PowersAttachment attachment = entity.getData(EffectAPITestNeoForge.POWERS);

@@ -3,21 +3,20 @@ package house.greenhouse.test;
 import house.greenhouse.test.attachment.PowersAttachment;
 import house.greenhouse.test.command.TestCommand;
 import house.greenhouse.test.network.clientbound.SyncPowerAttachmentClientboundPacket;
-import house.greenhouse.test.platform.EffectAPITestHelperFabric;
+import house.greenhouse.test.platform.EffectAPITestHelperNeoForge;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
-@Mod(EffectAPITest.MOD_ID)
+@Mod(EffectAPIEntityTest.MOD_ID)
 public class EffectAPITestNeoForge {
     public static final AttachmentType<PowersAttachment> POWERS = AttachmentType
             .builder(PowersAttachment::new)
@@ -26,10 +25,10 @@ public class EffectAPITestNeoForge {
             .build();
 
     public EffectAPITestNeoForge(IEventBus eventBus) {
-        EffectAPITest.init(new EffectAPITestHelperFabric());
+        EffectAPIEntityTest.init(new EffectAPITestHelperNeoForge());
     }
 
-    @EventBusSubscriber(modid = EffectAPITest.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(modid = EffectAPIEntityTest.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
     public static class ModEvents {
         @SubscribeEvent
         public static void registerContent(RegisterEvent event) {
@@ -44,18 +43,12 @@ public class EffectAPITestNeoForge {
 
         @SubscribeEvent
         public static void createNewDataPackRegistry(DataPackRegistryEvent.NewRegistry event) {
-            event.dataPackRegistry(EffectAPITest.POWER, Power.DIRECT_CODEC, Power.DIRECT_CODEC);
+            event.dataPackRegistry(EffectAPIEntityTest.POWER, Power.DIRECT_CODEC, Power.DIRECT_CODEC);
         }
     }
 
-    @EventBusSubscriber(modid = EffectAPITest.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
+    @EventBusSubscriber(modid = EffectAPIEntityTest.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
     public static class GameEvents {
-        @SubscribeEvent
-        public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
-            if (event.getEntity().hasData(POWERS))
-                event.getEntity().getData(POWERS).init(event.getEntity());
-        }
-
         @SubscribeEvent
         public static void onStartTracking(PlayerEvent.StartTracking event) {
             if (event.getTarget().hasData(POWERS)) {

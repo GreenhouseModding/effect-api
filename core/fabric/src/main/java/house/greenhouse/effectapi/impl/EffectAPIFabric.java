@@ -8,7 +8,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.core.Registry;
 import net.minecraft.server.MinecraftServer;
 
-public class EffectAPIBaseFabric implements ModInitializer {
+public class EffectAPIFabric implements ModInitializer {
     private static MinecraftServer server;
 
     @Override
@@ -16,7 +16,7 @@ public class EffectAPIBaseFabric implements ModInitializer {
         EffectAPIResourceTypes.registerAll(Registry::register);
         EffectAPIAttachments.init();
 
-        ServerLifecycleEvents.SERVER_STARTED.register(EffectAPIBaseFabric::setServer);
+        ServerLifecycleEvents.SERVER_STARTED.register(EffectAPIFabric::setServer);
         ServerLifecycleEvents.SERVER_STOPPED.register(server1 -> {
             ResourceEffect.ResourceEffectCodec.clearLoadedEffects();
             setServer(null);
@@ -24,7 +24,7 @@ public class EffectAPIBaseFabric implements ModInitializer {
     }
 
     public static void setServer(MinecraftServer server) {
-        EffectAPIBaseFabric.server = server;
+        EffectAPIFabric.server = server;
     }
 
     public static MinecraftServer getServer() {

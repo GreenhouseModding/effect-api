@@ -33,7 +33,8 @@ public class EffectAPIEntityPlatformHelperFabric implements EffectAPIEntityPlatf
 
     @Override
     public <T> T setResource(Entity entity, ResourceLocation id, T value, ResourceLocation source) {
-        return entity.getAttachedOrCreate(EffectAPIAttachments.RESOURCES).setValue(id, value, source);
+        ResourcesAttachment attachment = entity.getAttachedOrCreate(EffectAPIAttachments.RESOURCES);
+        return attachment.setValue(id, value, source);
     }
 
     @Override

@@ -2,6 +2,7 @@ package house.greenhouse.effectapi.entity.platform;
 
 import house.greenhouse.effectapi.api.attachment.ResourcesAttachment;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
+import house.greenhouse.effectapi.entity.api.EntityEffectUtil;
 import house.greenhouse.effectapi.entity.api.attachment.EntityEffectsAttachment;
 import house.greenhouse.effectapi.entity.impl.registry.EffectAPIEntityAttachments;
 import house.greenhouse.effectapi.impl.registry.EffectAPIAttachments;
@@ -30,7 +31,8 @@ public class EffectAPIEntityPlatformHelperNeoForge implements EffectAPIEntityPla
 
     @Override
     public <T> T setResource(Entity entity, ResourceLocation id, T value, @Nullable ResourceLocation source) {
-        return entity.getData(EffectAPIAttachments.RESOURCES).setValue(id, value, source);
+        ResourcesAttachment attachment = entity.getData(EffectAPIAttachments.RESOURCES);
+        return attachment.setValue(id, value, source);
     }
 
     @Override
@@ -50,7 +52,9 @@ public class EffectAPIEntityPlatformHelperNeoForge implements EffectAPIEntityPla
 
     @Override
     public void addEntityEffect(Entity entity, EffectAPIEffect effect, ResourceLocation source) {
-        entity.getData(EffectAPIEntityAttachments.ENTITY_EFFECTS).addEffect(effect, source);
+        EntityEffectsAttachment attachment = entity.getData(EffectAPIEntityAttachments.ENTITY_EFFECTS);
+        attachment.init(entity);
+        attachment.addEffect(effect, source);
     }
 
     @Override

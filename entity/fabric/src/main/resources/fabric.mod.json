@@ -1,8 +1,8 @@
 {
     "schemaVersion": 1,
     "id": "${mod_id}",
-    "version": "${version}",
-    "name": "${mod_name} Entity",
+    "version": "${mod_version}+${minecraft_version}",
+    "name": "${mod_name}",
     "description": "${mod_description}",
     "authors": [
         "${mod_author}"
@@ -38,7 +38,7 @@
         "fabric-api": "*",
         "minecraft": "${fabric_minecraft_version_range}",
         "java": ">=${java_version}",
-        "effect_api": ">=${version}"
+        "effect_api": ">=${mod_version}"
     },
     "custom": {
         "modmenu": {

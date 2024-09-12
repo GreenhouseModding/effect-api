@@ -9,5 +9,5 @@ import net.minecraft.resources.RegistryFixedCodec;
 
 public record Power(DataComponentMap effects) {
     public static final Codec<Power> DIRECT_CODEC = EffectAPIEntityEffectTypes.codec(EffectAPIEntityLootContextParamSets.ENTITY).xmap(Power::new, Power::effects);
-    public static final Codec<Holder<Power>> CODEC = RegistryFixedCodec.create(EffectAPITest.POWER);
+    public static final Codec<Holder<Power>> CODEC = RegistryFixedCodec.create(EffectAPIEntityTest.POWER);
 }

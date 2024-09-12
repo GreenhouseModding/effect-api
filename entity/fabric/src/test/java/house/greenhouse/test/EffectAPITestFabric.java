@@ -21,7 +21,7 @@ public class EffectAPITestFabric implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        DynamicRegistries.registerSynced(EffectAPITest.POWER, Power.DIRECT_CODEC);
+        DynamicRegistries.registerSynced(EffectAPIEntityTest.POWER, Power.DIRECT_CODEC);
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> TestCommand.register(dispatcher, registryAccess));
 
         PayloadTypeRegistry.playS2C().register(SyncPowerAttachmentClientboundPacket.TYPE, SyncPowerAttachmentClientboundPacket.STREAM_CODEC);
