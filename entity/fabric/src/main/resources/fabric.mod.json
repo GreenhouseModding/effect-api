@@ -1,6 +1,6 @@
 {
     "schemaVersion": 1,
-    "id": "${mod_id}_entity",
+    "id": "${mod_id}",
     "version": "${version}",
     "name": "${mod_name} Entity",
     "description": "${mod_description}",
@@ -30,25 +30,21 @@
         ]
     },
     "mixins": [
-        "${mod_id}_entity.mixins.json",
-        "${mod_id}_entity.fabric.mixins.json"
+        "${mod_id}.mixins.json",
+        "${mod_id}.fabric.mixins.json"
     ],
     "depends": {
         "fabricloader": "${fabric_loader_range}",
         "fabric-api": "*",
         "minecraft": "${fabric_minecraft_version_range}",
         "java": ">=${java_version}",
-        "${mod_id}_base": ">=${version}"
+        "effect_api": ">=${version}"
     },
     "custom": {
         "modmenu": {
             "badges": [ "library" ],
             "parent": {
-                "id": "${mod_id}",
-                "name": "${mod_name}",
-                "description": "${mod_description}",
-                "icon": "${mod_id}.png",
-                "badges": [ "library" ]
+                "id": "effect_api"
             }
         }
     }

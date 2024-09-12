@@ -32,7 +32,7 @@
     "mixins": [
         "${mod_id}.mixins.json"
     ],
-    "accessWidener": "${mod_id}.accesswidener",
+    "accessWidener": "effect_api.accesswidener",
     "depends": {
         "fabricloader": "${fabric_loader_range}",
         "fabric-api": "*",
@@ -41,14 +41,7 @@
     },
     "custom": {
         "modmenu": {
-            "badges": [ "library" ],
-            "parent": {
-                "id": "${mod_id}",
-                "name": "${mod_name}",
-                "description": "${mod_description}",
-                "icon": "${mod_id}.png",
-                "badges": [ "library" ]
-            }
+            "badges": [ "library" ]
         }
     }
 }

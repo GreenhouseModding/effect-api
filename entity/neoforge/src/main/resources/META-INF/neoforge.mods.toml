@@ -33,7 +33,7 @@ ordering="NONE"
 side="BOTH"
 
 [[dependencies.${mod_id}_entity]]
-modId="${mod_id}"
+modId="effect_api"
 mandatory=true
 versionRange="${neoforge_mod_version_range}"
 ordering="NONE"
