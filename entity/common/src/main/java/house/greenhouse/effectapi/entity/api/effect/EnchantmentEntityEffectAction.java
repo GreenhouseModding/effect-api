@@ -2,7 +2,7 @@ package house.greenhouse.effectapi.entity.api.effect;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import house.greenhouse.effectapi.api.effect.instanced.EffectAPIInstancedEffect;
+import house.greenhouse.effectapi.api.action.EffectAPIAction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -17,11 +17,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-public record EffectAPIEnchantmentEntityEffect<T extends EnchantmentEntityEffect>(T effect, Optional<EquipmentSlot> slot) implements EffectAPIInstancedEffect {
-    public static final MapCodec<EffectAPIEnchantmentEntityEffect<?>> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
-            EnchantmentEntityEffect.CODEC.fieldOf("effect").forGetter(EffectAPIEnchantmentEntityEffect::effect),
-            EquipmentSlot.CODEC.optionalFieldOf("slot").forGetter(EffectAPIEnchantmentEntityEffect::slot)
-    ).apply(inst, EffectAPIEnchantmentEntityEffect::new));
+public record EnchantmentEntityEffectAction<T extends EnchantmentEntityEffect>(T effect, Optional<EquipmentSlot> slot) implements EffectAPIAction {
+    public static final MapCodec<EnchantmentEntityEffectAction<?>> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
+            EnchantmentEntityEffect.CODEC.fieldOf("effect").forGetter(EnchantmentEntityEffectAction::effect),
+            EquipmentSlot.CODEC.optionalFieldOf("slot").forGetter(EnchantmentEntityEffectAction::slot)
+    ).apply(inst, EnchantmentEntityEffectAction::new));
 
     @Override
     public void apply(LootContext lootContext) {
@@ -47,7 +47,7 @@ public record EffectAPIEnchantmentEntityEffect<T extends EnchantmentEntityEffect
     }
 
     @Override
-    public MapCodec<? extends EffectAPIInstancedEffect> codec() {
+    public MapCodec<? extends EffectAPIAction> codec() {
         return CODEC;
     }
 }

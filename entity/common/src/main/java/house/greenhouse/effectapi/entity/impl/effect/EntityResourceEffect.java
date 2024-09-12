@@ -31,9 +31,8 @@ public class EntityResourceEffect<T> extends ResourceEffect<T> {
         T value;
         if (EntityResourceUtil.hasResource(entity, id))
             value = EntityResourceUtil.getResource(entity, id);
-        else {
+        else
             value = EntityResourceUtil.setResource(entity, id, defaultValue, lootContext.getParamOrNull(EffectAPILootContextParams.SOURCE));
-        }
         EffectAPI.getHelper().sendClientboundTracking(new ChangeEntityResourceClientboundPacket<>(entity.getId(), this, Optional.of(lootContext.getParam(EffectAPILootContextParams.SOURCE)), Optional.of(value)), entity);
     }
 

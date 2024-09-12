@@ -1,7 +1,7 @@
 package house.greenhouse.effectapi.entity.impl;
 
 import house.greenhouse.effectapi.entity.api.EffectAPIEntityEffectTypes;
-import house.greenhouse.effectapi.entity.api.EffectAPIEntityInstancedEffectTypes;
+import house.greenhouse.effectapi.entity.api.EffectAPIEntityActionTypes;
 import house.greenhouse.effectapi.entity.api.command.EntityResourceArgument;
 import house.greenhouse.effectapi.entity.api.command.EntityResourceValueArgument;
 import house.greenhouse.effectapi.entity.api.registry.EffectAPIEntityPredicates;
@@ -35,7 +35,7 @@ public class EffectAPIEntityNeoForge {
         @SubscribeEvent
         public static void registerContent(RegisterEvent event) {
             register(event, EffectAPIEntityEffectTypes::registerAll);
-            register(event, EffectAPIEntityInstancedEffectTypes::registerAll);
+            register(event, EffectAPIEntityActionTypes::registerAll);
             register(event, EffectAPIEntityPredicates::registerAll);
             event.register(Registries.COMMAND_ARGUMENT_TYPE, EffectAPI.asResource("data_resource"), () -> ArgumentTypeInfos.registerByClass(EntityResourceArgument.class, new EntityResourceArgument.Info()));
             event.register(Registries.COMMAND_ARGUMENT_TYPE, EffectAPI.asResource("data_resource_type"), () -> ArgumentTypeInfos.registerByClass(EntityResourceValueArgument.class, new EntityResourceValueArgument.Info()));

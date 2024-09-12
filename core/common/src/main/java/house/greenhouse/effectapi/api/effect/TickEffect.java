@@ -1,10 +1,10 @@
 
 package house.greenhouse.effectapi.api.effect;
 
-import house.greenhouse.effectapi.api.effect.instanced.EffectAPIInstancedEffect;
+import house.greenhouse.effectapi.api.action.EffectAPIAction;
 import net.minecraft.world.level.storage.loot.LootContext;
 
-public interface TickEffect<T extends EffectAPIInstancedEffect> extends EffectAPIEffect {
+public interface TickEffect<T extends EffectAPIAction> extends EffectAPIEffect {
 
     T effect();
 

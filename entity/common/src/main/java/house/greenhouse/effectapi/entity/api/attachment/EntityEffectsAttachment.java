@@ -29,7 +29,7 @@ public class EntityEffectsAttachment {
     public static final ResourceLocation ID = EffectAPI.asResource("entity_effects");
 
     private Map<ResourceLocation, DataComponentMap> allComponents = new HashMap<>();
-    private final Map<EffectAPIEffect, ResourceLocation> componentSourcesForUpdating = new HashMap<>();
+    private final Map<EffectAPIEffect, ResourceLocation> sources = new HashMap<>();
     private DataComponentMap combinedComponents = DataComponentMap.EMPTY;
     private DataComponentMap activeComponents = DataComponentMap.EMPTY;
     private Entity provider;
@@ -56,22 +56,22 @@ public class EntityEffectsAttachment {
         updateActiveComponents(true);
         InternalEffectUtil.executeOnAllEffects(activeComponents, effect -> {
             if (effect.type() == EffectAPIEntityEffectTypes.ENTITY_TICK)
-                InternalEffectUtil.<EntityTickEffect<?>>castConditional(effect).tick(EntityEffectUtil.createEntityOnlyContext(provider, componentSourcesForUpdating.getOrDefault(effect, null)));
+                InternalEffectUtil.<EntityTickEffect<?>>castConditional(effect).tick(EntityEffectUtil.createEntityOnlyContext(provider, sources.getOrDefault(effect, null)));
         });
     }
 
     public void refresh() {
         InternalEffectUtil.executeOnAllEffects(activeComponents, effect ->
-                effect.onRefreshed(EntityEffectUtil.createEntityOnlyContext(provider)));
+                effect.onRefreshed(EntityEffectUtil.createEntityOnlyContext(provider, sources.getOrDefault(effect, null))));
     }
 
     private void updateActiveComponents(boolean sync) {
         DataComponentMap previous = activeComponents;
-        if (!InternalEffectUtil.haveActivesChanged(EntityEffectUtil.createEntityOnlyContext(provider), EffectAPIEntityLootContextParamSets.ENTITY, combinedComponents, previous, componentSourcesForUpdating)) {
+        if (!InternalEffectUtil.haveActivesChanged(EntityEffectUtil.createEntityOnlyContext(provider), EffectAPIEntityLootContextParamSets.ENTITY, combinedComponents, previous, sources)) {
             InternalEffectUtil.clearChangedCache();
             return;
         }
-        activeComponents = InternalEffectUtil.generateActiveEffects(EntityEffectUtil.createEntityOnlyContext(provider), EffectAPIEntityLootContextParamSets.ENTITY, combinedComponents, previous, componentSourcesForUpdating);
+        activeComponents = InternalEffectUtil.generateActiveEffects(EntityEffectUtil.createEntityOnlyContext(provider), EffectAPIEntityLootContextParamSets.ENTITY, combinedComponents, previous, sources);
         if (sync)
             sync();
     }
@@ -90,7 +90,7 @@ public class EntityEffectsAttachment {
         }
 
         newMap.computeIfAbsent(source, k -> new Reference2ObjectArrayMap<>()).computeIfAbsent(effect.type(), t -> new ArrayList<>()).add(effect);
-        setComponentSourcesForUpdating(effect, source);
+        addToSources(effect, source);
 
         Map<ResourceLocation, DataComponentMap> finalMap = new HashMap<>();
         for (var entry : newMap.entrySet()) {
@@ -116,7 +116,7 @@ public class EntityEffectsAttachment {
         allComponents = Map.copyOf(newMap);
         combineComponents();
         updateActiveComponents(false);
-        componentSourcesForUpdating.remove(effect);
+        sources.remove(effect);
     }
 
     public void combineComponents() {
@@ -131,10 +131,10 @@ public class EntityEffectsAttachment {
         combinedComponents = builder.build();
     }
 
-    private void setComponentSourcesForUpdating(EffectAPIEffect effect, ResourceLocation source) {
-        if (componentSourcesForUpdating.containsKey(effect))
+    private void addToSources(EffectAPIEffect effect, ResourceLocation source) {
+        if (sources.containsKey(effect))
             return;
-        componentSourcesForUpdating.put(effect, source);
+        sources.put(effect, source);
     }
 
     @ApiStatus.Internal

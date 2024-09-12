@@ -2,7 +2,7 @@
   "effect_api:entity_tick": [
     {
       "effect": {
-        "type": "effect_api:enchantment_effect",
+        "type": "effect_api:enchantment_entity_effect",
         "effect": {
           "type": "minecraft:ignite",
           "duration": 4.0

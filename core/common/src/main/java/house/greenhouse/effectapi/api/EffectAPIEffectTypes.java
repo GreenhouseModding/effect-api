@@ -8,6 +8,7 @@ import house.greenhouse.effectapi.mixin.DataComponentMapBuilderAccessor;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectMaps;
+import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.TypedDataComponent;
@@ -19,21 +20,19 @@ import java.util.List;
 import java.util.Map;
 
 public class EffectAPIEffectTypes {
-    private static final Codec<DataComponentType<?>> COMPONENT_CODEC = EffectAPIRegistries.EFFECT_TYPE.byNameCodec();
-
-    public static Codec<DataComponentMap> codec(LootContextParamSet paramSet) {
-        return Codec.lazyInitialized(() -> Codec.dispatchedMap(COMPONENT_CODEC, DataComponentType::codecOrThrow).flatXmap(dataComponentMap -> encodeComponents(paramSet, dataComponentMap), map -> (DataResult) decodeComponents(map)));
+    public static Codec<DataComponentMap> codec(Registry<DataComponentType<?>> typeRegistry, LootContextParamSet paramSet) {
+        return Codec.lazyInitialized(() -> Codec.dispatchedMap(typeRegistry.byNameCodec(), DataComponentType::codecOrThrow).flatXmap(dataComponentMap -> encodeComponents(typeRegistry, paramSet, dataComponentMap), map -> (DataResult) decodeComponents(map)));
     }
 
     @ApiStatus.Internal
-    private static DataResult<DataComponentMap> encodeComponents(LootContextParamSet paramSet, Map<DataComponentType<?>, ?> componentTypes) {
+    private static DataResult<DataComponentMap> encodeComponents(Registry<DataComponentType<?>> registry, LootContextParamSet paramSet, Map<DataComponentType<?>, ?> componentTypes) {
         if (componentTypes.isEmpty())
             return DataResult.success(DataComponentMap.EMPTY);
         ProblemReporter.Collector collector = new ProblemReporter.Collector();
         for (var component : componentTypes.entrySet())
             for (var effect : ((List<?>) component.getValue()).stream().filter(object -> object instanceof EffectAPIEffect effect &&
                     !paramSet.getAllowed().containsAll(effect.paramSet().getRequired())).map(object -> (EffectAPIEffect) object).toList())
-                collector.report("Parameters " + effect.paramSet().getRequired().stream().filter(param -> !paramSet.isAllowed(param)).toList() + " are not provided for " + EffectAPIRegistries.EFFECT_TYPE.getKey(effect.type()) + ".");
+                collector.report("Parameters " + effect.paramSet().getRequired().stream().filter(param -> !paramSet.isAllowed(param)).toList() + " are not provided for " + registry.getKey(effect.type()) + ".");
 
         var errorMap = collector.get();
         if (errorMap.isEmpty())
