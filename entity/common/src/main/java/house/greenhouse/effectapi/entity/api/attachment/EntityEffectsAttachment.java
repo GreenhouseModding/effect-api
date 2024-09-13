@@ -2,10 +2,8 @@ package house.greenhouse.effectapi.entity.api.attachment;
 
 import com.google.common.collect.ImmutableList;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
-import house.greenhouse.effectapi.entity.api.EffectAPIEntityEffectTypes;
 import house.greenhouse.effectapi.entity.api.EntityEffectAPI;
 import house.greenhouse.effectapi.entity.api.registry.EffectAPIEntityLootContextParamSets;
-import house.greenhouse.effectapi.entity.impl.effect.EntityTickEffect;
 import house.greenhouse.effectapi.entity.impl.network.clientbound.SyncEntityEffectsAttachmentClientboundPacket;
 import house.greenhouse.effectapi.impl.EffectAPI;
 import house.greenhouse.effectapi.impl.util.InternalEffectUtil;
@@ -42,7 +40,7 @@ public class EntityEffectsAttachment {
         if (provider != null)
             return;
         this.provider = entity;
-        updateActiveComponents(true);
+        updateActiveComponents();
     }
 
     public boolean isEmpty() {
@@ -70,7 +68,7 @@ public class EntityEffectsAttachment {
     }
 
     public void tick() {
-        updateActiveComponents(true);
+        updateActiveComponents();
         InternalEffectUtil.executeOnAllEffects(combinedComponents, effect -> {
             LootContext context = contexts.get(effect);
             if (effect.shouldTick(context, hasEffect(effect, false)))
@@ -83,15 +81,13 @@ public class EntityEffectsAttachment {
                 effect.onRefreshed(contexts.get(effect)));
     }
 
-    private void updateActiveComponents(boolean sync) {
+    private void updateActiveComponents() {
         DataComponentMap previous = activeComponents;
-        if (!InternalEffectUtil.haveActivesChanged(contexts, EffectAPIEntityLootContextParamSets.ENTITY, combinedComponents, previous)) {
-            InternalEffectUtil.clearChangedCache();
+        var newComponents = InternalEffectUtil.generateActiveEffectsIfNecessary(contexts, EffectAPIEntityLootContextParamSets.ENTITY, combinedComponents, previous);
+        if (newComponents.isEmpty())
             return;
-        }
-        activeComponents = InternalEffectUtil.generateActiveEffects(contexts, EffectAPIEntityLootContextParamSets.ENTITY, combinedComponents, previous);
-        if (sync)
-            sync();
+        activeComponents = newComponents.get();
+        sync();
     }
 
     public void sync() {
@@ -119,7 +115,7 @@ public class EntityEffectsAttachment {
         }
         allComponents = finalMap;
         combineComponents();
-        updateActiveComponents(true);
+        updateActiveComponents();
     }
 
     public void removeEffect(EffectAPIEffect effect, ResourceLocation source) {
@@ -133,7 +129,7 @@ public class EntityEffectsAttachment {
 
         allComponents = newMap;
         combineComponents();
-        updateActiveComponents(true);
+        updateActiveComponents();
         contexts.remove(effect);
     }
 
