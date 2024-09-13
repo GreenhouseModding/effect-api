@@ -1,5 +1,6 @@
 package house.greenhouse.effectapi.impl.registry;
 
+import house.greenhouse.effectapi.api.attachment.ResourcesAttachment;
 import house.greenhouse.effectapi.impl.attachment.ResourcesAttachmentImpl;
 import house.greenhouse.effectapi.impl.EffectAPI;
 import house.greenhouse.effectapi.impl.registry.internal.RegistrationCallback;
@@ -9,8 +10,8 @@ import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import java.util.HashMap;
 
 public class EffectAPIAttachments {
-    public static final AttachmentType<ResourcesAttachmentImpl> RESOURCES = AttachmentType
-            .builder(() -> new ResourcesAttachmentImpl(new HashMap<>()))
+    public static final AttachmentType<ResourcesAttachment> RESOURCES = AttachmentType
+            .<ResourcesAttachment>builder(() -> new ResourcesAttachmentImpl(new HashMap<>()))
             .serialize(ResourcesAttachmentImpl.CODEC)
             .copyOnDeath()
             .build();

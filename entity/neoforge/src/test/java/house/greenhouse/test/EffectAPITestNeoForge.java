@@ -33,7 +33,7 @@ public class EffectAPITestNeoForge {
     public static class ModEvents {
         @SubscribeEvent
         public static void registerContent(RegisterEvent event) {
-            event.register(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, PowersAttachment.ID, () -> POWERS);
+            event.register(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, EffectAPIEntityTest.POWERS_ATTACHMENT_KEY, () -> POWERS);
         }
 
         @SubscribeEvent

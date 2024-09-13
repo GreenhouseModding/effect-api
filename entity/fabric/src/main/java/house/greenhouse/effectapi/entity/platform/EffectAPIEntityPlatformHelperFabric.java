@@ -1,6 +1,7 @@
 package house.greenhouse.effectapi.entity.platform;
 
 import house.greenhouse.effectapi.api.attachment.EffectsAttachment;
+import house.greenhouse.effectapi.api.attachment.ResourcesAttachment;
 import house.greenhouse.effectapi.impl.attachment.ResourcesAttachmentImpl;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
 import house.greenhouse.effectapi.entity.api.EntityEffectAPI;
@@ -19,7 +20,7 @@ public class EffectAPIEntityPlatformHelperFabric implements EffectAPIEntityPlatf
 
     @Override
     @Nullable
-    public ResourcesAttachmentImpl getResources(Entity entity) {
+    public ResourcesAttachment getResources(Entity entity) {
         return entity.getAttached(EffectAPIAttachments.RESOURCES);
     }
 
@@ -29,23 +30,23 @@ public class EffectAPIEntityPlatformHelperFabric implements EffectAPIEntityPlatf
     }
 
     @Override
-    public void setResourcesAttachment(Entity entity, ResourcesAttachmentImpl attachment) {
-        entity.setAttached(EffectAPIAttachments.RESOURCES, attachment);
+    public void setResourcesAttachment(Entity entity, ResourcesAttachment attachment) {
+        entity.setAttached(EffectAPIAttachments.RESOURCES, (ResourcesAttachmentImpl) attachment);
     }
 
     @Override
     public <T> T setResource(Entity entity, ResourceLocation id, T value, ResourceLocation source) {
-        ResourcesAttachmentImpl attachment = entity.getAttachedOrCreate(EffectAPIAttachments.RESOURCES);
+        ResourcesAttachment attachment = entity.getAttachedOrCreate(EffectAPIAttachments.RESOURCES);
         return attachment.setValue(id, value, source);
     }
 
     @Override
     public void removeResource(Entity entity, ResourceLocation id, ResourceLocation source) {
-        ResourcesAttachmentImpl attachment = getResources(entity);
+        ResourcesAttachment attachment = getResources(entity);
         if (attachment == null)
             return;
-        attachment.removeValue(id);
-        if (attachment.resources().isEmpty())
+        attachment.removeValue(id, source);
+        if (attachment.isEmpty())
             entity.removeAttached(EffectAPIAttachments.RESOURCES);
     }
 
@@ -81,6 +82,6 @@ public class EffectAPIEntityPlatformHelperFabric implements EffectAPIEntityPlatf
         if (alLComponents.isEmpty())
             entity.removeAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS);
         else
-            ((EffectsAttachmentImpl<Entity>)entity.getAttachedOrCreate(EffectAPIEntityAttachments.ENTITY_EFFECTS)).setComponents(alLComponents, activeComponents);
+            entity.getAttachedOrCreate(EffectAPIEntityAttachments.ENTITY_EFFECTS).setComponents(alLComponents, activeComponents);
     }
 }

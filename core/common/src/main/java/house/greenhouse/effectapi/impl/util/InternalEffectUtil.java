@@ -22,24 +22,24 @@ public class InternalEffectUtil {
     }
 
     public static Optional<DataComponentMap> generateActiveEffectsIfNecessary(Map<EffectAPIEffect, LootContext> contexts, LootContextParamSet paramSet,
-                                                            DataComponentMap combined, DataComponentMap previousMap) {
+                                                                              DataComponentMap combined, DataComponentMap previousMap) {
         Map<DataComponentType<?>, List<EffectAPIEffect>> newMap = new Reference2ObjectArrayMap<>();
-
         boolean createNewMap = false;
 
         for (TypedDataComponent<?> component : combined) {
             if (component.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect)
                 for (EffectAPIEffect effect : ((List<EffectAPIEffect>) list)) {
                     if (effect.paramSet() == paramSet) {
-                        if (effect.isActive(contexts.get(effect))) {
+                        LootContext context = contexts.get(effect);
+                        if (effect.isActive(context)) {
                             newMap.computeIfAbsent(component.type(), type -> new ArrayList<>()).add(effect);
-                            if (previousMap.stream().map(c -> ((List<?>) c.value())).noneMatch(cs -> cs.contains(effect))) {
-                                effect.onAdded(contexts.get(effect));
+                            if (previousMap.stream().map(c -> ((List<?>) c.value())).noneMatch(ls -> ls.contains(effect))) {
+                                effect.onAdded(context);
                                 createNewMap = true;
                             }
                         } else {
-                            if (previousMap.stream().map(c -> ((List<?>) c.value())).anyMatch(cs -> cs.contains(effect))) {
-                                effect.onRemoved(contexts.get(effect));
+                            if (previousMap.stream().map(c -> ((List<?>) c.value())).anyMatch(ls -> ls.contains(effect))) {
+                                effect.onRemoved(context);
                                 createNewMap = true;
                             }
                         }

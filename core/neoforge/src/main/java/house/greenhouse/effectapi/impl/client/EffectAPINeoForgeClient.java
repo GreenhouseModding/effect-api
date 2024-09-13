@@ -12,8 +12,9 @@ public class EffectAPINeoForgeClient {
     public static class ClientGameEvents {
         @SubscribeEvent
         public static void onDisconnect(ClientPlayerNetworkEvent.LoggingOut event) {
-            if (event.getPlayer() != null)
+            if (event.getPlayer() != null) {
                 InternalResourceUtil.clearEffectMap();
+            }
         }
     }
 }

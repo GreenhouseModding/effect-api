@@ -8,6 +8,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import house.greenhouse.effectapi.api.attachment.ResourcesAttachment;
 import house.greenhouse.effectapi.impl.attachment.ResourcesAttachmentImpl;
 import house.greenhouse.effectapi.api.effect.ResourceEffect;
 import house.greenhouse.effectapi.entity.impl.EffectAPIEntity;
@@ -34,16 +35,16 @@ public class EntityResourceArgument implements ArgumentType<ResourceEffect<?>> {
 
     private final String entitiesParam;
     private final int whitespaceBeforeEntities;
-    private final ResourceLocation source;
+    private final String modId;
 
-    protected EntityResourceArgument(String entitiesParam, int whitespaceBeforeEntities, ResourceLocation source) {
+    protected EntityResourceArgument(String entitiesParam, int whitespaceBeforeEntities, String modId) {
         this.entitiesParam = entitiesParam;
         this.whitespaceBeforeEntities = whitespaceBeforeEntities;
-        this.source = source;
+        this.modId = modId;
     }
 
-    public static EntityResourceArgument resource(String entitiesParam, String commandUntilEntities, ResourceLocation source) {
-        return new EntityResourceArgument(entitiesParam, commandUntilEntities.split(" ").length, source);
+    public static EntityResourceArgument resource(String entitiesParam, String commandUntilEntities, String modId) {
+        return new EntityResourceArgument(entitiesParam, commandUntilEntities.split(" ").length, modId);
     }
 
     public static <T> EntityResourceEffect<T> getResource(CommandContext<CommandSourceStack> context, String param) {
@@ -95,11 +96,11 @@ public class EntityResourceArgument implements ArgumentType<ResourceEffect<?>> {
 
     private List<ResourceLocation> getResourceEffectsFromSource(List<? extends Entity> entities) {
         return InternalResourceUtil.getIdMap().keySet().stream().filter(id -> entities.stream().anyMatch(entity -> {
-                    ResourcesAttachmentImpl attachment = EffectAPIEntity.getHelper().getResources(entity);
+                    ResourcesAttachment attachment = EffectAPIEntity.getHelper().getResources(entity);
                     if (attachment == null)
                         return false;
-                    ResourceEffect.ResourceHolder<?> value = attachment.getResourceHolder(id);
-                    return value != null && value.getSource() != null && value.getSource().equals(source);
+                    ResourceEffect.ResourceHolder<?> value = ((ResourcesAttachmentImpl)attachment).getResourceHolder(id);
+                    return value != null && ((ResourcesAttachmentImpl) attachment).getSources(id).stream().anyMatch(location -> location.getNamespace().equals(modId));
                 })).toList();
     }
 
@@ -108,37 +109,37 @@ public class EntityResourceArgument implements ArgumentType<ResourceEffect<?>> {
         public void serializeToNetwork(EntityResourceArgument.Info.Template template, FriendlyByteBuf friendlyByteBuf) {
             friendlyByteBuf.writeUtf(template.entitiesParam);
             friendlyByteBuf.writeInt(template.whitespaceBeforeEntities);
-            friendlyByteBuf.writeResourceLocation(template.source);
+            friendlyByteBuf.writeUtf(template.modId);
         }
 
         public EntityResourceArgument.Info.Template deserializeFromNetwork(FriendlyByteBuf buf) {
-            return new EntityResourceArgument.Info.Template(buf.readUtf(), buf.readInt(), buf.readResourceLocation());
+            return new EntityResourceArgument.Info.Template(buf.readUtf(), buf.readInt(), buf.readUtf());
         }
 
         @Override
         public void serializeToJson(EntityResourceArgument.Info.Template template, JsonObject jsonObject) {
             jsonObject.addProperty("entities_param", template.entitiesParam);
             jsonObject.addProperty("whitespace_before_entities", template.whitespaceBeforeEntities);
-            jsonObject.addProperty("source", template.source.toString());
+            jsonObject.addProperty("source", template.modId);
         }
 
         public EntityResourceArgument.Info.Template unpack(EntityResourceArgument argument) {
-            return new EntityResourceArgument.Info.Template(argument.entitiesParam, argument.whitespaceBeforeEntities, argument.source);
+            return new EntityResourceArgument.Info.Template(argument.entitiesParam, argument.whitespaceBeforeEntities, argument.modId);
         }
 
         public final class Template implements ArgumentTypeInfo.Template<EntityResourceArgument> {
             private final String entitiesParam;
             private final int whitespaceBeforeEntities;
-            private final ResourceLocation source;
+            private final String modId;
 
-            Template(String entitiesParam, int whitespaceBeforeEntities, ResourceLocation source) {
+            Template(String entitiesParam, int whitespaceBeforeEntities, String modId) {
                 this.entitiesParam = entitiesParam;
                 this.whitespaceBeforeEntities = whitespaceBeforeEntities;
-                this.source = source;
+                this.modId = modId;
             }
 
             public EntityResourceArgument instantiate(CommandBuildContext context) {
-                return new EntityResourceArgument(entitiesParam, whitespaceBeforeEntities, source);
+                return new EntityResourceArgument(entitiesParam, whitespaceBeforeEntities, modId);
             }
 
             @Override

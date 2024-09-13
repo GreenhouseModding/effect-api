@@ -7,8 +7,7 @@
   "mixins": [
     "DataComponentMapBuilderAccessor",
     "LootContextAccessor",
-    "LootParamsAccessor",
-    "RegistryDataLoaderMixin"
+    "LootParamsAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

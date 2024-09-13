@@ -2,6 +2,7 @@ package house.greenhouse.test.attachment;
 
 import com.mojang.serialization.Codec;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
+import house.greenhouse.effectapi.api.effect.ResourceEffect;
 import house.greenhouse.effectapi.entity.api.EntityEffectAPI;
 import house.greenhouse.effectapi.impl.EffectAPI;
 import house.greenhouse.test.EffectAPIEntityTest;
@@ -15,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PowersAttachment {
-    public static final ResourceLocation ID = EffectAPIEntityTest.asResource("powers");
     public static final Codec<PowersAttachment> CODEC = Power.CODEC.listOf().xmap(holders -> {
         PowersAttachment attachment = new PowersAttachment();
         for (Holder<Power> power : holders)
@@ -34,8 +34,10 @@ public class PowersAttachment {
         if (provider != null)
             return;
         provider = entity;
-        for (Holder<Power> power : delegatedPowers)
-            addPower(power);
+        for (Holder<Power> power : delegatedPowers) {
+            powers.add(power);
+            EntityEffectAPI.addEffects(provider, power.value().effects().stream().filter(component -> component.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect).flatMap(component -> ((List<EffectAPIEffect>)component.value()).stream()).toList(), createSource(power));
+        }
         delegatedPowers.clear();
         sync();
     }
@@ -57,10 +59,8 @@ public class PowersAttachment {
     }
 
     public void addPower(Holder<Power> power) {
-        EntityEffectAPI.addEffects(provider, power.value().effects().stream().filter(component -> component.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect).flatMap(component -> ((List<EffectAPIEffect>)component.value()).stream()).toList(), ID);
-        EntityEffectAPI.syncEffects(provider);
         powers.add(power);
-        sync();
+        EntityEffectAPI.addEffects(provider, power.value().effects().stream().filter(component -> component.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect).flatMap(component -> ((List<EffectAPIEffect>)component.value()).stream()).toList(), createSource(power));
     }
 
     private void addDelegatedPower(Holder<Power> power) {
@@ -68,19 +68,26 @@ public class PowersAttachment {
     }
 
     public void removePower(Holder<Power> power) {
-        EntityEffectAPI.removeEffects(provider, power.value().effects().stream().filter(component -> component.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect).flatMap(component -> ((List<EffectAPIEffect>)component.value()).stream()).toList(), ID);
-        EntityEffectAPI.syncEffects(provider);
         powers.remove(power);
-        sync();
+        EntityEffectAPI.removeEffects(provider, power.value().effects().stream().filter(component -> component.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect).flatMap(component -> ((List<EffectAPIEffect>)component.value()).stream()).toList(), createSource(power));
     }
 
     public void sync() {
         if (provider.level().isClientSide())
             return;
+        EntityEffectAPI.syncEffects(provider);
         EffectAPI.getHelper().sendClientboundTracking(new SyncPowerAttachmentClientboundPacket(provider.getId(), powers), provider, true);
     }
 
     public void setFromNetwork(List<Holder<Power>> powers) {
         this.powers = powers;
+    }
+
+    public static ResourceLocation createSource(Holder<Power> holder) {
+        return EffectAPIEntityTest.asResource(holder.unwrapKey().map(key -> {
+            String namespace = key.location().getNamespace();
+            String path = key.location().getPath();
+            return "power/" + namespace + "/" + path;
+        }).orElseThrow());
     }
 }

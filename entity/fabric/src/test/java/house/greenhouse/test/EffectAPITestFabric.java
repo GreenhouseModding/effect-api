@@ -17,7 +17,7 @@ public class EffectAPITestFabric implements ModInitializer {
             .initializer(PowersAttachment::new)
             .persistent(PowersAttachment.CODEC)
             .copyOnDeath()
-            .buildAndRegister(PowersAttachment.ID);
+            .buildAndRegister(EffectAPIEntityTest.POWERS_ATTACHMENT_KEY);
 
     @Override
     public void onInitialize() {

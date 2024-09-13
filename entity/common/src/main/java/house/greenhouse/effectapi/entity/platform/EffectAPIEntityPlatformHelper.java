@@ -1,6 +1,7 @@
 package house.greenhouse.effectapi.entity.platform;
 
 import house.greenhouse.effectapi.api.attachment.EffectsAttachment;
+import house.greenhouse.effectapi.api.attachment.ResourcesAttachment;
 import house.greenhouse.effectapi.impl.attachment.ResourcesAttachmentImpl;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
 import house.greenhouse.effectapi.impl.attachment.EffectsAttachmentImpl;
@@ -13,11 +14,11 @@ import org.jetbrains.annotations.Nullable;
 public interface EffectAPIEntityPlatformHelper {
 
     @Nullable
-    ResourcesAttachmentImpl getResources(Entity entity);
+    ResourcesAttachment getResources(Entity entity);
 
     boolean hasResource(Entity entity, ResourceLocation id);
 
-    void setResourcesAttachment(Entity entity, ResourcesAttachmentImpl attachment);
+    void setResourcesAttachment(Entity entity, ResourcesAttachment attachment);
 
     <T> T setResource(Entity entity, ResourceLocation id, T value, ResourceLocation source);
 

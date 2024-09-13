@@ -1,5 +1,9 @@
 package house.greenhouse.effectapi.entity.api;
 
+import house.greenhouse.effectapi.api.attachment.ResourcesAttachment;
+import house.greenhouse.effectapi.entity.impl.network.clientbound.ChangeEntityResourceClientboundPacket;
+import house.greenhouse.effectapi.entity.impl.network.clientbound.SyncEntityResourcesAttachmentClientboundPacket;
+import house.greenhouse.effectapi.impl.EffectAPI;
 import house.greenhouse.effectapi.impl.attachment.ResourcesAttachmentImpl;
 import house.greenhouse.effectapi.api.effect.ResourceEffect;
 import house.greenhouse.effectapi.entity.impl.EffectAPIEntity;
@@ -9,19 +13,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * This class provides some common hooks for the resources attachment.
  */
 public class EntityResourceAPI {
-
-    public static Collection<ResourceEffect.ResourceHolder<Object>> getAllResources(Entity entity) {
-        ResourcesAttachmentImpl attachment = EffectAPIEntity.getHelper().getResources(entity);
-        if (attachment == null)
-            return List.of();
-        return attachment.resources().values();
-    }
-
     /**
      * Checks if an entity has a specific resource.
      * This does not check the value, only if the resource is present on the entity.
@@ -31,10 +28,10 @@ public class EntityResourceAPI {
      * @return              True if the entity has the resource, no matter the value, false if not.
      */
     public static boolean hasResource(Entity entity, ResourceLocation resourceId) {
-        ResourcesAttachmentImpl attachment = EffectAPIEntity.getHelper().getResources(entity);
+        ResourcesAttachment attachment = EffectAPIEntity.getHelper().getResources(entity);
         if (attachment == null)
             return false;
-        return attachment.resources().containsKey(resourceId);
+        return attachment.hasResource(resourceId);
     }
 
     /**
@@ -47,7 +44,7 @@ public class EntityResourceAPI {
      */
     @Nullable
     public static <T> T getResourceValue(Entity entity, ResourceLocation resourceId) {
-        ResourcesAttachmentImpl attachment = EffectAPIEntity.getHelper().getResources(entity);
+        ResourcesAttachment attachment = EffectAPIEntity.getHelper().getResources(entity);
         if (attachment == null)
             return null;
         return attachment.getValue(resourceId);
@@ -60,7 +57,10 @@ public class EntityResourceAPI {
      * @param source    The source of the effect.
      */
     public static <T> T setResourceValue(Entity entity, ResourceLocation resourceId, T value, ResourceLocation source) {
-        return EffectAPIEntity.getHelper().setResource(entity, resourceId, value, source);
+        EffectAPIEntity.getHelper().setResource(entity, resourceId, value, source);
+        if (!entity.level().isClientSide())
+            EffectAPI.getHelper().sendClientboundTracking(new SyncEntityResourcesAttachmentClientboundPacket(entity.getId(), EffectAPIEntity.getHelper().getResources(entity)), entity);
+        return value;
     }
 
     /**
@@ -72,9 +72,7 @@ public class EntityResourceAPI {
      */
     public static void removeResource(Entity entity, ResourceLocation resourceId, ResourceLocation source) {
         EffectAPIEntity.getHelper().removeResource(entity, resourceId, source);
-    }
-
-    public static void sync(Entity entity, ResourceLocation resourceId) {
-
+        if (EffectAPIEntity.getHelper().getResources(entity) != null && !entity.level().isClientSide())
+            EffectAPI.getHelper().sendClientboundTracking(new SyncEntityResourcesAttachmentClientboundPacket(entity.getId(), EffectAPIEntity.getHelper().getResources(entity)), entity);
     }
 }

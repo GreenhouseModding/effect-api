@@ -21,33 +21,30 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class EffectsAttachmentImpl<T> implements EffectsAttachment<T> {
+public abstract class EffectsAttachmentImpl<T> implements EffectsAttachment<T> {
     private final Map<EffectAPIEffect, LootContext> contexts = new HashMap<>();
-    private final ContextFunction<T> contextFunction;
-    private final IndividualNetworkFunction<T> individualNetworkFunction;
-    
-    private final TrackingNetworkFunction<T> trackingNetworkFunction;
-    private final LootContextParamSet paramSet;
 
-    private Object2ObjectArrayMap<ResourceLocation, DataComponentMap> sourcesToComponents = new Object2ObjectArrayMap<>();
-    private DataComponentMap combinedComponents = DataComponentMap.EMPTY;
-    private DataComponentMap activeComponents = DataComponentMap.EMPTY;
+    protected Object2ObjectArrayMap<ResourceLocation, DataComponentMap> sourcesToComponents = new Object2ObjectArrayMap<>();
+    protected DataComponentMap combinedComponents = DataComponentMap.EMPTY;
+    protected DataComponentMap activeComponents = DataComponentMap.EMPTY;
 
-    private T provider;
-
-    public EffectsAttachmentImpl(ContextFunction<T> contextFunction, IndividualNetworkFunction<T> individualNetworkFunction, TrackingNetworkFunction<T> trackingNetworkFunction, LootContextParamSet paramSet) {
-        this.contextFunction = contextFunction;
-        this.individualNetworkFunction = individualNetworkFunction;
-        this.trackingNetworkFunction = trackingNetworkFunction;
-        this.paramSet = paramSet;
-    }
+    protected T provider;
 
     public void init(T provider) {
         if (this.provider != null)
             return;
         this.provider = provider;
+        combineComponents();
         updateActiveComponents();
     }
+
+    public abstract LootContext createLootContext(EffectAPIEffect effect, ResourceLocation source);
+
+    public abstract void sync(ServerPlayer player);
+
+    public abstract void sync();
+
+    public abstract LootContextParamSet paramSet();
 
     public boolean isEmpty() {
         return sourcesToComponents.isEmpty();
@@ -87,23 +84,6 @@ public class EffectsAttachmentImpl<T> implements EffectsAttachment<T> {
                 effect.onRefreshed(contexts.get(effect)));
     }
 
-    private void updateActiveComponents() {
-        DataComponentMap previous = activeComponents;
-        var newComponents = InternalEffectUtil.generateActiveEffectsIfNecessary(contexts, paramSet, combinedComponents, previous);
-        if (newComponents.isEmpty())
-            return;
-        activeComponents = newComponents.get();
-        sync();
-    }
-
-    public void sync(ServerPlayer player) {
-        individualNetworkFunction.send(provider, sourcesToComponents, activeComponents, player);
-    }
-
-    public void sync() {
-        trackingNetworkFunction.send(provider, sourcesToComponents, activeComponents);
-    }
-
     public void addEffect(EffectAPIEffect effect, ResourceLocation source) {
         Object2ObjectArrayMap<ResourceLocation, Map<DataComponentType<?>, List<EffectAPIEffect>>> newMap = new Object2ObjectArrayMap<>();
 
@@ -114,7 +94,7 @@ public class EffectsAttachmentImpl<T> implements EffectsAttachment<T> {
         }
 
         newMap.computeIfAbsent(source, k -> new Reference2ObjectArrayMap<>()).computeIfAbsent(effect.type(), t -> new ArrayList<>()).add(effect);
-        contexts.put(effect, contextFunction.apply(provider, effect, source));
+        contexts.put(effect, createLootContext(effect, source));
 
         Object2ObjectArrayMap<ResourceLocation, DataComponentMap> finalMap = new Object2ObjectArrayMap<>();
         for (var entry : newMap.entrySet()) {
@@ -125,22 +105,45 @@ public class EffectsAttachmentImpl<T> implements EffectsAttachment<T> {
         }
         sourcesToComponents = finalMap;
         combineComponents();
-        updateActiveComponents();
     }
 
     public void removeEffect(EffectAPIEffect effect, ResourceLocation source) {
         if (sourcesToComponents.isEmpty())
             return;
-        Object2ObjectArrayMap<ResourceLocation, DataComponentMap> newMap = new Object2ObjectArrayMap<>(sourcesToComponents);
 
-        newMap.get(source).keySet().removeIf(type -> ((List<?>)sourcesToComponents.get(source).getOrDefault(type, List.of())).stream().anyMatch(object -> object == effect));
-        if (newMap.get(source).isEmpty())
-            newMap.remove(source);
+        Object2ObjectArrayMap<ResourceLocation, Map<DataComponentType<?>, List<EffectAPIEffect>>> newMap = new Object2ObjectArrayMap<>();
+        for (Map.Entry<ResourceLocation, DataComponentMap> holder : sourcesToComponents.entrySet()) {
+            for (var component : holder.getValue())
+                if (component.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect) {
+                    List<EffectAPIEffect> effects = (List<EffectAPIEffect>) new ArrayList<>(list);
+                    effects.remove(effect);
+                    if (effects.isEmpty())
+                        continue;
+                    newMap.computeIfAbsent(holder.getKey(), k -> new Reference2ObjectArrayMap<>()).computeIfAbsent(component.type(), t -> new ArrayList<>()).addAll(effects);
+                }
+        }
 
-        sourcesToComponents = newMap;
-        combineComponents();
-        updateActiveComponents();
+        Object2ObjectArrayMap<ResourceLocation, DataComponentMap> finalMap = new Object2ObjectArrayMap<>();
+        for (var entry : newMap.entrySet()) {
+            DataComponentMap.Builder builder = DataComponentMap.builder();
+            for (var val : entry.getValue().entrySet())
+                builder.set((DataComponentType<? super List<EffectAPIEffect>>) val.getKey(), List.copyOf(val.getValue()));
+            finalMap.put(entry.getKey(), builder.build());
+        }
+
+        effect.onRemoved(contexts.get(effect));
+        sourcesToComponents = finalMap;
         contexts.remove(effect);
+        combineComponents();
+    }
+
+    private void updateActiveComponents() {
+        DataComponentMap previous = activeComponents;
+        var newComponents = InternalEffectUtil.generateActiveEffectsIfNecessary(contexts, paramSet(), combinedComponents, previous);
+        if (newComponents.isEmpty())
+            return;
+        activeComponents = newComponents.get();
+        sync();
     }
 
     private void combineComponents() {
@@ -159,20 +162,5 @@ public class EffectsAttachmentImpl<T> implements EffectsAttachment<T> {
         this.sourcesToComponents = allComponents;
         combineComponents();
         this.activeComponents = activeComponents;
-    }
-
-    @FunctionalInterface
-    public interface ContextFunction<T> {
-        LootContext apply(T provider, EffectAPIEffect effect, ResourceLocation source);
-    }
-
-    @FunctionalInterface
-    public interface IndividualNetworkFunction<T> {
-        void send(T provider, Object2ObjectArrayMap<ResourceLocation, DataComponentMap> sourcesToComponents, DataComponentMap activeComponents, ServerPlayer receiver);
-    }
-    
-    @FunctionalInterface
-    public interface TrackingNetworkFunction<T> {
-        void send(T provider, Object2ObjectArrayMap<ResourceLocation, DataComponentMap> sourcesToComponents, DataComponentMap activeComponents);
     }
 }

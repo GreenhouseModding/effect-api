@@ -6,16 +6,12 @@ import house.greenhouse.effectapi.api.registry.EffectAPILootContextParams;
 import house.greenhouse.effectapi.entity.api.EffectAPIEntityEffectTypes;
 import house.greenhouse.effectapi.entity.api.EntityResourceAPI;
 import house.greenhouse.effectapi.entity.api.registry.EffectAPIEntityLootContextParamSets;
-import house.greenhouse.effectapi.entity.impl.network.clientbound.ChangeEntityResourceClientboundPacket;
-import house.greenhouse.effectapi.impl.EffectAPI;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-
-import java.util.Optional;
 
 public class EntityResourceEffect<T> extends ResourceEffect<T> {
     public static final Codec<EntityResourceEffect<?>> CODEC = ResourceEffectCodec.create(triple -> new EntityResourceEffect<>(triple.getLeft(), triple.getMiddle(), triple.getRight()));
@@ -28,19 +24,13 @@ public class EntityResourceEffect<T> extends ResourceEffect<T> {
     @Override
     public void onAdded(LootContext lootContext) {
         Entity entity = lootContext.getParam(LootContextParams.THIS_ENTITY);
-        T value;
-        if (EntityResourceAPI.hasResource(entity, id))
-            value = EntityResourceAPI.getResourceValue(entity, id);
-        else
-            value = EntityResourceAPI.setResourceValue(entity, id, defaultValue, lootContext.getParamOrNull(EffectAPILootContextParams.SOURCE));
-        EffectAPI.getHelper().sendClientboundTracking(new ChangeEntityResourceClientboundPacket<>(entity.getId(), this, Optional.of(lootContext.getParam(EffectAPILootContextParams.SOURCE)), Optional.of(value)), entity);
+        EntityResourceAPI.setResourceValue(entity, id, EntityResourceAPI.hasResource(entity, id) ? EntityResourceAPI.getResourceValue(entity, id) : defaultValue, lootContext.getParamOrNull(EffectAPILootContextParams.SOURCE));
     }
 
     @Override
     public void onRemoved(LootContext lootContext) {
         Entity entity = lootContext.getParam(LootContextParams.THIS_ENTITY);
         EntityResourceAPI.removeResource(entity, id, lootContext.getParamOrNull(EffectAPILootContextParams.SOURCE));
-        EffectAPI.getHelper().sendClientboundTracking(new ChangeEntityResourceClientboundPacket<>(entity.getId(), this, Optional.empty(), Optional.empty()), entity);
     }
 
     @Override

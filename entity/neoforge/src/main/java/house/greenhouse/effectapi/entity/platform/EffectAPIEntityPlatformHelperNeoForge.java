@@ -1,5 +1,6 @@
 package house.greenhouse.effectapi.entity.platform;
 
+import house.greenhouse.effectapi.api.attachment.ResourcesAttachment;
 import house.greenhouse.effectapi.impl.attachment.ResourcesAttachmentImpl;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
 import house.greenhouse.effectapi.entity.api.EntityEffectAPI;
@@ -14,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class EffectAPIEntityPlatformHelperNeoForge implements EffectAPIEntityPlatformHelper {
     @Override
-    public ResourcesAttachmentImpl getResources(Entity entity) {
+    public ResourcesAttachment getResources(Entity entity) {
         return entity.getExistingData(EffectAPIAttachments.RESOURCES).orElse(null);
     }
 
@@ -24,23 +25,23 @@ public class EffectAPIEntityPlatformHelperNeoForge implements EffectAPIEntityPla
     }
 
     @Override
-    public void setResourcesAttachment(Entity entity, ResourcesAttachmentImpl attachment) {
+    public void setResourcesAttachment(Entity entity, ResourcesAttachment attachment) {
         entity.setData(EffectAPIAttachments.RESOURCES, attachment);
     }
 
     @Override
     public <T> T setResource(Entity entity, ResourceLocation id, T value, @Nullable ResourceLocation source) {
-        ResourcesAttachmentImpl attachment = entity.getData(EffectAPIAttachments.RESOURCES);
+        ResourcesAttachment attachment = entity.getData(EffectAPIAttachments.RESOURCES);
         return attachment.setValue(id, value, source);
     }
 
     @Override
     public void removeResource(Entity entity, ResourceLocation id, ResourceLocation source) {
-        ResourcesAttachmentImpl attachment = getResources(entity);
+        ResourcesAttachment attachment = getResources(entity);
         if (attachment == null)
             return;
-        attachment.resources().remove(id);
-        if (attachment.resources().isEmpty())
+        attachment.removeValue(id, source);
+        if (attachment.isEmpty())
             entity.removeData(EffectAPIAttachments.RESOURCES);
     }
 
@@ -63,8 +64,6 @@ public class EffectAPIEntityPlatformHelperNeoForge implements EffectAPIEntityPla
         var attachment = entity.getExistingData(EffectAPIEntityAttachments.ENTITY_EFFECTS);
         if (attachment.isEmpty() || !attachment.get().hasEffect(effect, true))
             return;
-        if (attachment.get().isActive(effect))
-            effect.onRemoved(EntityEffectAPI.createEntityOnlyContext(entity));
         attachment.get().removeEffect(effect, source);
         if (attachment.get().isEmpty())
             entity.removeData(EffectAPIEntityAttachments.ENTITY_EFFECTS);

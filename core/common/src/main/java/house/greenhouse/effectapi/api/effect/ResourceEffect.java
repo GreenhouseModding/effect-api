@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+// TODO: Create a datapack registry for resources.
 public abstract class ResourceEffect<T> implements EffectAPIEffect {
     protected final ResourceLocation id;
     protected final Codec<T> resourceType;
@@ -24,8 +25,8 @@ public abstract class ResourceEffect<T> implements EffectAPIEffect {
         this.id = id;
         this.resourceType = resourceType;
         this.defaultValue = defaultValue;
-        InternalResourceUtil.putInEffectMap(id, this);
     }
+
     public ResourceLocation getId() {
         return id;
     }
@@ -42,12 +43,10 @@ public abstract class ResourceEffect<T> implements EffectAPIEffect {
 
         private final ResourceEffect<T> effect;
         private T value;
-        private final ResourceLocation source;
 
-        public ResourceHolder(ResourceEffect<T> effect, ResourceLocation source) {
+        public ResourceHolder(ResourceEffect<T> effect) {
             this.effect = effect;
             this.value = effect.defaultValue;
-            this.source = source;
         }
 
         public ResourceEffect<T> getEffect() {
@@ -61,14 +60,9 @@ public abstract class ResourceEffect<T> implements EffectAPIEffect {
         public void setValue(T value) {
             this.value = value;
         }
-
-        public ResourceLocation getSource() {
-            return source;
-        }
     }
 
     public static class ResourceEffectCodec<E extends ResourceEffect<?>> implements Codec<ResourceEffect<?>> {
-        private static boolean registryPhase = false;
         private static final Map<ResourceLocation, ResourceEffect<?>> LOADED_EFFECTS = new HashMap<>();
 
         private final Function<Triple<ResourceLocation, Codec<Object>, Object>, E> constructor;
@@ -80,10 +74,6 @@ public abstract class ResourceEffect<T> implements EffectAPIEffect {
 
         public static <E extends ResourceEffect<?>> Codec<E> create(Function<Triple<ResourceLocation, Codec<Object>, Object>, E> constructor) {
             return new ResourceEffectCodec(constructor);
-        }
-
-        public static void setRegistryPhase(boolean value) {
-            registryPhase = value;
         }
 
         public static void clearLoadedEffects() {
@@ -100,8 +90,6 @@ public abstract class ResourceEffect<T> implements EffectAPIEffect {
             if (id.isError())
                 return DataResult.error(() -> "Failed to decode 'id' field for `effectapi:resource` effect." + id.error().get().message());
 
-            if (LOADED_EFFECTS.containsKey(id.getOrThrow().getFirst()))
-                return DataResult.success(Pair.of(LOADED_EFFECTS.get(id.getOrThrow().getFirst()), input));
 
             var resourceType = EffectAPIRegistries.RESOURCE_TYPE.byNameCodec().decode(ops, mapLike.getOrThrow().get("resource_type"));
             if (resourceType.isError())
@@ -112,9 +100,19 @@ public abstract class ResourceEffect<T> implements EffectAPIEffect {
             if (defaultValue.isError())
                 return DataResult.error(() -> "Failed to decode 'default_value' field for `effectapi:resource` effect." + resourceType.error().get().message());
 
+            if (LOADED_EFFECTS.containsKey(id.getOrThrow().getFirst())) {
+                ResourceEffect<?> effect = LOADED_EFFECTS.get(id.getOrThrow().getFirst());
+                if (!effect.defaultValue.equals(defaultValue.getOrThrow().getFirst())) {
+                    LOADED_EFFECTS.clear();
+                    return DataResult.error(() -> "Resources with the same id (" + id.getOrThrow().getFirst() + ") must share the same field values.");
+                }
+            }
+
             E effect = constructor.apply(Triple.of(id.getOrThrow().getFirst(), resourceTypeCodec, defaultValue.getOrThrow().getFirst()));
-            if (registryPhase)
+            if (!LOADED_EFFECTS.containsKey(id.getOrThrow().getFirst())) {
                 LOADED_EFFECTS.put(id.getOrThrow().getFirst(), effect);
+                InternalResourceUtil.putInEffectMap(id.getOrThrow().getFirst(), effect);
+            }
             return DataResult.success(Pair.of(effect, input));
         }
 

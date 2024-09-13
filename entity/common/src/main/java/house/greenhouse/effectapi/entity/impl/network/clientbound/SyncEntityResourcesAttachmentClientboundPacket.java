@@ -1,5 +1,6 @@
 package house.greenhouse.effectapi.entity.impl.network.clientbound;
 
+import house.greenhouse.effectapi.api.attachment.ResourcesAttachment;
 import house.greenhouse.effectapi.impl.attachment.ResourcesAttachmentImpl;
 import house.greenhouse.effectapi.entity.impl.EffectAPIEntity;
 import house.greenhouse.effectapi.impl.EffectAPI;
@@ -11,7 +12,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 
-public record SyncEntityResourcesAttachmentClientboundPacket(int entityId, ResourcesAttachmentImpl attachment) implements CustomPacketPayload {
+public record SyncEntityResourcesAttachmentClientboundPacket(int entityId, ResourcesAttachment attachment) implements CustomPacketPayload {
     public static final ResourceLocation ID = EffectAPI.asResource("sync_entity_resources_attachment");
     public static final Type<SyncEntityResourcesAttachmentClientboundPacket> TYPE = new Type<>(ID);
     public static final StreamCodec<RegistryFriendlyByteBuf, SyncEntityResourcesAttachmentClientboundPacket> STREAM_CODEC = StreamCodec.of(SyncEntityResourcesAttachmentClientboundPacket::write, SyncEntityResourcesAttachmentClientboundPacket::new);

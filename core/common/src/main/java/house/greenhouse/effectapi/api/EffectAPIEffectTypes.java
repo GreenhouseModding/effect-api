@@ -41,19 +41,19 @@ public class EffectAPIEffectTypes {
 
     @ApiStatus.Internal
     private static DataResult<Map<DataComponentType<?>, Object>> decodeComponents(DataComponentMap map) {
-        int $$1 = map.size();
-        if ($$1 == 0) {
+        int size = map.size();
+        if (size == 0) {
             return DataResult.success(Reference2ObjectMaps.emptyMap());
         } else {
-            Reference2ObjectMap<DataComponentType<?>, Object> $$2 = new Reference2ObjectArrayMap<>($$1);
+            Reference2ObjectMap<DataComponentType<?>, Object> map2 = new Reference2ObjectArrayMap<>(size);
 
-            for (TypedDataComponent<?> $$3 : map) {
-                if (!$$3.type().isTransient()) {
-                    $$2.put($$3.type(), $$3.value());
+            for (TypedDataComponent<?> component : map) {
+                if (!component.type().isTransient()) {
+                    map2.put(component.type(), component.value());
                 }
             }
 
-            return DataResult.success($$2);
+            return DataResult.success(map2);
         }
     }
 }
