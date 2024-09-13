@@ -81,7 +81,7 @@ public class EffectAPIEntityNeoForge {
         }
 
         @SubscribeEvent
-        public static void onEntityJoinLevel(PlayerEvent.PlayerLoggedInEvent event) {
+        public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
             if (event.getEntity().hasData(EffectAPIEntityAttachments.ENTITY_EFFECTS)) {
                 event.getEntity().getData(EffectAPIEntityAttachments.ENTITY_EFFECTS).init(event.getEntity());
                 EntityEffectUtil.syncEffects(event.getEntity());

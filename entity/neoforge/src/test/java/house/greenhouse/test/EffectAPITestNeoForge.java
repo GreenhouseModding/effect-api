@@ -10,6 +10,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
@@ -49,6 +50,24 @@ public class EffectAPITestNeoForge {
 
     @EventBusSubscriber(modid = EffectAPIEntityTest.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
     public static class GameEvents {
+        @SubscribeEvent
+        public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
+            if (event.getEntity().hasData(POWERS)) {
+                PowersAttachment attachment = event.getEntity().getData(POWERS);
+                attachment.init(event.getEntity());
+                attachment.sync();
+            }
+        }
+
+        @SubscribeEvent
+        public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+            if (event.getEntity().hasData(POWERS)) {
+                PowersAttachment attachment = event.getEntity().getData(POWERS);
+                attachment.init(event.getEntity());
+                attachment.sync();
+            }
+        }
+
         @SubscribeEvent
         public static void onStartTracking(PlayerEvent.StartTracking event) {
             if (event.getTarget().hasData(POWERS)) {
