@@ -100,7 +100,7 @@ public class EffectAPIConditionalEffect<T extends EffectAPIEffect> implements Ef
     @Override
     public void tick(LootContext context) {
         ticks.computeIfPresent(context, (ctx, l) -> l + 1);
-        if (effect.shouldTick(context, previousValue))
+        if (effect.shouldTick(context, previousValue && effect.isActive(context)))
             effect.tick(context);
     }
 
