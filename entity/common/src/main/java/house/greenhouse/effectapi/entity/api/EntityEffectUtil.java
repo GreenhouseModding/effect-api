@@ -65,7 +65,6 @@ public class EntityEffectUtil {
      * @param source    The source of the effect.
      */
     public static void addEffect(Entity entity, EffectAPIEffect effect, ResourceLocation source) {
-        effect.onAdded(createEntityOnlyContext(entity, source));
         EffectAPIEntity.getHelper().addEntityEffect(entity, effect, source);
     }
 
@@ -78,7 +77,6 @@ public class EntityEffectUtil {
      */
     public static void addEffects(Entity entity, List<? extends EffectAPIEffect> effects, ResourceLocation source) {
         for (EffectAPIEffect effect : effects) {
-            effect.onAdded(createEntityOnlyContext(entity, source));
             EffectAPIEntity.getHelper().addEntityEffect(entity, effect, source);
         }
     }
@@ -91,7 +89,7 @@ public class EntityEffectUtil {
      * @param source    The source of the effect.
      */
     public static void removeEffect(Entity entity, EffectAPIEffect effect, ResourceLocation source) {
-        effect.onRemoved(createEntityOnlyContext(entity, source));
+        effect.onRemoved(createEntityOnlyContext(entity));
         EffectAPIEntity.getHelper().removeEntityEffect(entity, effect, source);
     }
 
@@ -104,7 +102,7 @@ public class EntityEffectUtil {
      */
     public static void removeEffects(Entity entity, List<? extends EffectAPIEffect> effects, ResourceLocation source) {
         for (EffectAPIEffect effect : effects) {
-            effect.onRemoved(createEntityOnlyContext(entity, source));
+            effect.onRemoved(createEntityOnlyContext(entity));
             EffectAPIEntity.getHelper().removeEntityEffect(entity, effect, source);
         }
     }

@@ -87,10 +87,15 @@ public class InternalEffectUtil {
                         newMap.computeIfAbsent(component.type(), type -> new ArrayList<>()).add(effect);
                         continue;
                     }
-                    if (effect.paramSet() == paramSet && effect.isActive(context1)) {
-                        newMap.computeIfAbsent(component.type(), type -> new ArrayList<>()).add(effect);
-                        if (previousMap.stream().map(c -> ((List<?>) c.value())).noneMatch(cs -> cs.contains(effect)))
-                            effect.onAdded(context1);
+                    if (effect.paramSet() == paramSet) {
+                        if (effect.isActive(context1)) {
+                            newMap.computeIfAbsent(component.type(), type -> new ArrayList<>()).add(effect);
+                            if (previousMap.stream().map(c -> ((List<?>) c.value())).noneMatch(cs -> cs.contains(effect)))
+                                effect.onAdded(context1);
+                        } else {
+                            if (previousMap.stream().map(c -> ((List<?>) c.value())).anyMatch(cs -> cs.contains(effect)))
+                                effect.onRemoved(context1);
+                        }
                     }
                 }
         }

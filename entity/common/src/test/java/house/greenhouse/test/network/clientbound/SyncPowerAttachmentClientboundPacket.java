@@ -2,6 +2,7 @@ package house.greenhouse.test.network.clientbound;
 
 import house.greenhouse.test.EffectAPIEntityTest;
 import house.greenhouse.test.Power;
+import house.greenhouse.test.attachment.PowersAttachment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.NbtOps;
@@ -31,8 +32,9 @@ public record SyncPowerAttachmentClientboundPacket(int entityId, List<Holder<Pow
     public void handle() {
         Minecraft.getInstance().execute(() -> {
             Entity entity = Minecraft.getInstance().level.getEntity(entityId);
-            EffectAPIEntityTest.getHelper().getPowers(entity).setFromNetwork(allPowers);
-            if (EffectAPIEntityTest.getHelper().getPowers(entity).isEmpty())
+            PowersAttachment attachment = EffectAPIEntityTest.getHelper().getPowers(entity);
+            attachment.setFromNetwork(allPowers);
+            if (allPowers.isEmpty())
                 EffectAPIEntityTest.getHelper().removePowerAttachment(entity);
         });
     }
