@@ -172,7 +172,7 @@ public class TestCommand {
 
         for (Entity entity : entities) {
             if (EffectAPIEntity.getHelper().getResources(entity) != null && EffectAPIEntity.getHelper().getResources(entity).resources().containsKey(resource.getId())) {
-                EffectAPIEntity.getHelper().setResource(entity, resource.getId(), value, null);
+                EffectAPIEntity.getHelper().setResource(entity, resource.getId(), value, EffectAPIEntityTest.POWER.location());
                 ++successes;
             }
         }

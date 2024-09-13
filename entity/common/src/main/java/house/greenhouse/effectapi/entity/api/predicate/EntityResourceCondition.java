@@ -27,7 +27,7 @@ public record EntityResourceCondition(ResourceEffect<Object> effect, Object valu
         if (!context.hasParam(entityTarget.getParam()))
             return false;
         Entity entity = context.getParam(entityTarget.getParam());
-        Object compareTo = EntityResourceUtil.getResource(entity, effect.getId());
+        Object compareTo = EntityResourceUtil.getResourceValue(entity, effect.getId());
         return value.equals(compareTo);
     }
 

@@ -34,7 +34,7 @@ public class EntityResourceUtil {
         ResourcesAttachment attachment = EffectAPIEntity.getHelper().getResources(entity);
         if (attachment == null)
             return false;
-        return !attachment.resources().containsKey(resourceId);
+        return attachment.resources().containsKey(resourceId);
     }
 
     /**
@@ -46,7 +46,7 @@ public class EntityResourceUtil {
      * @param <T>           The type of the resource's value.
      */
     @Nullable
-    public static <T> T getResource(Entity entity, ResourceLocation resourceId) {
+    public static <T> T getResourceValue(Entity entity, ResourceLocation resourceId) {
         ResourcesAttachment attachment = EffectAPIEntity.getHelper().getResources(entity);
         if (attachment == null)
             return null;
@@ -59,7 +59,7 @@ public class EntityResourceUtil {
      * @param entity    The entity to add the effect to.
      * @param source    The source of the effect.
      */
-    public static <T> T setResource(Entity entity, ResourceLocation resourceId, T value, ResourceLocation source) {
+    public static <T> T setResourceValue(Entity entity, ResourceLocation resourceId, T value, ResourceLocation source) {
         return EffectAPIEntity.getHelper().setResource(entity, resourceId, value, source);
     }
 
@@ -72,5 +72,9 @@ public class EntityResourceUtil {
      */
     public static void removeResource(Entity entity, ResourceLocation resourceId, ResourceLocation source) {
         EffectAPIEntity.getHelper().removeResource(entity, resourceId, source);
+    }
+
+    public static void sync(Entity entity, ResourceLocation resourceId) {
+
     }
 }

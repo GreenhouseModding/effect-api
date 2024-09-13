@@ -36,9 +36,9 @@ public class EffectAPIEntityEffectTypes {
             .build();
 
     public static void registerAll(RegistrationCallback<DataComponentType<?>> callback) {
-        callback.register(EffectAPIEntityRegistries.EFFECT_COMPONENT_TYPE, EffectAPI.asResource("entity_attribute"), ENTITY_ATTRIBUTE);
-        callback.register(EffectAPIEntityRegistries.EFFECT_COMPONENT_TYPE, EffectAPI.asResource("entity_tick"), ENTITY_TICK);
-        callback.register(EffectAPIEntityRegistries.EFFECT_COMPONENT_TYPE, EffectAPI.asResource("entity_resource"), ENTITY_RESOURCE);
-        callback.register(EffectAPIEntityRegistries.EFFECT_COMPONENT_TYPE, EffectAPI.asResource("entity_trigger"), ENTITY_TRIGGER);
+        callback.register(EffectAPIEntityRegistries.EFFECT_COMPONENT_TYPE, EffectAPI.asResource("attribute"), ENTITY_ATTRIBUTE);
+        callback.register(EffectAPIEntityRegistries.EFFECT_COMPONENT_TYPE, EffectAPI.asResource("tick"), ENTITY_TICK);
+        callback.register(EffectAPIEntityRegistries.EFFECT_COMPONENT_TYPE, EffectAPI.asResource("resource"), ENTITY_RESOURCE);
+        callback.register(EffectAPIEntityRegistries.EFFECT_COMPONENT_TYPE, EffectAPI.asResource("trigger"), ENTITY_TRIGGER);
     }
 }

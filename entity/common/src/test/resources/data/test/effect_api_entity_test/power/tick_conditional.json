@@ -1,5 +1,5 @@
 {
-  "effect_api:entity_tick": [
+  "effect_api:tick": [
     {
       "effect": {
         "type": "effect_api:enchantment_entity_effect",

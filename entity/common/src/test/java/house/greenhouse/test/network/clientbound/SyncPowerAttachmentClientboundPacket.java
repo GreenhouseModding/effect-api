@@ -6,9 +6,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 
@@ -20,12 +20,12 @@ public record SyncPowerAttachmentClientboundPacket(int entityId, List<Holder<Pow
     public static final StreamCodec<RegistryFriendlyByteBuf, SyncPowerAttachmentClientboundPacket> STREAM_CODEC = StreamCodec.of(SyncPowerAttachmentClientboundPacket::write, SyncPowerAttachmentClientboundPacket::new);
 
     public SyncPowerAttachmentClientboundPacket(RegistryFriendlyByteBuf buf) {
-        this(buf.readInt(), Power.CODEC.listOf().fieldOf("powers").codec().decode(RegistryOps.create(NbtOps.INSTANCE, buf.registryAccess()), buf.readNbt()).getOrThrow().getFirst());
+        this(buf.readInt(), ByteBufCodecs.fromCodecWithRegistries(Power.CODEC.listOf().fieldOf("powers").codec()).decode(buf));
     }
 
     public static void write(RegistryFriendlyByteBuf buf, SyncPowerAttachmentClientboundPacket packet) {
         buf.writeInt(packet.entityId);
-        buf.writeNbt(Power.CODEC.listOf().fieldOf("powers").codec().encodeStart(RegistryOps.create(NbtOps.INSTANCE, buf.registryAccess()), packet.allPowers).getOrThrow());
+        ByteBufCodecs.fromCodecWithRegistries(Power.CODEC.listOf().fieldOf("powers").codec()).encode(buf, packet.allPowers);
     }
 
     public void handle() {

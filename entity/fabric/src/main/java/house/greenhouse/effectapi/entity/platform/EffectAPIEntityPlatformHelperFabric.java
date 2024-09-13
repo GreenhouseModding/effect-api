@@ -5,12 +5,12 @@ import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
 import house.greenhouse.effectapi.entity.api.attachment.EntityEffectsAttachment;
 import house.greenhouse.effectapi.entity.impl.registry.EffectAPIEntityAttachments;
 import house.greenhouse.effectapi.impl.registry.EffectAPIAttachments;
+import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
 import java.util.Optional;
 
 public class EffectAPIEntityPlatformHelperFabric implements EffectAPIEntityPlatformHelper {
@@ -71,7 +71,7 @@ public class EffectAPIEntityPlatformHelperFabric implements EffectAPIEntityPlatf
     }
 
     @Override
-    public void setEntityEffects(Entity entity, Map<ResourceLocation, DataComponentMap> alLComponents, DataComponentMap activeComponents) {
+    public void setEntityEffects(Entity entity, Object2ObjectArrayMap<ResourceLocation, DataComponentMap> alLComponents, DataComponentMap activeComponents) {
         if (alLComponents.isEmpty())
             entity.removeAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS);
         else

@@ -1,5 +1,5 @@
 {
-  "effect_api:entity_trigger": [
+  "effect_api:trigger": [
     {
       "effect": {
         "on_added": {

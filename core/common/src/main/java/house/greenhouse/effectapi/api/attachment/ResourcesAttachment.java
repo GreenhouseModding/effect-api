@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 public record ResourcesAttachment(Map<ResourceLocation, ResourceEffect.ResourceHolder<Object>> resources) {
     public static final Codec<ResourcesAttachment> CODEC = new AttachmentCodec();
@@ -61,23 +60,23 @@ public record ResourcesAttachment(Map<ResourceLocation, ResourceEffect.ResourceH
 
         @Override
         public <T> DataResult<Pair<ResourcesAttachment, T>> decode(DynamicOps<T> ops, T input) {
-            DataResult<Stream<T>> stream = ops.getStream(input);
-            if (stream.isError()) {
-                return DataResult.error(() -> stream.error().get().message());
+            DataResult<MapLike<T>> map = ops.getMap(input);
+            if (map.isError()) {
+                return DataResult.error(() -> map.error().get().message());
             }
 
             Map<ResourceLocation, ResourceEffect.ResourceHolder<Object>> finalMap = new HashMap<>();
             List<String> errors = new ArrayList<>();
 
-            for (T entry : stream.getOrThrow().toList()) {
-                DataResult<MapLike<T>> mapLike = ops.getMap(entry);
-                if (mapLike.isError()) {
-                    return DataResult.error(() -> stream.error().get().message());
-                }
-
-                DataResult<Pair<ResourceLocation, T>> id = ResourceLocation.CODEC.decode(ops, mapLike.getOrThrow().get("id"));
+            for (Pair<T, T> entry : map.getOrThrow().entries().toList()) {
+                DataResult<Pair<ResourceLocation, T>> id = ResourceLocation.CODEC.decode(ops, entry.getFirst());
+                DataResult<MapLike<T>> mapLike = ops.getMap(entry.getSecond());
                 if (id.isError()) {
-                    errors.add("Failed to parse id in attachment. (Skipping). " + id.error().get().message());
+                    errors.add("Failed to parse id \"" + id + "\" in attachment. (Skipping). " + id.error().get().message());
+                    continue;
+                }
+                if (mapLike.isError()) {
+                    errors.add("Attempt to deserialize resource \"" + id + "\" that is not a map. (Skipping). " + id.error().get().message());
                     continue;
                 }
 
@@ -119,20 +118,18 @@ public record ResourcesAttachment(Map<ResourceLocation, ResourceEffect.ResourceH
 
         @Override
         public <T> DataResult<T> encode(ResourcesAttachment input, DynamicOps<T> ops, T prefix) {
-            List<T> list = new ArrayList<>();
-
+            Map<T, T> map = new HashMap<>();
             for (Map.Entry<ResourceLocation, ResourceEffect.ResourceHolder<Object>> entry : input.resources.entrySet()) {
-                Map<T, T> map = new HashMap<>();
                 try {
-                    map.put(ops.createString("id"), ResourceLocation.CODEC.encodeStart(ops, entry.getKey()).getOrThrow());
-                    map.put(ops.createString("value"), entry.getValue().getEffect().getResourceTypeCodec().encodeStart(ops, entry.getValue().getValue()).getOrThrow());
-                    map.put(ops.createString("source"), ResourceLocation.CODEC.encodeStart(ops, entry.getValue().getSource()).getOrThrow());
+                    Map<T, T> innerMap = new HashMap<>();
+                    innerMap.put(ops.createString("value"), entry.getValue().getEffect().getResourceTypeCodec().encodeStart(ops, entry.getValue().getValue()).getOrThrow());
+                    innerMap.put(ops.createString("source"), ResourceLocation.CODEC.encodeStart(ops, entry.getValue().getSource()).getOrThrow());
+                    map.put(ResourceLocation.CODEC.encodeStart(ops, entry.getKey()).getOrThrow(), ops.createMap(innerMap));
                 } catch (Exception ex) {
                     EffectAPI.LOG.error("Failed to encode resource '{}' to attachment. (Skipping).", entry.getKey(), ex);
                 }
-                list.add(ops.createMap(map));
             }
-            return DataResult.success(ops.createList(list.stream()));
+            return DataResult.success(ops.createMap(map));
         }
     }
 }

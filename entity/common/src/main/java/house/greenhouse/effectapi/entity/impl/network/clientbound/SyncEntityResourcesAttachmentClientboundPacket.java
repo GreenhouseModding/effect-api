@@ -6,6 +6,7 @@ import house.greenhouse.effectapi.impl.EffectAPI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.RegistryOps;
@@ -18,12 +19,12 @@ public record SyncEntityResourcesAttachmentClientboundPacket(int entityId, Resou
     public static final StreamCodec<RegistryFriendlyByteBuf, SyncEntityResourcesAttachmentClientboundPacket> STREAM_CODEC = StreamCodec.of(SyncEntityResourcesAttachmentClientboundPacket::write, SyncEntityResourcesAttachmentClientboundPacket::new);
 
     public SyncEntityResourcesAttachmentClientboundPacket(RegistryFriendlyByteBuf buf) {
-        this(buf.readInt(), ResourcesAttachment.CODEC.decode(RegistryOps.create(NbtOps.INSTANCE, buf.registryAccess()), buf.readNbt()).getOrThrow().getFirst());
+        this(buf.readInt(), ByteBufCodecs.fromCodecWithRegistries(ResourcesAttachment.CODEC).decode(buf));
     }
 
     public static void write(RegistryFriendlyByteBuf buf, SyncEntityResourcesAttachmentClientboundPacket packet) {
         buf.writeInt(packet.entityId);
-        buf.writeNbt(ResourcesAttachment.CODEC.encodeStart(RegistryOps.create(NbtOps.INSTANCE, buf.registryAccess()), packet.attachment).getOrThrow());
+        ByteBufCodecs.fromCodecWithRegistries(ResourcesAttachment.CODEC).encode(buf, packet.attachment);
     }
 
     public void handle() {

@@ -71,6 +71,26 @@ public class EffectAPIEntityNeoForge {
     @EventBusSubscriber(modid = EffectAPI.MOD_ID + "_entity", bus = EventBusSubscriber.Bus.GAME)
     public static class GameEvents {
         @SubscribeEvent
+        public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
+            if (event.getEntity().hasData(EffectAPIEntityAttachments.ENTITY_EFFECTS)) {
+                event.getEntity().getData(EffectAPIEntityAttachments.ENTITY_EFFECTS).init(event.getEntity());
+                EntityEffectUtil.syncEffects(event.getEntity());
+            }
+            if (event.getEntity().hasData(EffectAPIAttachments.RESOURCES))
+                EffectAPI.getHelper().sendClientboundTracking(new SyncEntityResourcesAttachmentClientboundPacket(event.getEntity().getId(), event.getEntity().getData(EffectAPIAttachments.RESOURCES)), event.getEntity());
+        }
+
+        @SubscribeEvent
+        public static void onEntityJoinLevel(PlayerEvent.PlayerLoggedInEvent event) {
+            if (event.getEntity().hasData(EffectAPIEntityAttachments.ENTITY_EFFECTS)) {
+                event.getEntity().getData(EffectAPIEntityAttachments.ENTITY_EFFECTS).init(event.getEntity());
+                EntityEffectUtil.syncEffects(event.getEntity());
+            }
+            if (event.getEntity().hasData(EffectAPIAttachments.RESOURCES))
+                EffectAPI.getHelper().sendClientboundTracking(new SyncEntityResourcesAttachmentClientboundPacket(event.getEntity().getId(), event.getEntity().getData(EffectAPIAttachments.RESOURCES)), event.getEntity());
+        }
+
+        @SubscribeEvent
         public static void onStartTracking(PlayerEvent.StartTracking event) {
             if (event.getEntity().hasData(EffectAPIEntityAttachments.ENTITY_EFFECTS)) {
                 event.getEntity().getData(EffectAPIEntityAttachments.ENTITY_EFFECTS).init(event.getEntity());
@@ -81,12 +101,13 @@ public class EffectAPIEntityNeoForge {
         }
 
         @SubscribeEvent
-        public static void onStartTracking(PlayerEvent.Clone event) {
+        public static void onPlayerClone(PlayerEvent.Clone event) {
             if (event.getOriginal().hasData(EffectAPIEntityAttachments.ENTITY_EFFECTS)) {
                 event.getEntity().setData(EffectAPIEntityAttachments.ENTITY_EFFECTS, event.getOriginal().getData(EffectAPIEntityAttachments.ENTITY_EFFECTS));
                 EntityEffectsAttachment attachment = event.getEntity().getData(EffectAPIEntityAttachments.ENTITY_EFFECTS);
                 attachment.init(event.getEntity());
                 attachment.refresh();
+                attachment.sync();
             }
         }
     }

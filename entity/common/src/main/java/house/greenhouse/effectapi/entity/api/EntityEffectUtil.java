@@ -49,11 +49,11 @@ public class EntityEffectUtil {
      * @param type      The type of effect to check.
      * @return          True if the entity has an instance of the effect, false if not.
      */
-    public static boolean hasEffectType(Entity entity, DataComponentType<?> type) {
+    public static <T extends EffectAPIEffect> boolean hasEffectType(Entity entity, DataComponentType<List<T>> type) {
         EntityEffectsAttachment attachment = EffectAPIEntity.getHelper().getEntityEffects(entity);
         if (attachment == null)
             return false;
-        return !attachment.getEffects((DataComponentType)type).isEmpty();
+        return attachment.hasEffectType(type);
     }
 
     /**
@@ -65,7 +65,7 @@ public class EntityEffectUtil {
      * @param source    The source of the effect.
      */
     public static void addEffect(Entity entity, EffectAPIEffect effect, ResourceLocation source) {
-        effect.onRemoved(createEntityOnlyContext(entity, source));
+        effect.onAdded(createEntityOnlyContext(entity, source));
         EffectAPIEntity.getHelper().addEntityEffect(entity, effect, source);
     }
 
@@ -78,7 +78,7 @@ public class EntityEffectUtil {
      */
     public static void addEffects(Entity entity, List<? extends EffectAPIEffect> effects, ResourceLocation source) {
         for (EffectAPIEffect effect : effects) {
-            effect.onRemoved(createEntityOnlyContext(entity, source));
+            effect.onAdded(createEntityOnlyContext(entity, source));
             EffectAPIEntity.getHelper().addEntityEffect(entity, effect, source);
         }
     }
