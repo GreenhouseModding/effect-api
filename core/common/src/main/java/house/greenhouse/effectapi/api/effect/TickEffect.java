@@ -11,4 +11,8 @@ public interface TickEffect<T extends EffectAPIAction> extends EffectAPIEffect {
     default void tick(LootContext lootContext) {
         effect().apply(lootContext);
     }
+
+    default boolean shouldTick(LootContext context, boolean isActive) {
+        return isActive;
+    }
 }

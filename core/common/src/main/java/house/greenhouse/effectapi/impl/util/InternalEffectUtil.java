@@ -2,20 +2,16 @@ package house.greenhouse.effectapi.impl.util;
 
 import house.greenhouse.effectapi.api.effect.EffectAPIConditionalEffect;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
-import house.greenhouse.effectapi.api.registry.EffectAPILootContextParams;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.TypedDataComponent;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 public class InternalEffectUtil {
@@ -39,20 +35,15 @@ public class InternalEffectUtil {
         removed = null;
     }
 
-    public static boolean haveActivesChanged(LootContext context, LootContextParamSet paramSet,
-                                             DataComponentMap combined, DataComponentMap previousMap,
-                                             Map<EffectAPIEffect, ResourceLocation> sources) {
+    public static boolean haveActivesChanged(Map<EffectAPIEffect, LootContext> contexts, LootContextParamSet paramSet,
+                                             DataComponentMap combined, DataComponentMap previousMap) {
         return combined.stream().anyMatch(typed -> {
             if (typed.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect)
                 for (EffectAPIEffect effect : (List<EffectAPIEffect>) list) {
-                    LootParams.Builder paramBuilder = LootContextUtil.copyIntoParamBuilder(context);
-                    if (paramSet.isAllowed(EffectAPILootContextParams.SOURCE) && !context.hasParam(EffectAPILootContextParams.SOURCE))
-                        paramBuilder.withOptionalParameter(EffectAPILootContextParams.SOURCE, sources.get(effect));
-                    LootContext context1 = new LootContext.Builder(paramBuilder.create(paramSet)).create(Optional.empty());
-                    if (effect.paramSet() == paramSet && effect.isActive(context1) && previousMap.stream().map(c -> ((List<?>) c.value())).noneMatch(cs -> cs.contains(effect))) {
+                    if (effect.paramSet() == paramSet && effect.isActive(contexts.get(effect)) && previousMap.stream().map(c -> ((List<?>) c.value())).noneMatch(cs -> cs.contains(effect))) {
                         added = effect;
                         return true;
-                    } else if (effect.paramSet() == paramSet && !effect.isActive(context1) && previousMap.stream().map(c -> ((List<?>) c.value())).anyMatch(cs -> cs.contains(effect))) {
+                    } else if (effect.paramSet() == paramSet && !effect.isActive(contexts.get(effect)) && previousMap.stream().map(c -> ((List<?>) c.value())).anyMatch(cs -> cs.contains(effect))) {
                         removed = effect;
                         return true;
                     } else
@@ -62,24 +53,19 @@ public class InternalEffectUtil {
         });
     }
 
-    public static DataComponentMap generateActiveEffects(LootContext context, LootContextParamSet paramSet,
-                                                         DataComponentMap map, DataComponentMap previousMap,
-                                                         Map<EffectAPIEffect, ResourceLocation> sources) {
+    public static DataComponentMap generateActiveEffects(Map<EffectAPIEffect, LootContext> contexts, LootContextParamSet paramSet,
+                                                         DataComponentMap map, DataComponentMap previousMap) {
         Map<DataComponentType<?>, List<EffectAPIEffect>> newMap = new Reference2ObjectArrayMap<>();
 
         for (TypedDataComponent<?> component : map) {
             if (component.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect)
                 for (EffectAPIEffect effect : ((List<EffectAPIEffect>) list)) {
-                    LootParams.Builder paramBuilder = LootContextUtil.copyIntoParamBuilder(context);
-                    if (paramSet.isAllowed(EffectAPILootContextParams.SOURCE) && !context.hasParam(EffectAPILootContextParams.SOURCE))
-                        paramBuilder.withOptionalParameter(EffectAPILootContextParams.SOURCE, sources.get(effect));
-                    LootContext context1 = new LootContext.Builder(paramBuilder.create(paramSet)).create(Optional.empty());
                     if (removed == effect) {
-                        effect.onRemoved(context1);
+                        effect.onRemoved(contexts.get(effect));
                         continue;
                     }
                     if (added == effect) {
-                        effect.onAdded(context1);
+                        effect.onAdded(contexts.get(effect));
                         newMap.computeIfAbsent(component.type(), type -> new ArrayList<>()).add(effect);
                         continue;
                     }
@@ -88,13 +74,13 @@ public class InternalEffectUtil {
                         continue;
                     }
                     if (effect.paramSet() == paramSet) {
-                        if (effect.isActive(context1)) {
+                        if (effect.isActive(contexts.get(effect))) {
                             newMap.computeIfAbsent(component.type(), type -> new ArrayList<>()).add(effect);
                             if (previousMap.stream().map(c -> ((List<?>) c.value())).noneMatch(cs -> cs.contains(effect)))
-                                effect.onAdded(context1);
+                                effect.onAdded(contexts.get(effect));
                         } else {
                             if (previousMap.stream().map(c -> ((List<?>) c.value())).anyMatch(cs -> cs.contains(effect)))
-                                effect.onRemoved(context1);
+                                effect.onRemoved(contexts.get(effect));
                         }
                     }
                 }

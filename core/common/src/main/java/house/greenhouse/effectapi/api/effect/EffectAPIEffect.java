@@ -13,6 +13,12 @@ public interface EffectAPIEffect {
         onRemoved(context);
     }
 
+    default void tick(LootContext context) {}
+
+    default boolean shouldTick(LootContext context, boolean isActive) {
+        return false;
+    }
+
     default boolean isActive(LootContext context) {
         return true;
     }

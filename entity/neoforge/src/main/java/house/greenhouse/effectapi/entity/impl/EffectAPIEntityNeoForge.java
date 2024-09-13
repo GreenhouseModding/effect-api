@@ -73,8 +73,10 @@ public class EffectAPIEntityNeoForge {
         @SubscribeEvent
         public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
             if (event.getEntity().hasData(EffectAPIEntityAttachments.ENTITY_EFFECTS)) {
-                event.getEntity().getData(EffectAPIEntityAttachments.ENTITY_EFFECTS).init(event.getEntity());
-                EntityEffectAPI.syncEffects(event.getEntity());
+                EntityEffectsAttachment attachment = event.getEntity().getData(EffectAPIEntityAttachments.ENTITY_EFFECTS);
+                attachment.init(event.getEntity());
+                attachment.refresh();
+                attachment.sync();
             }
             if (event.getEntity().hasData(EffectAPIAttachments.RESOURCES))
                 EffectAPI.getHelper().sendClientboundTracking(new SyncEntityResourcesAttachmentClientboundPacket(event.getEntity().getId(), event.getEntity().getData(EffectAPIAttachments.RESOURCES)), event.getEntity());
@@ -83,8 +85,10 @@ public class EffectAPIEntityNeoForge {
         @SubscribeEvent
         public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
             if (event.getEntity().hasData(EffectAPIEntityAttachments.ENTITY_EFFECTS)) {
-                event.getEntity().getData(EffectAPIEntityAttachments.ENTITY_EFFECTS).init(event.getEntity());
-                EntityEffectAPI.syncEffects(event.getEntity());
+                EntityEffectsAttachment attachment = event.getEntity().getData(EffectAPIEntityAttachments.ENTITY_EFFECTS);
+                attachment.init(event.getEntity());
+                attachment.refresh();
+                attachment.sync();
             }
             if (event.getEntity().hasData(EffectAPIAttachments.RESOURCES))
                 EffectAPI.getHelper().sendClientboundTracking(new SyncEntityResourcesAttachmentClientboundPacket(event.getEntity().getId(), event.getEntity().getData(EffectAPIAttachments.RESOURCES)), event.getEntity());
@@ -93,7 +97,6 @@ public class EffectAPIEntityNeoForge {
         @SubscribeEvent
         public static void onStartTracking(PlayerEvent.StartTracking event) {
             if (event.getEntity().hasData(EffectAPIEntityAttachments.ENTITY_EFFECTS)) {
-                event.getEntity().getData(EffectAPIEntityAttachments.ENTITY_EFFECTS).init(event.getEntity());
                 EntityEffectAPI.syncEffects(event.getEntity());
             }
             if (event.getTarget().hasData(EffectAPIAttachments.RESOURCES))

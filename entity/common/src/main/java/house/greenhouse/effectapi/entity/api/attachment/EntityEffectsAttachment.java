@@ -15,6 +15,7 @@ import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.storage.loot.LootContext;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
@@ -30,10 +31,10 @@ public class EntityEffectsAttachment {
     public static final ResourceLocation ID = EffectAPI.asResource("entity_effects");
 
     private Object2ObjectArrayMap<ResourceLocation, DataComponentMap> allComponents = new Object2ObjectArrayMap<>();
-    private final Map<EffectAPIEffect, ResourceLocation> sources = new HashMap<>();
     private DataComponentMap combinedComponents = DataComponentMap.EMPTY;
     private DataComponentMap activeComponents = DataComponentMap.EMPTY;
     private Entity provider;
+    private final Map<EffectAPIEffect, LootContext> contexts = new HashMap<>();
 
     public EntityEffectsAttachment() {}
 
@@ -70,24 +71,25 @@ public class EntityEffectsAttachment {
 
     public void tick() {
         updateActiveComponents(true);
-        InternalEffectUtil.executeOnAllEffects(activeComponents, effect -> {
-            if (effect.type() == EffectAPIEntityEffectTypes.ENTITY_TICK)
-                InternalEffectUtil.<EntityTickEffect<?>>castConditional(effect).tick(EntityEffectAPI.createEntityOnlyContext(provider, sources.getOrDefault(effect, null)));
+        InternalEffectUtil.executeOnAllEffects(combinedComponents, effect -> {
+            LootContext context = contexts.get(effect);
+            if (effect.shouldTick(context, hasEffect(effect, false)))
+                effect.tick(context);
         });
     }
 
     public void refresh() {
         InternalEffectUtil.executeOnAllEffects(activeComponents, effect ->
-                effect.onRefreshed(EntityEffectAPI.createEntityOnlyContext(provider, sources.getOrDefault(effect, null))));
+                effect.onRefreshed(contexts.get(effect)));
     }
 
     private void updateActiveComponents(boolean sync) {
         DataComponentMap previous = activeComponents;
-        if (!InternalEffectUtil.haveActivesChanged(EntityEffectAPI.createEntityOnlyContext(provider), EffectAPIEntityLootContextParamSets.ENTITY, combinedComponents, previous, sources)) {
+        if (!InternalEffectUtil.haveActivesChanged(contexts, EffectAPIEntityLootContextParamSets.ENTITY, combinedComponents, previous)) {
             InternalEffectUtil.clearChangedCache();
             return;
         }
-        activeComponents = InternalEffectUtil.generateActiveEffects(EntityEffectAPI.createEntityOnlyContext(provider), EffectAPIEntityLootContextParamSets.ENTITY, combinedComponents, previous, sources);
+        activeComponents = InternalEffectUtil.generateActiveEffects(contexts, EffectAPIEntityLootContextParamSets.ENTITY, combinedComponents, previous);
         if (sync)
             sync();
     }
@@ -106,7 +108,7 @@ public class EntityEffectsAttachment {
         }
 
         newMap.computeIfAbsent(source, k -> new Reference2ObjectArrayMap<>()).computeIfAbsent(effect.type(), t -> new ArrayList<>()).add(effect);
-        addToSources(effect, source);
+        contexts.put(effect, EntityEffectAPI.createEntityOnlyContext(provider, source));
 
         Object2ObjectArrayMap<ResourceLocation, DataComponentMap> finalMap = new Object2ObjectArrayMap<>();
         for (var entry : newMap.entrySet()) {
@@ -132,7 +134,7 @@ public class EntityEffectsAttachment {
         allComponents = newMap;
         combineComponents();
         updateActiveComponents(true);
-        sources.remove(effect);
+        contexts.remove(effect);
     }
 
     public void combineComponents() {
@@ -145,12 +147,6 @@ public class EntityEffectsAttachment {
         for (var value : map.entrySet())
             builder.set((DataComponentType<? super List<EffectAPIEffect>>) value.getKey(), ImmutableList.copyOf(value.getValue()));
         combinedComponents = builder.build();
-    }
-
-    private void addToSources(EffectAPIEffect effect, ResourceLocation source) {
-        if (sources.containsKey(effect))
-            return;
-        sources.put(effect, source);
     }
 
     @ApiStatus.Internal

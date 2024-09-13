@@ -2,6 +2,7 @@ package house.greenhouse.effectapi.entity.impl;
 
 import house.greenhouse.effectapi.entity.api.EffectAPIEntityEffectTypes;
 import house.greenhouse.effectapi.entity.api.EffectAPIEntityActionTypes;
+import house.greenhouse.effectapi.entity.api.attachment.EntityEffectsAttachment;
 import house.greenhouse.effectapi.entity.api.command.EntityResourceArgument;
 import house.greenhouse.effectapi.entity.api.command.EntityResourceValueArgument;
 import house.greenhouse.effectapi.entity.api.registry.EffectAPIEntityPredicates;
@@ -42,8 +43,10 @@ public class EffectAPIEntityFabric implements ModInitializer {
         ServerEntityEvents.ENTITY_LOAD.addPhaseOrdering(EFFECT_API_BEFORE_EVENT, Event.DEFAULT_PHASE);
         ServerEntityEvents.ENTITY_LOAD.register((trackedEntity, player) -> {
             if (trackedEntity.hasAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS)) {
-                trackedEntity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS).init(trackedEntity);
-                trackedEntity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS).sync();
+                EntityEffectsAttachment attachment = trackedEntity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS);
+                attachment.init(trackedEntity);
+                attachment.refresh();
+                attachment.sync();
             }
             if (trackedEntity.hasAttached(EffectAPIAttachments.RESOURCES))
                 EffectAPI.getHelper().sendClientboundTracking(new SyncEntityResourcesAttachmentClientboundPacket(trackedEntity.getId(), trackedEntity.getAttached(EffectAPIAttachments.RESOURCES)), trackedEntity);
@@ -51,16 +54,21 @@ public class EffectAPIEntityFabric implements ModInitializer {
         EntityTrackingEvents.START_TRACKING.addPhaseOrdering(EFFECT_API_BEFORE_EVENT, Event.DEFAULT_PHASE);
         EntityTrackingEvents.START_TRACKING.register((trackedEntity, player) -> {
             if (trackedEntity.hasAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS)) {
-                trackedEntity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS).init(trackedEntity);
-                trackedEntity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS).sync();
+                EntityEffectsAttachment attachment = trackedEntity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS);
+                attachment.sync();
             }
             if (trackedEntity.hasAttached(EffectAPIAttachments.RESOURCES))
                 EffectAPI.getHelper().sendClientboundTracking(new SyncEntityResourcesAttachmentClientboundPacket(trackedEntity.getId(), trackedEntity.getAttached(EffectAPIAttachments.RESOURCES)), trackedEntity);
         });
         ServerPlayerEvents.COPY_FROM.addPhaseOrdering(EFFECT_API_BEFORE_EVENT, Event.DEFAULT_PHASE);
         ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) -> {
-            if (newPlayer.hasAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS))
-                newPlayer.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS).refresh();
+            if (oldPlayer.hasAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS)) {
+                newPlayer.setAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS, oldPlayer.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS));
+                EntityEffectsAttachment attachment = newPlayer.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS);
+                attachment.init(newPlayer);
+                attachment.refresh();
+                attachment.sync();
+            }
         });
 
         ArgumentTypeRegistry.registerArgumentType(EffectAPI.asResource("data_resource"), EntityResourceArgument.class, new EntityResourceArgument.Info());
