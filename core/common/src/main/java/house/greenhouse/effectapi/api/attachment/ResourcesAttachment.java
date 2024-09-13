@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+// TODO: Make this a split interface and record.
 public record ResourcesAttachment(Map<ResourceLocation, ResourceEffect.ResourceHolder<Object>> resources) {
     public static final Codec<ResourcesAttachment> CODEC = new AttachmentCodec();
 

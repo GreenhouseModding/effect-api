@@ -23,7 +23,7 @@ public interface EffectAPIEntityPlatformHelper {
     void removeResource(Entity entity, ResourceLocation id, ResourceLocation source);
 
     @Nullable
-    EffectsAttachment getEntityEffects(Entity entity);
+    EffectsAttachment<Entity> getEntityEffects(Entity entity);
 
     void addEntityEffect(Entity entity, EffectAPIEffect effect, ResourceLocation source);
 

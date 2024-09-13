@@ -48,7 +48,7 @@ public class EntityEffectAPI {
      * @param <T>               The effect class.
      */
     public static <T extends EffectAPIEffect> List<T> getEffects(Entity entity, DataComponentType<List<T>> type, boolean includeInactive) {
-        EffectsAttachment attachment = EffectAPIEntity.getHelper().getEntityEffects(entity);
+        EffectsAttachment<Entity>  attachment = EffectAPIEntity.getHelper().getEntityEffects(entity);
         if (attachment == null)
             return List.of();
         return EffectAPIEntity.getHelper().getEntityEffects(entity).getEffects(type, includeInactive);
@@ -76,7 +76,7 @@ public class EntityEffectAPI {
      * @return          True if the entity has an instance of the effect, false if not.
      */
     public static <T extends EffectAPIEffect> boolean hasType(Entity entity, DataComponentType<List<T>> type, boolean includeInactive) {
-        EffectsAttachment attachment = EffectAPIEntity.getHelper().getEntityEffects(entity);
+        EffectsAttachment<Entity> attachment = EffectAPIEntity.getHelper().getEntityEffects(entity);
         if (attachment == null)
             return false;
         return attachment.hasEffectType(type, includeInactive);
@@ -131,16 +131,17 @@ public class EntityEffectAPI {
         }
     }
 
+    // TODO: Only expose deferred syncing.
     /**
      * Syncs an entity's effects with any players surrounding it.
      *
      * @param entity    The entity to sync.
      */
     public static void syncEffects(Entity entity) {
-        EffectsAttachment attachment = EffectAPIEntity.getHelper().getEntityEffects(entity);
+        EffectsAttachment<Entity> attachment = EffectAPIEntity.getHelper().getEntityEffects(entity);
         if (attachment == null)
             return;
-        attachment.sync();
+        attachment.syncToAll();
     }
 
     /**

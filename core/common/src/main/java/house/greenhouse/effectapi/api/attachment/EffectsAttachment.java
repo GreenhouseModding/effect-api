@@ -2,13 +2,13 @@ package house.greenhouse.effectapi.api.attachment;
 
 import com.google.common.collect.ImmutableList;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
-import house.greenhouse.effectapi.impl.EffectAPI;
 import house.greenhouse.effectapi.impl.util.InternalEffectUtil;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import org.jetbrains.annotations.ApiStatus;
@@ -21,10 +21,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+// TODO: Make this a split interface and class.
 public class EffectsAttachment<T> {
     private final Map<EffectAPIEffect, LootContext> contexts = new HashMap<>();
     private final ContextFunction<T> contextFunction;
-    private final NetworkFunction<T> networkFunction;
+    private final IndividualNetworkFunction<T> individualNetworkFunction;
+    
+    private final TrackingNetworkFunction<T> trackingNetworkFunction;
     private final LootContextParamSet paramSet;
 
     private Object2ObjectArrayMap<ResourceLocation, DataComponentMap> sourcesToComponents = new Object2ObjectArrayMap<>();
@@ -33,9 +36,10 @@ public class EffectsAttachment<T> {
 
     private T provider;
 
-    public EffectsAttachment(ContextFunction<T> contextFunction, NetworkFunction<T> networkFunction, LootContextParamSet paramSet) {
+    public EffectsAttachment(ContextFunction<T> contextFunction, IndividualNetworkFunction<T> individualNetworkFunction, TrackingNetworkFunction<T> trackingNetworkFunction, LootContextParamSet paramSet) {
         this.contextFunction = contextFunction;
-        this.networkFunction = networkFunction;
+        this.individualNetworkFunction = individualNetworkFunction;
+        this.trackingNetworkFunction = trackingNetworkFunction;
         this.paramSet = paramSet;
     }
 
@@ -90,11 +94,15 @@ public class EffectsAttachment<T> {
         if (newComponents.isEmpty())
             return;
         activeComponents = newComponents.get();
-        sync();
+        syncToAll();
     }
 
-    public void sync() {
-        networkFunction.send(provider, sourcesToComponents, activeComponents);
+    public void syncToPlayer(ServerPlayer player) {
+        individualNetworkFunction.send(provider, sourcesToComponents, activeComponents, player);
+    }
+
+    public void syncToAll() {
+        trackingNetworkFunction.send(provider, sourcesToComponents, activeComponents);
     }
 
     public void addEffect(EffectAPIEffect effect, ResourceLocation source) {
@@ -161,7 +169,12 @@ public class EffectsAttachment<T> {
     }
 
     @FunctionalInterface
-    public interface NetworkFunction<T> {
+    public interface IndividualNetworkFunction<T> {
+        void send(T provider, Object2ObjectArrayMap<ResourceLocation, DataComponentMap> sourcesToComponents, DataComponentMap activeComponents, ServerPlayer receiver);
+    }
+    
+    @FunctionalInterface
+    public interface TrackingNetworkFunction<T> {
         void send(T provider, Object2ObjectArrayMap<ResourceLocation, DataComponentMap> sourcesToComponents, DataComponentMap activeComponents);
     }
 }

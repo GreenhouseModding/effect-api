@@ -50,7 +50,7 @@ public class EffectAPIEntityPlatformHelperFabric implements EffectAPIEntityPlatf
 
 
     @Override
-    public @Nullable EffectsAttachment getEntityEffects(Entity entity) {
+    public @Nullable EffectsAttachment<Entity> getEntityEffects(Entity entity) {
         return entity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS);
     }
 
@@ -58,14 +58,14 @@ public class EffectAPIEntityPlatformHelperFabric implements EffectAPIEntityPlatf
     public void addEntityEffect(Entity entity, EffectAPIEffect effect, ResourceLocation source) {
         if (entity.hasAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS) && entity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS).hasEffect(effect, true))
             return;
-        EffectsAttachment attachment =  entity.getAttachedOrCreate(EffectAPIEntityAttachments.ENTITY_EFFECTS);
+        EffectsAttachment<Entity> attachment =  entity.getAttachedOrCreate(EffectAPIEntityAttachments.ENTITY_EFFECTS);
         attachment.init(entity);
         attachment.addEffect(effect, source);
     }
 
     @Override
     public void removeEntityEffect(Entity entity, EffectAPIEffect effect, ResourceLocation source) {
-        EffectsAttachment attachment =  entity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS);
+        EffectsAttachment<Entity> attachment =  entity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS);
         if (attachment == null || !attachment.hasEffect(effect, true))
             return;
         if (attachment.isActive(effect))

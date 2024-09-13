@@ -45,7 +45,7 @@ public class EffectAPIEntityPlatformHelperNeoForge implements EffectAPIEntityPla
     }
 
     @Override
-    public @Nullable EffectsAttachment getEntityEffects(Entity entity) {
+    public @Nullable EffectsAttachment<Entity> getEntityEffects(Entity entity) {
         return entity.getExistingData(EffectAPIEntityAttachments.ENTITY_EFFECTS).orElse(null);
     }
 
@@ -53,7 +53,7 @@ public class EffectAPIEntityPlatformHelperNeoForge implements EffectAPIEntityPla
     public void addEntityEffect(Entity entity, EffectAPIEffect effect, ResourceLocation source) {
         if (entity.hasData(EffectAPIEntityAttachments.ENTITY_EFFECTS) && entity.getData(EffectAPIEntityAttachments.ENTITY_EFFECTS).hasEffect(effect, true))
             return;
-        EffectsAttachment attachment = entity.getData(EffectAPIEntityAttachments.ENTITY_EFFECTS);
+        EffectsAttachment<Entity> attachment = entity.getData(EffectAPIEntityAttachments.ENTITY_EFFECTS);
         attachment.init(entity);
         attachment.addEffect(effect, source);
     }

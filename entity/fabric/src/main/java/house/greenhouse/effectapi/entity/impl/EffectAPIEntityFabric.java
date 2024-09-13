@@ -19,8 +19,10 @@ import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.networking.v1.EntityTrackingEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 
 public class EffectAPIEntityFabric implements ModInitializer {
     private static final ResourceLocation EFFECT_API_BEFORE_EVENT = EffectAPI.asResource("before");
@@ -43,10 +45,10 @@ public class EffectAPIEntityFabric implements ModInitializer {
         ServerEntityEvents.ENTITY_LOAD.addPhaseOrdering(EFFECT_API_BEFORE_EVENT, Event.DEFAULT_PHASE);
         ServerEntityEvents.ENTITY_LOAD.register((trackedEntity, player) -> {
             if (trackedEntity.hasAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS)) {
-                EffectsAttachment attachment = trackedEntity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS);
+                EffectsAttachment<Entity> attachment = trackedEntity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS);
                 attachment.init(trackedEntity);
                 attachment.refresh();
-                attachment.sync();
+                attachment.syncToAll();
             }
             if (trackedEntity.hasAttached(EffectAPIAttachments.RESOURCES))
                 EffectAPI.getHelper().sendClientboundTracking(new SyncEntityResourcesAttachmentClientboundPacket(trackedEntity.getId(), trackedEntity.getAttached(EffectAPIAttachments.RESOURCES)), trackedEntity);
@@ -54,20 +56,20 @@ public class EffectAPIEntityFabric implements ModInitializer {
         EntityTrackingEvents.START_TRACKING.addPhaseOrdering(EFFECT_API_BEFORE_EVENT, Event.DEFAULT_PHASE);
         EntityTrackingEvents.START_TRACKING.register((trackedEntity, player) -> {
             if (trackedEntity.hasAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS)) {
-                EffectsAttachment attachment = trackedEntity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS);
-                attachment.sync();
+                EffectsAttachment<Entity> attachment = trackedEntity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS);
+                attachment.syncToPlayer(player);
             }
             if (trackedEntity.hasAttached(EffectAPIAttachments.RESOURCES))
-                EffectAPI.getHelper().sendClientboundTracking(new SyncEntityResourcesAttachmentClientboundPacket(trackedEntity.getId(), trackedEntity.getAttached(EffectAPIAttachments.RESOURCES)), trackedEntity);
+                ServerPlayNetworking.send(player, new SyncEntityResourcesAttachmentClientboundPacket(trackedEntity.getId(), trackedEntity.getAttached(EffectAPIAttachments.RESOURCES)));
         });
         ServerPlayerEvents.COPY_FROM.addPhaseOrdering(EFFECT_API_BEFORE_EVENT, Event.DEFAULT_PHASE);
         ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) -> {
             if (oldPlayer.hasAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS)) {
                 newPlayer.setAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS, oldPlayer.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS));
-                EffectsAttachment attachment = newPlayer.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS);
+                EffectsAttachment<Entity> attachment = newPlayer.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS);
                 attachment.init(newPlayer);
                 attachment.refresh();
-                attachment.sync();
+                attachment.syncToAll();
             }
         });
 

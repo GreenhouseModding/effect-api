@@ -3,7 +3,6 @@ package house.greenhouse.effectapi.entity.impl;
 import house.greenhouse.effectapi.entity.api.EffectAPIEntityEffectTypes;
 import house.greenhouse.effectapi.entity.api.EffectAPIEntityActionTypes;
 import house.greenhouse.effectapi.entity.api.EffectAPIEntityRegistries;
-import house.greenhouse.effectapi.entity.api.EntityEffectAPI;
 import house.greenhouse.effectapi.api.attachment.EffectsAttachment;
 import house.greenhouse.effectapi.entity.api.command.EntityResourceArgument;
 import house.greenhouse.effectapi.entity.api.command.EntityResourceValueArgument;
@@ -18,6 +17,9 @@ import house.greenhouse.effectapi.impl.registry.EffectAPIAttachments;
 import house.greenhouse.effectapi.impl.registry.internal.RegistrationCallback;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -25,6 +27,8 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
@@ -71,47 +75,60 @@ public class EffectAPIEntityNeoForge {
 
     @EventBusSubscriber(modid = EffectAPI.MOD_ID + "_entity", bus = EventBusSubscriber.Bus.GAME)
     public static class GameEvents {
+        @SubscribeEvent
+        public static void onEntityTick(EntityTickEvent.Post event) {
+            Entity entity = event.getEntity();
+            if (entity.hasData(EffectAPIEntityAttachments.ENTITY_EFFECTS)) {
+                entity.getData(EffectAPIEntityAttachments.ENTITY_EFFECTS).tick();
+            }
+        }
+
         @SubscribeEvent(priority = EventPriority.HIGH)
         public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
-            if (event.getEntity().hasData(EffectAPIEntityAttachments.ENTITY_EFFECTS)) {
-                EffectsAttachment attachment = event.getEntity().getData(EffectAPIEntityAttachments.ENTITY_EFFECTS);
-                attachment.init(event.getEntity());
+            Entity entity = event.getEntity();
+            if (entity.hasData(EffectAPIEntityAttachments.ENTITY_EFFECTS)) {
+                EffectsAttachment<Entity> attachment = entity.getData(EffectAPIEntityAttachments.ENTITY_EFFECTS);
+                attachment.init(entity);
                 attachment.refresh();
-                attachment.sync();
+                attachment.syncToAll();
             }
-            if (event.getEntity().hasData(EffectAPIAttachments.RESOURCES))
-                EffectAPI.getHelper().sendClientboundTracking(new SyncEntityResourcesAttachmentClientboundPacket(event.getEntity().getId(), event.getEntity().getData(EffectAPIAttachments.RESOURCES)), event.getEntity());
+            if (entity.hasData(EffectAPIAttachments.RESOURCES))
+                EffectAPI.getHelper().sendClientboundTracking(new SyncEntityResourcesAttachmentClientboundPacket(entity.getId(), entity.getData(EffectAPIAttachments.RESOURCES)), entity);
         }
 
         @SubscribeEvent(priority = EventPriority.HIGH)
         public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-            if (event.getEntity().hasData(EffectAPIEntityAttachments.ENTITY_EFFECTS)) {
-                EffectsAttachment attachment = event.getEntity().getData(EffectAPIEntityAttachments.ENTITY_EFFECTS);
-                attachment.init(event.getEntity());
+            Entity entity = event.getEntity();
+            if (entity.hasData(EffectAPIEntityAttachments.ENTITY_EFFECTS)) {
+                EffectsAttachment<Entity> attachment = entity.getData(EffectAPIEntityAttachments.ENTITY_EFFECTS);
+                attachment.init(entity);
                 attachment.refresh();
-                attachment.sync();
+                attachment.syncToAll();
             }
-            if (event.getEntity().hasData(EffectAPIAttachments.RESOURCES))
-                EffectAPI.getHelper().sendClientboundTracking(new SyncEntityResourcesAttachmentClientboundPacket(event.getEntity().getId(), event.getEntity().getData(EffectAPIAttachments.RESOURCES)), event.getEntity());
+            if (entity.hasData(EffectAPIAttachments.RESOURCES))
+                EffectAPI.getHelper().sendClientboundTracking(new SyncEntityResourcesAttachmentClientboundPacket(entity.getId(), entity.getData(EffectAPIAttachments.RESOURCES)), entity);
         }
 
         @SubscribeEvent(priority = EventPriority.HIGH)
         public static void onStartTracking(PlayerEvent.StartTracking event) {
-            if (event.getEntity().hasData(EffectAPIEntityAttachments.ENTITY_EFFECTS)) {
-                EntityEffectAPI.syncEffects(event.getEntity());
+            Entity entity = event.getTarget();
+            if (entity.hasData(EffectAPIEntityAttachments.ENTITY_EFFECTS)) {
+                entity.getData(EffectAPIEntityAttachments.ENTITY_EFFECTS).syncToPlayer((ServerPlayer) event.getEntity());
             }
             if (event.getTarget().hasData(EffectAPIAttachments.RESOURCES))
-                EffectAPI.getHelper().sendClientboundTracking(new SyncEntityResourcesAttachmentClientboundPacket(event.getTarget().getId(), event.getTarget().getData(EffectAPIAttachments.RESOURCES)), event.getTarget());
+                PacketDistributor.sendToPlayer((ServerPlayer) event.getEntity(), new SyncEntityResourcesAttachmentClientboundPacket(entity.getId(), entity.getData(EffectAPIAttachments.RESOURCES)));
         }
 
         @SubscribeEvent(priority = EventPriority.HIGH)
         public static void onPlayerClone(PlayerEvent.Clone event) {
+            Player original = event.getOriginal();
+            Player entity = event.getEntity();
             if (event.getOriginal().hasData(EffectAPIEntityAttachments.ENTITY_EFFECTS)) {
-                event.getEntity().setData(EffectAPIEntityAttachments.ENTITY_EFFECTS, event.getOriginal().getData(EffectAPIEntityAttachments.ENTITY_EFFECTS));
-                EffectsAttachment attachment = event.getEntity().getData(EffectAPIEntityAttachments.ENTITY_EFFECTS);
-                attachment.init(event.getEntity());
+                entity.setData(EffectAPIEntityAttachments.ENTITY_EFFECTS, original.getData(EffectAPIEntityAttachments.ENTITY_EFFECTS));
+                EffectsAttachment<Entity> attachment = entity.getData(EffectAPIEntityAttachments.ENTITY_EFFECTS);
+                attachment.init(entity);
                 attachment.refresh();
-                attachment.sync();
+                attachment.syncToAll();
             }
         }
     }
