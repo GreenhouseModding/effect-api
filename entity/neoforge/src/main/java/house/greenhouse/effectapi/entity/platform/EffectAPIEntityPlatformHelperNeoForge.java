@@ -1,9 +1,9 @@
 package house.greenhouse.effectapi.entity.platform;
 
-import house.greenhouse.effectapi.api.attachment.ResourcesAttachment;
+import house.greenhouse.effectapi.impl.attachment.ResourcesAttachmentImpl;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
 import house.greenhouse.effectapi.entity.api.EntityEffectAPI;
-import house.greenhouse.effectapi.api.attachment.EffectsAttachment;
+import house.greenhouse.effectapi.impl.attachment.EffectsAttachmentImpl;
 import house.greenhouse.effectapi.entity.impl.registry.EffectAPIEntityAttachments;
 import house.greenhouse.effectapi.impl.registry.EffectAPIAttachments;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class EffectAPIEntityPlatformHelperNeoForge implements EffectAPIEntityPlatformHelper {
     @Override
-    public ResourcesAttachment getResources(Entity entity) {
+    public ResourcesAttachmentImpl getResources(Entity entity) {
         return entity.getExistingData(EffectAPIAttachments.RESOURCES).orElse(null);
     }
 
@@ -24,19 +24,19 @@ public class EffectAPIEntityPlatformHelperNeoForge implements EffectAPIEntityPla
     }
 
     @Override
-    public void setResourcesAttachment(Entity entity, ResourcesAttachment attachment) {
+    public void setResourcesAttachment(Entity entity, ResourcesAttachmentImpl attachment) {
         entity.setData(EffectAPIAttachments.RESOURCES, attachment);
     }
 
     @Override
     public <T> T setResource(Entity entity, ResourceLocation id, T value, @Nullable ResourceLocation source) {
-        ResourcesAttachment attachment = entity.getData(EffectAPIAttachments.RESOURCES);
+        ResourcesAttachmentImpl attachment = entity.getData(EffectAPIAttachments.RESOURCES);
         return attachment.setValue(id, value, source);
     }
 
     @Override
     public void removeResource(Entity entity, ResourceLocation id, ResourceLocation source) {
-        ResourcesAttachment attachment = getResources(entity);
+        ResourcesAttachmentImpl attachment = getResources(entity);
         if (attachment == null)
             return;
         attachment.resources().remove(id);
@@ -45,7 +45,7 @@ public class EffectAPIEntityPlatformHelperNeoForge implements EffectAPIEntityPla
     }
 
     @Override
-    public @Nullable EffectsAttachment<Entity> getEntityEffects(Entity entity) {
+    public @Nullable EffectsAttachmentImpl<Entity> getEntityEffects(Entity entity) {
         return entity.getExistingData(EffectAPIEntityAttachments.ENTITY_EFFECTS).orElse(null);
     }
 
@@ -53,7 +53,7 @@ public class EffectAPIEntityPlatformHelperNeoForge implements EffectAPIEntityPla
     public void addEntityEffect(Entity entity, EffectAPIEffect effect, ResourceLocation source) {
         if (entity.hasData(EffectAPIEntityAttachments.ENTITY_EFFECTS) && entity.getData(EffectAPIEntityAttachments.ENTITY_EFFECTS).hasEffect(effect, true))
             return;
-        EffectsAttachment<Entity> attachment = entity.getData(EffectAPIEntityAttachments.ENTITY_EFFECTS);
+        EffectsAttachmentImpl<Entity> attachment = entity.getData(EffectAPIEntityAttachments.ENTITY_EFFECTS);
         attachment.init(entity);
         attachment.addEffect(effect, source);
     }

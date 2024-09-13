@@ -2,6 +2,7 @@
 package house.greenhouse.effectapi.entity.impl.registry;
 
 import house.greenhouse.effectapi.api.attachment.EffectsAttachment;
+import house.greenhouse.effectapi.impl.attachment.EffectsAttachmentImpl;
 import house.greenhouse.effectapi.entity.api.EntityEffectAPI;
 import house.greenhouse.effectapi.entity.api.registry.EffectAPIEntityLootContextParamSets;
 import house.greenhouse.effectapi.entity.impl.EffectAPIEntity;
@@ -13,8 +14,8 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.world.entity.Entity;
 
 public class EffectAPIEntityAttachments {
-    public static final AttachmentType<EffectsAttachment<Entity>> ENTITY_EFFECTS = AttachmentRegistry.<EffectsAttachment<Entity>>builder()
-            .initializer(() -> new EffectsAttachment<>(
+    public static final AttachmentType<EffectsAttachmentImpl<Entity>> ENTITY_EFFECTS = AttachmentRegistry.<EffectsAttachmentImpl<Entity>>builder()
+            .initializer(() -> new EffectsAttachmentImpl<>(
                     (provider, effect, source) -> EntityEffectAPI.createEntityOnlyContext(provider, source),
                     (provider, sourcesToComponents, activeComponents, receiver) -> ServerPlayNetworking.send(receiver, new SyncEntityEffectsAttachmentClientboundPacket(provider.getId(), sourcesToComponents, activeComponents)),
                     (provider, sourcesToComponents, activeComponents) -> EffectAPI.getHelper().sendClientboundTracking(new SyncEntityEffectsAttachmentClientboundPacket(provider.getId(), sourcesToComponents, activeComponents), provider),

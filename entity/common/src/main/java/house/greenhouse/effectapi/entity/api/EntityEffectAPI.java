@@ -1,9 +1,10 @@
 package house.greenhouse.effectapi.entity.api;
 
+import house.greenhouse.effectapi.api.attachment.EffectsAttachment;
 import house.greenhouse.effectapi.api.effect.EffectAPIConditionalEffect;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
 import house.greenhouse.effectapi.api.registry.EffectAPILootContextParams;
-import house.greenhouse.effectapi.api.attachment.EffectsAttachment;
+import house.greenhouse.effectapi.impl.attachment.EffectsAttachmentImpl;
 import house.greenhouse.effectapi.entity.api.registry.EffectAPIEntityLootContextParamSets;
 import house.greenhouse.effectapi.entity.impl.EffectAPIEntity;
 import net.minecraft.core.component.DataComponentType;
@@ -48,7 +49,7 @@ public class EntityEffectAPI {
      * @param <T>               The effect class.
      */
     public static <T extends EffectAPIEffect> List<T> getEffects(Entity entity, DataComponentType<List<T>> type, boolean includeInactive) {
-        EffectsAttachment<Entity>  attachment = EffectAPIEntity.getHelper().getEntityEffects(entity);
+        EffectsAttachment<Entity> attachment = EffectAPIEntity.getHelper().getEntityEffects(entity);
         if (attachment == null)
             return List.of();
         return EffectAPIEntity.getHelper().getEntityEffects(entity).getEffects(type, includeInactive);
@@ -141,7 +142,7 @@ public class EntityEffectAPI {
         EffectsAttachment<Entity> attachment = EffectAPIEntity.getHelper().getEntityEffects(entity);
         if (attachment == null)
             return;
-        attachment.syncToAll();
+        attachment.sync();
     }
 
     /**

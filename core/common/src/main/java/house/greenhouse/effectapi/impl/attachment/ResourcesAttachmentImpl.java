@@ -1,4 +1,4 @@
-package house.greenhouse.effectapi.api.attachment;
+package house.greenhouse.effectapi.impl.attachment;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
@@ -18,8 +18,8 @@ import java.util.Map;
 import java.util.Optional;
 
 // TODO: Make this a split interface and record.
-public record ResourcesAttachment(Map<ResourceLocation, ResourceEffect.ResourceHolder<Object>> resources) {
-    public static final Codec<ResourcesAttachment> CODEC = new AttachmentCodec();
+public record ResourcesAttachmentImpl(Map<ResourceLocation, ResourceEffect.ResourceHolder<Object>> resources) {
+    public static final Codec<ResourcesAttachmentImpl> CODEC = new AttachmentCodec();
 
     public boolean hasResource(ResourceLocation id) {
         return resources.containsKey(id);
@@ -56,11 +56,11 @@ public record ResourcesAttachment(Map<ResourceLocation, ResourceEffect.ResourceH
         return (ResourceEffect.ResourceHolder<T>) resources.get(id);
     }
 
-    public static class AttachmentCodec implements Codec<ResourcesAttachment> {
+    public static class AttachmentCodec implements Codec<ResourcesAttachmentImpl> {
         protected AttachmentCodec() {}
 
         @Override
-        public <T> DataResult<Pair<ResourcesAttachment, T>> decode(DynamicOps<T> ops, T input) {
+        public <T> DataResult<Pair<ResourcesAttachmentImpl, T>> decode(DynamicOps<T> ops, T input) {
             DataResult<MapLike<T>> map = ops.getMap(input);
             if (map.isError()) {
                 return DataResult.error(() -> map.error().get().message());
@@ -114,11 +114,11 @@ public record ResourcesAttachment(Map<ResourceLocation, ResourceEffect.ResourceH
                 EffectAPI.LOG.error(error);
             }
 
-            return DataResult.success(Pair.of(new ResourcesAttachment(finalMap), input));
+            return DataResult.success(Pair.of(new ResourcesAttachmentImpl(finalMap), input));
         }
 
         @Override
-        public <T> DataResult<T> encode(ResourcesAttachment input, DynamicOps<T> ops, T prefix) {
+        public <T> DataResult<T> encode(ResourcesAttachmentImpl input, DynamicOps<T> ops, T prefix) {
             Map<T, T> map = new HashMap<>();
             for (Map.Entry<ResourceLocation, ResourceEffect.ResourceHolder<Object>> entry : input.resources.entrySet()) {
                 try {

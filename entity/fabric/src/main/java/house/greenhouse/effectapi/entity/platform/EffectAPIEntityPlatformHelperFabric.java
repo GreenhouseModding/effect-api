@@ -1,9 +1,10 @@
 package house.greenhouse.effectapi.entity.platform;
 
-import house.greenhouse.effectapi.api.attachment.ResourcesAttachment;
+import house.greenhouse.effectapi.api.attachment.EffectsAttachment;
+import house.greenhouse.effectapi.impl.attachment.ResourcesAttachmentImpl;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
 import house.greenhouse.effectapi.entity.api.EntityEffectAPI;
-import house.greenhouse.effectapi.api.attachment.EffectsAttachment;
+import house.greenhouse.effectapi.impl.attachment.EffectsAttachmentImpl;
 import house.greenhouse.effectapi.entity.impl.registry.EffectAPIEntityAttachments;
 import house.greenhouse.effectapi.impl.registry.EffectAPIAttachments;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
@@ -18,7 +19,7 @@ public class EffectAPIEntityPlatformHelperFabric implements EffectAPIEntityPlatf
 
     @Override
     @Nullable
-    public ResourcesAttachment getResources(Entity entity) {
+    public ResourcesAttachmentImpl getResources(Entity entity) {
         return entity.getAttached(EffectAPIAttachments.RESOURCES);
     }
 
@@ -28,19 +29,19 @@ public class EffectAPIEntityPlatformHelperFabric implements EffectAPIEntityPlatf
     }
 
     @Override
-    public void setResourcesAttachment(Entity entity, ResourcesAttachment attachment) {
+    public void setResourcesAttachment(Entity entity, ResourcesAttachmentImpl attachment) {
         entity.setAttached(EffectAPIAttachments.RESOURCES, attachment);
     }
 
     @Override
     public <T> T setResource(Entity entity, ResourceLocation id, T value, ResourceLocation source) {
-        ResourcesAttachment attachment = entity.getAttachedOrCreate(EffectAPIAttachments.RESOURCES);
+        ResourcesAttachmentImpl attachment = entity.getAttachedOrCreate(EffectAPIAttachments.RESOURCES);
         return attachment.setValue(id, value, source);
     }
 
     @Override
     public void removeResource(Entity entity, ResourceLocation id, ResourceLocation source) {
-        ResourcesAttachment attachment = getResources(entity);
+        ResourcesAttachmentImpl attachment = getResources(entity);
         if (attachment == null)
             return;
         attachment.removeValue(id);
@@ -59,7 +60,7 @@ public class EffectAPIEntityPlatformHelperFabric implements EffectAPIEntityPlatf
         if (entity.hasAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS) && entity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS).hasEffect(effect, true))
             return;
         EffectsAttachment<Entity> attachment =  entity.getAttachedOrCreate(EffectAPIEntityAttachments.ENTITY_EFFECTS);
-        attachment.init(entity);
+        ((EffectsAttachmentImpl<Entity>)attachment).init(entity);
         attachment.addEffect(effect, source);
     }
 
@@ -80,6 +81,6 @@ public class EffectAPIEntityPlatformHelperFabric implements EffectAPIEntityPlatf
         if (alLComponents.isEmpty())
             entity.removeAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS);
         else
-            entity.getAttachedOrCreate(EffectAPIEntityAttachments.ENTITY_EFFECTS).setComponents(alLComponents, activeComponents);
+            ((EffectsAttachmentImpl<Entity>)entity.getAttachedOrCreate(EffectAPIEntityAttachments.ENTITY_EFFECTS)).setComponents(alLComponents, activeComponents);
     }
 }

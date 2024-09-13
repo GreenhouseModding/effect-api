@@ -8,7 +8,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import house.greenhouse.effectapi.api.attachment.ResourcesAttachment;
+import house.greenhouse.effectapi.impl.attachment.ResourcesAttachmentImpl;
 import house.greenhouse.effectapi.api.effect.ResourceEffect;
 import house.greenhouse.effectapi.entity.impl.EffectAPIEntity;
 import house.greenhouse.effectapi.entity.impl.client.util.ClientEntitySelectorUtil;
@@ -95,7 +95,7 @@ public class EntityResourceArgument implements ArgumentType<ResourceEffect<?>> {
 
     private List<ResourceLocation> getResourceEffectsFromSource(List<? extends Entity> entities) {
         return InternalResourceUtil.getIdMap().keySet().stream().filter(id -> entities.stream().anyMatch(entity -> {
-                    ResourcesAttachment attachment = EffectAPIEntity.getHelper().getResources(entity);
+                    ResourcesAttachmentImpl attachment = EffectAPIEntity.getHelper().getResources(entity);
                     if (attachment == null)
                         return false;
                     ResourceEffect.ResourceHolder<?> value = attachment.getResourceHolder(id);

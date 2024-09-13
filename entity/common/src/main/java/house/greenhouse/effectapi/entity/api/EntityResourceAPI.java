@@ -1,6 +1,6 @@
 package house.greenhouse.effectapi.entity.api;
 
-import house.greenhouse.effectapi.api.attachment.ResourcesAttachment;
+import house.greenhouse.effectapi.impl.attachment.ResourcesAttachmentImpl;
 import house.greenhouse.effectapi.api.effect.ResourceEffect;
 import house.greenhouse.effectapi.entity.impl.EffectAPIEntity;
 import net.minecraft.resources.ResourceLocation;
@@ -16,7 +16,7 @@ import java.util.List;
 public class EntityResourceAPI {
 
     public static Collection<ResourceEffect.ResourceHolder<Object>> getAllResources(Entity entity) {
-        ResourcesAttachment attachment = EffectAPIEntity.getHelper().getResources(entity);
+        ResourcesAttachmentImpl attachment = EffectAPIEntity.getHelper().getResources(entity);
         if (attachment == null)
             return List.of();
         return attachment.resources().values();
@@ -31,7 +31,7 @@ public class EntityResourceAPI {
      * @return              True if the entity has the resource, no matter the value, false if not.
      */
     public static boolean hasResource(Entity entity, ResourceLocation resourceId) {
-        ResourcesAttachment attachment = EffectAPIEntity.getHelper().getResources(entity);
+        ResourcesAttachmentImpl attachment = EffectAPIEntity.getHelper().getResources(entity);
         if (attachment == null)
             return false;
         return attachment.resources().containsKey(resourceId);
@@ -47,7 +47,7 @@ public class EntityResourceAPI {
      */
     @Nullable
     public static <T> T getResourceValue(Entity entity, ResourceLocation resourceId) {
-        ResourcesAttachment attachment = EffectAPIEntity.getHelper().getResources(entity);
+        ResourcesAttachmentImpl attachment = EffectAPIEntity.getHelper().getResources(entity);
         if (attachment == null)
             return null;
         return attachment.getValue(resourceId);

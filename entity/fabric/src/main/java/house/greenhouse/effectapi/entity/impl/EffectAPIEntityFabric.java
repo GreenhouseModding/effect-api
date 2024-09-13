@@ -2,7 +2,7 @@ package house.greenhouse.effectapi.entity.impl;
 
 import house.greenhouse.effectapi.entity.api.EffectAPIEntityEffectTypes;
 import house.greenhouse.effectapi.entity.api.EffectAPIEntityActionTypes;
-import house.greenhouse.effectapi.api.attachment.EffectsAttachment;
+import house.greenhouse.effectapi.impl.attachment.EffectsAttachmentImpl;
 import house.greenhouse.effectapi.entity.api.command.EntityResourceArgument;
 import house.greenhouse.effectapi.entity.api.command.EntityResourceValueArgument;
 import house.greenhouse.effectapi.entity.api.registry.EffectAPIEntityPredicates;
@@ -45,10 +45,10 @@ public class EffectAPIEntityFabric implements ModInitializer {
         ServerEntityEvents.ENTITY_LOAD.addPhaseOrdering(EFFECT_API_BEFORE_EVENT, Event.DEFAULT_PHASE);
         ServerEntityEvents.ENTITY_LOAD.register((trackedEntity, player) -> {
             if (trackedEntity.hasAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS)) {
-                EffectsAttachment<Entity> attachment = trackedEntity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS);
+                EffectsAttachmentImpl<Entity> attachment = trackedEntity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS);
                 attachment.init(trackedEntity);
                 attachment.refresh();
-                attachment.syncToAll();
+                attachment.sync();
             }
             if (trackedEntity.hasAttached(EffectAPIAttachments.RESOURCES))
                 EffectAPI.getHelper().sendClientboundTracking(new SyncEntityResourcesAttachmentClientboundPacket(trackedEntity.getId(), trackedEntity.getAttached(EffectAPIAttachments.RESOURCES)), trackedEntity);
@@ -56,8 +56,8 @@ public class EffectAPIEntityFabric implements ModInitializer {
         EntityTrackingEvents.START_TRACKING.addPhaseOrdering(EFFECT_API_BEFORE_EVENT, Event.DEFAULT_PHASE);
         EntityTrackingEvents.START_TRACKING.register((trackedEntity, player) -> {
             if (trackedEntity.hasAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS)) {
-                EffectsAttachment<Entity> attachment = trackedEntity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS);
-                attachment.syncToPlayer(player);
+                EffectsAttachmentImpl<Entity> attachment = trackedEntity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS);
+                attachment.sync(player);
             }
             if (trackedEntity.hasAttached(EffectAPIAttachments.RESOURCES))
                 ServerPlayNetworking.send(player, new SyncEntityResourcesAttachmentClientboundPacket(trackedEntity.getId(), trackedEntity.getAttached(EffectAPIAttachments.RESOURCES)));
@@ -66,10 +66,10 @@ public class EffectAPIEntityFabric implements ModInitializer {
         ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) -> {
             if (oldPlayer.hasAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS)) {
                 newPlayer.setAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS, oldPlayer.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS));
-                EffectsAttachment<Entity> attachment = newPlayer.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS);
+                EffectsAttachmentImpl<Entity> attachment = newPlayer.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS);
                 attachment.init(newPlayer);
                 attachment.refresh();
-                attachment.syncToAll();
+                attachment.sync();
             }
         });
 
