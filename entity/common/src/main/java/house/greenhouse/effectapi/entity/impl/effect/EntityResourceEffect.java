@@ -4,7 +4,7 @@ import com.mojang.serialization.Codec;
 import house.greenhouse.effectapi.api.effect.ResourceEffect;
 import house.greenhouse.effectapi.api.registry.EffectAPILootContextParams;
 import house.greenhouse.effectapi.entity.api.EffectAPIEntityEffectTypes;
-import house.greenhouse.effectapi.entity.api.EntityResourceUtil;
+import house.greenhouse.effectapi.entity.api.EntityResourceAPI;
 import house.greenhouse.effectapi.entity.api.registry.EffectAPIEntityLootContextParamSets;
 import house.greenhouse.effectapi.entity.impl.network.clientbound.ChangeEntityResourceClientboundPacket;
 import house.greenhouse.effectapi.impl.EffectAPI;
@@ -29,17 +29,17 @@ public class EntityResourceEffect<T> extends ResourceEffect<T> {
     public void onAdded(LootContext lootContext) {
         Entity entity = lootContext.getParam(LootContextParams.THIS_ENTITY);
         T value;
-        if (EntityResourceUtil.hasResource(entity, id))
-            value = EntityResourceUtil.getResourceValue(entity, id);
+        if (EntityResourceAPI.hasResource(entity, id))
+            value = EntityResourceAPI.getResourceValue(entity, id);
         else
-            value = EntityResourceUtil.setResourceValue(entity, id, defaultValue, lootContext.getParamOrNull(EffectAPILootContextParams.SOURCE));
+            value = EntityResourceAPI.setResourceValue(entity, id, defaultValue, lootContext.getParamOrNull(EffectAPILootContextParams.SOURCE));
         EffectAPI.getHelper().sendClientboundTracking(new ChangeEntityResourceClientboundPacket<>(entity.getId(), this, Optional.of(lootContext.getParam(EffectAPILootContextParams.SOURCE)), Optional.of(value)), entity);
     }
 
     @Override
     public void onRemoved(LootContext lootContext) {
         Entity entity = lootContext.getParam(LootContextParams.THIS_ENTITY);
-        EntityResourceUtil.removeResource(entity, id, lootContext.getParamOrNull(EffectAPILootContextParams.SOURCE));
+        EntityResourceAPI.removeResource(entity, id, lootContext.getParamOrNull(EffectAPILootContextParams.SOURCE));
         EffectAPI.getHelper().sendClientboundTracking(new ChangeEntityResourceClientboundPacket<>(entity.getId(), this, Optional.empty(), Optional.empty()), entity);
     }
 

@@ -2,7 +2,7 @@ package house.greenhouse.test.attachment;
 
 import com.mojang.serialization.Codec;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
-import house.greenhouse.effectapi.entity.api.EntityEffectUtil;
+import house.greenhouse.effectapi.entity.api.EntityEffectAPI;
 import house.greenhouse.effectapi.impl.EffectAPI;
 import house.greenhouse.test.EffectAPIEntityTest;
 import house.greenhouse.test.Power;
@@ -57,8 +57,8 @@ public class PowersAttachment {
     }
 
     public void addPower(Holder<Power> power) {
-        EntityEffectUtil.addEffects(provider, power.value().effects().stream().filter(component -> component.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect).flatMap(component -> ((List<EffectAPIEffect>)component.value()).stream()).toList(), ID);
-        EntityEffectUtil.syncEffects(provider);
+        EntityEffectAPI.addEffects(provider, power.value().effects().stream().filter(component -> component.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect).flatMap(component -> ((List<EffectAPIEffect>)component.value()).stream()).toList(), ID);
+        EntityEffectAPI.syncEffects(provider);
         powers.add(power);
         sync();
     }
@@ -68,8 +68,8 @@ public class PowersAttachment {
     }
 
     public void removePower(Holder<Power> power) {
-        EntityEffectUtil.removeEffects(provider, power.value().effects().stream().filter(component -> component.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect).flatMap(component -> ((List<EffectAPIEffect>)component.value()).stream()).toList(), ID);
-        EntityEffectUtil.syncEffects(provider);
+        EntityEffectAPI.removeEffects(provider, power.value().effects().stream().filter(component -> component.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect).flatMap(component -> ((List<EffectAPIEffect>)component.value()).stream()).toList(), ID);
+        EntityEffectAPI.syncEffects(provider);
         powers.remove(power);
         sync();
     }

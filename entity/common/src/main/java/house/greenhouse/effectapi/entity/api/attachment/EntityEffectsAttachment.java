@@ -3,7 +3,7 @@ package house.greenhouse.effectapi.entity.api.attachment;
 import com.google.common.collect.ImmutableList;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
 import house.greenhouse.effectapi.entity.api.EffectAPIEntityEffectTypes;
-import house.greenhouse.effectapi.entity.api.EntityEffectUtil;
+import house.greenhouse.effectapi.entity.api.EntityEffectAPI;
 import house.greenhouse.effectapi.entity.api.registry.EffectAPIEntityLootContextParamSets;
 import house.greenhouse.effectapi.entity.impl.effect.EntityTickEffect;
 import house.greenhouse.effectapi.entity.impl.network.clientbound.SyncEntityEffectsAttachmentClientboundPacket;
@@ -48,34 +48,46 @@ public class EntityEffectsAttachment {
         return allComponents.isEmpty();
     }
 
-    public <T> List<T> getEffects(DataComponentType<List<T>> type) {
-        return activeComponents.getOrDefault(type, List.of());
+    public <T extends EffectAPIEffect> List<T> getEffects(DataComponentType<List<T>> type, boolean includeInactive) {
+        return includeInactive ? combinedComponents.getOrDefault(type, List.of()) : activeComponents.getOrDefault(type, List.of());
     }
 
-    public <T> boolean hasEffectType(DataComponentType<List<T>> type) {
-        return activeComponents.keySet().contains(type);
+    public <T extends EffectAPIEffect> boolean isTypeActive(DataComponentType<List<T>> type) {
+        return hasEffectType(type, false);
+    }
+
+    public <T extends EffectAPIEffect> boolean hasEffectType(DataComponentType<List<T>> type, boolean includeInactive) {
+        return includeInactive ? combinedComponents.keySet().contains(type) : activeComponents.keySet().contains(type);
+    }
+
+    public <T extends EffectAPIEffect> boolean isActive(T effect) {
+        return hasEffect(effect, false);
+    }
+
+    public <T extends EffectAPIEffect> boolean hasEffect(T effect, boolean includeInactive) {
+        return includeInactive ? combinedComponents.stream().anyMatch(typedDataComponent -> typedDataComponent.value() instanceof List<?> list && list.stream().anyMatch(o -> o == effect)) : activeComponents.stream().anyMatch(typedDataComponent -> typedDataComponent.value() instanceof List<?> list && list.stream().anyMatch(o -> o == effect));
     }
 
     public void tick() {
         updateActiveComponents(true);
         InternalEffectUtil.executeOnAllEffects(activeComponents, effect -> {
             if (effect.type() == EffectAPIEntityEffectTypes.ENTITY_TICK)
-                InternalEffectUtil.<EntityTickEffect<?>>castConditional(effect).tick(EntityEffectUtil.createEntityOnlyContext(provider, sources.getOrDefault(effect, null)));
+                InternalEffectUtil.<EntityTickEffect<?>>castConditional(effect).tick(EntityEffectAPI.createEntityOnlyContext(provider, sources.getOrDefault(effect, null)));
         });
     }
 
     public void refresh() {
         InternalEffectUtil.executeOnAllEffects(activeComponents, effect ->
-                effect.onRefreshed(EntityEffectUtil.createEntityOnlyContext(provider, sources.getOrDefault(effect, null))));
+                effect.onRefreshed(EntityEffectAPI.createEntityOnlyContext(provider, sources.getOrDefault(effect, null))));
     }
 
     private void updateActiveComponents(boolean sync) {
         DataComponentMap previous = activeComponents;
-        if (!InternalEffectUtil.haveActivesChanged(EntityEffectUtil.createEntityOnlyContext(provider), EffectAPIEntityLootContextParamSets.ENTITY, combinedComponents, previous, sources)) {
+        if (!InternalEffectUtil.haveActivesChanged(EntityEffectAPI.createEntityOnlyContext(provider), EffectAPIEntityLootContextParamSets.ENTITY, combinedComponents, previous, sources)) {
             InternalEffectUtil.clearChangedCache();
             return;
         }
-        activeComponents = InternalEffectUtil.generateActiveEffects(EntityEffectUtil.createEntityOnlyContext(provider), EffectAPIEntityLootContextParamSets.ENTITY, combinedComponents, previous, sources);
+        activeComponents = InternalEffectUtil.generateActiveEffects(EntityEffectAPI.createEntityOnlyContext(provider), EffectAPIEntityLootContextParamSets.ENTITY, combinedComponents, previous, sources);
         if (sync)
             sync();
     }

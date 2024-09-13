@@ -2,6 +2,7 @@ package house.greenhouse.effectapi.entity.platform;
 
 import house.greenhouse.effectapi.api.attachment.ResourcesAttachment;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
+import house.greenhouse.effectapi.entity.api.EntityEffectAPI;
 import house.greenhouse.effectapi.entity.api.attachment.EntityEffectsAttachment;
 import house.greenhouse.effectapi.entity.impl.registry.EffectAPIEntityAttachments;
 import house.greenhouse.effectapi.impl.registry.EffectAPIAttachments;
@@ -55,6 +56,8 @@ public class EffectAPIEntityPlatformHelperFabric implements EffectAPIEntityPlatf
 
     @Override
     public void addEntityEffect(Entity entity, EffectAPIEffect effect, ResourceLocation source) {
+        if (entity.hasAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS) && entity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS).hasEffect(effect, true))
+            return;
         EntityEffectsAttachment attachment =  entity.getAttachedOrCreate(EffectAPIEntityAttachments.ENTITY_EFFECTS);
         attachment.init(entity);
         attachment.addEffect(effect, source);
@@ -63,8 +66,10 @@ public class EffectAPIEntityPlatformHelperFabric implements EffectAPIEntityPlatf
     @Override
     public void removeEntityEffect(Entity entity, EffectAPIEffect effect, ResourceLocation source) {
         EntityEffectsAttachment attachment =  entity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS);
-        if (attachment == null)
+        if (attachment == null || !attachment.hasEffect(effect, true))
             return;
+        if (attachment.isActive(effect))
+            effect.onRemoved(EntityEffectAPI.createEntityOnlyContext(entity));
         attachment.removeEffect(effect, source);
         if (attachment.isEmpty())
             entity.removeAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS);

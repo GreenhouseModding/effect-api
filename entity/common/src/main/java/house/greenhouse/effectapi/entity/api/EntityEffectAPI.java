@@ -25,35 +25,61 @@ import java.util.Optional;
  * modded implementations, so you don't have to struggle with compatibility with one
  * mod's effects that is only handled through its own code.
  */
-public class EntityEffectUtil {
+public class EntityEffectAPI {
     /**
      * Obtains an entity's active effects.
      *
-     * @param entity    The entity to get the effects of.
-     * @param type      The type of effect.
-     * @return          A list of effects.
-     * @param <T>       The effect class.
+     * @param entity            The entity to get the effects of.
+     * @param type              The type of effect.
+     * @return                  A list of effects.
+     * @param <T>               The effect class.
      */
-    public static <T extends EffectAPIEffect> List<T> getEntityEffects(Entity entity, DataComponentType<List<T>> type) {
+    public static <T extends EffectAPIEffect> List<T> getEffects(Entity entity, DataComponentType<List<T>> type) {
+        return getEffects(entity, type, false);
+    }
+
+    /**
+     * Obtains an entity's effects.
+     *
+     * @param entity            The entity to get the effects of.
+     * @param type              The type of effect.
+     * @param includeInactive   Whether to include inactive effects.
+     * @return                  A list of effects.
+     * @param <T>               The effect class.
+     */
+    public static <T extends EffectAPIEffect> List<T> getEffects(Entity entity, DataComponentType<List<T>> type, boolean includeInactive) {
         EntityEffectsAttachment attachment = EffectAPIEntity.getHelper().getEntityEffects(entity);
         if (attachment == null)
             return List.of();
-        return EffectAPIEntity.getHelper().getEntityEffects(entity).getEffects(type);
+        return EffectAPIEntity.getHelper().getEntityEffects(entity).getEffects(type, includeInactive);
     }
 
     /**
      * Checks if an entity has a specific effect type active.
-     * For checking specific effects, or checking if multiple are active, use {@link EntityEffectUtil#getEntityEffects(Entity, DataComponentType)}
+     * For checking specific effects, or checking if more than one is active, use {@link EntityEffectAPI#getEffects(Entity, DataComponentType)}
      *
      * @param entity    The entity to check.
      * @param type      The type of effect to check.
      * @return          True if the entity has an instance of the effect, false if not.
      */
-    public static <T extends EffectAPIEffect> boolean hasEffectType(Entity entity, DataComponentType<List<T>> type) {
+    public static <T extends EffectAPIEffect> boolean isTypeActive(Entity entity, DataComponentType<List<T>> type) {
+        return hasType(entity, type, false);
+    }
+
+
+    /**
+     * Checks if an entity has a specific effect type.
+     * For checking specific effects, use {@link EntityEffectAPI#getEffects(Entity, DataComponentType)}
+     *
+     * @param entity    The entity to check.
+     * @param type      The type of effect to check.
+     * @return          True if the entity has an instance of the effect, false if not.
+     */
+    public static <T extends EffectAPIEffect> boolean hasType(Entity entity, DataComponentType<List<T>> type, boolean includeInactive) {
         EntityEffectsAttachment attachment = EffectAPIEntity.getHelper().getEntityEffects(entity);
         if (attachment == null)
             return false;
-        return attachment.hasEffectType(type);
+        return attachment.hasEffectType(type, includeInactive);
     }
 
     /**
@@ -89,7 +115,6 @@ public class EntityEffectUtil {
      * @param source    The source of the effect.
      */
     public static void removeEffect(Entity entity, EffectAPIEffect effect, ResourceLocation source) {
-        effect.onRemoved(createEntityOnlyContext(entity));
         EffectAPIEntity.getHelper().removeEntityEffect(entity, effect, source);
     }
 
@@ -102,7 +127,6 @@ public class EntityEffectUtil {
      */
     public static void removeEffects(Entity entity, List<? extends EffectAPIEffect> effects, ResourceLocation source) {
         for (EffectAPIEffect effect : effects) {
-            effect.onRemoved(createEntityOnlyContext(entity));
             EffectAPIEntity.getHelper().removeEntityEffect(entity, effect, source);
         }
     }
@@ -121,7 +145,7 @@ public class EntityEffectUtil {
 
     /**
      * Creates a {@link LootContext} based on the entity provided, without an effect source.
-     * Please use {@link EntityEffectUtil#createEntityOnlyContext(Entity, ResourceLocation)} in contexts where you need an effect source.
+     * Please use {@link EntityEffectAPI#createEntityOnlyContext(Entity, ResourceLocation)} in contexts where you need an effect source.
      *
      * @param entity    The provided entity.
      * @return          A {@link LootContext} with the entity's position and the entity.

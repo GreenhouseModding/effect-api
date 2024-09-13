@@ -3,7 +3,7 @@ package house.greenhouse.effectapi.entity.impl;
 import house.greenhouse.effectapi.entity.api.EffectAPIEntityEffectTypes;
 import house.greenhouse.effectapi.entity.api.EffectAPIEntityActionTypes;
 import house.greenhouse.effectapi.entity.api.EffectAPIEntityRegistries;
-import house.greenhouse.effectapi.entity.api.EntityEffectUtil;
+import house.greenhouse.effectapi.entity.api.EntityEffectAPI;
 import house.greenhouse.effectapi.entity.api.attachment.EntityEffectsAttachment;
 import house.greenhouse.effectapi.entity.api.command.EntityResourceArgument;
 import house.greenhouse.effectapi.entity.api.command.EntityResourceValueArgument;
@@ -74,7 +74,7 @@ public class EffectAPIEntityNeoForge {
         public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
             if (event.getEntity().hasData(EffectAPIEntityAttachments.ENTITY_EFFECTS)) {
                 event.getEntity().getData(EffectAPIEntityAttachments.ENTITY_EFFECTS).init(event.getEntity());
-                EntityEffectUtil.syncEffects(event.getEntity());
+                EntityEffectAPI.syncEffects(event.getEntity());
             }
             if (event.getEntity().hasData(EffectAPIAttachments.RESOURCES))
                 EffectAPI.getHelper().sendClientboundTracking(new SyncEntityResourcesAttachmentClientboundPacket(event.getEntity().getId(), event.getEntity().getData(EffectAPIAttachments.RESOURCES)), event.getEntity());
@@ -84,7 +84,7 @@ public class EffectAPIEntityNeoForge {
         public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
             if (event.getEntity().hasData(EffectAPIEntityAttachments.ENTITY_EFFECTS)) {
                 event.getEntity().getData(EffectAPIEntityAttachments.ENTITY_EFFECTS).init(event.getEntity());
-                EntityEffectUtil.syncEffects(event.getEntity());
+                EntityEffectAPI.syncEffects(event.getEntity());
             }
             if (event.getEntity().hasData(EffectAPIAttachments.RESOURCES))
                 EffectAPI.getHelper().sendClientboundTracking(new SyncEntityResourcesAttachmentClientboundPacket(event.getEntity().getId(), event.getEntity().getData(EffectAPIAttachments.RESOURCES)), event.getEntity());
@@ -94,7 +94,7 @@ public class EffectAPIEntityNeoForge {
         public static void onStartTracking(PlayerEvent.StartTracking event) {
             if (event.getEntity().hasData(EffectAPIEntityAttachments.ENTITY_EFFECTS)) {
                 event.getEntity().getData(EffectAPIEntityAttachments.ENTITY_EFFECTS).init(event.getEntity());
-                EntityEffectUtil.syncEffects(event.getEntity());
+                EntityEffectAPI.syncEffects(event.getEntity());
             }
             if (event.getTarget().hasData(EffectAPIAttachments.RESOURCES))
                 EffectAPI.getHelper().sendClientboundTracking(new SyncEntityResourcesAttachmentClientboundPacket(event.getTarget().getId(), event.getTarget().getData(EffectAPIAttachments.RESOURCES)), event.getTarget());

@@ -7,7 +7,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.MapLike;
 import com.mojang.serialization.RecordBuilder;
 import house.greenhouse.effectapi.api.effect.ResourceEffect;
-import house.greenhouse.effectapi.entity.api.EntityResourceUtil;
+import house.greenhouse.effectapi.entity.api.EntityResourceAPI;
 import house.greenhouse.effectapi.entity.api.registry.EffectAPIEntityPredicates;
 import house.greenhouse.effectapi.impl.util.InternalResourceUtil;
 import net.minecraft.resources.ResourceLocation;
@@ -27,7 +27,7 @@ public record EntityResourceCondition(ResourceEffect<Object> effect, Object valu
         if (!context.hasParam(entityTarget.getParam()))
             return false;
         Entity entity = context.getParam(entityTarget.getParam());
-        Object compareTo = EntityResourceUtil.getResourceValue(entity, effect.getId());
+        Object compareTo = EntityResourceAPI.getResourceValue(entity, effect.getId());
         return value.equals(compareTo);
     }
 

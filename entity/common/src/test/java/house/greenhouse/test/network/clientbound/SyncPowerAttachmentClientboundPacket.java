@@ -1,5 +1,6 @@
 package house.greenhouse.test.network.clientbound;
 
+import house.greenhouse.effectapi.api.registry.EffectAPIRegistries;
 import house.greenhouse.test.EffectAPIEntityTest;
 import house.greenhouse.test.Power;
 import house.greenhouse.test.attachment.PowersAttachment;
@@ -21,12 +22,12 @@ public record SyncPowerAttachmentClientboundPacket(int entityId, List<Holder<Pow
     public static final StreamCodec<RegistryFriendlyByteBuf, SyncPowerAttachmentClientboundPacket> STREAM_CODEC = StreamCodec.of(SyncPowerAttachmentClientboundPacket::write, SyncPowerAttachmentClientboundPacket::new);
 
     public SyncPowerAttachmentClientboundPacket(RegistryFriendlyByteBuf buf) {
-        this(buf.readInt(), ByteBufCodecs.fromCodecWithRegistries(Power.CODEC.listOf().fieldOf("powers").codec()).decode(buf));
+        this(buf.readInt(), ByteBufCodecs.holderRegistry(EffectAPIEntityTest.POWER).apply(ByteBufCodecs.list()).decode(buf));
     }
 
     public static void write(RegistryFriendlyByteBuf buf, SyncPowerAttachmentClientboundPacket packet) {
         buf.writeInt(packet.entityId);
-        ByteBufCodecs.fromCodecWithRegistries(Power.CODEC.listOf().fieldOf("powers").codec()).encode(buf, packet.allPowers);
+        ByteBufCodecs.holderRegistry(EffectAPIEntityTest.POWER).apply(ByteBufCodecs.list()).encode(buf, packet.allPowers);
     }
 
     public void handle() {

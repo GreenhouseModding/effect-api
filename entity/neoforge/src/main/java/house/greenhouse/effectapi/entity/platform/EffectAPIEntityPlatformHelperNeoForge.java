@@ -2,6 +2,7 @@ package house.greenhouse.effectapi.entity.platform;
 
 import house.greenhouse.effectapi.api.attachment.ResourcesAttachment;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
+import house.greenhouse.effectapi.entity.api.EntityEffectAPI;
 import house.greenhouse.effectapi.entity.api.attachment.EntityEffectsAttachment;
 import house.greenhouse.effectapi.entity.impl.registry.EffectAPIEntityAttachments;
 import house.greenhouse.effectapi.impl.registry.EffectAPIAttachments;
@@ -50,6 +51,8 @@ public class EffectAPIEntityPlatformHelperNeoForge implements EffectAPIEntityPla
 
     @Override
     public void addEntityEffect(Entity entity, EffectAPIEffect effect, ResourceLocation source) {
+        if (entity.hasData(EffectAPIEntityAttachments.ENTITY_EFFECTS) && entity.getData(EffectAPIEntityAttachments.ENTITY_EFFECTS).hasEffect(effect, true))
+            return;
         EntityEffectsAttachment attachment = entity.getData(EffectAPIEntityAttachments.ENTITY_EFFECTS);
         attachment.init(entity);
         attachment.addEffect(effect, source);
@@ -58,11 +61,13 @@ public class EffectAPIEntityPlatformHelperNeoForge implements EffectAPIEntityPla
     @Override
     public void removeEntityEffect(Entity entity, EffectAPIEffect effect, ResourceLocation source) {
         var attachment = entity.getExistingData(EffectAPIEntityAttachments.ENTITY_EFFECTS);
-        if (attachment.isPresent()) {
-            attachment.get().removeEffect(effect, source);
-            if (attachment.get().isEmpty())
-                entity.removeData(EffectAPIEntityAttachments.ENTITY_EFFECTS);
-        }
+        if (attachment.isEmpty() || !attachment.get().hasEffect(effect, true))
+            return;
+        if (attachment.get().isActive(effect))
+            effect.onRemoved(EntityEffectAPI.createEntityOnlyContext(entity));
+        attachment.get().removeEffect(effect, source);
+        if (attachment.get().isEmpty())
+            entity.removeData(EffectAPIEntityAttachments.ENTITY_EFFECTS);
     }
 
     @Override

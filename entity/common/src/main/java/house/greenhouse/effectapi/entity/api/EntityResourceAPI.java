@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * This class provides some common hooks for the resources attachment.
  */
-public class EntityResourceUtil {
+public class EntityResourceAPI {
 
     public static Collection<ResourceEffect.ResourceHolder<Object>> getAllResources(Entity entity) {
         ResourcesAttachment attachment = EffectAPIEntity.getHelper().getResources(entity);
