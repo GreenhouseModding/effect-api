@@ -2,8 +2,8 @@ package house.greenhouse.effectapi.entity.api;
 
 import com.mojang.serialization.Codec;
 import house.greenhouse.effectapi.api.EffectAPIEffectTypes;
+import house.greenhouse.effectapi.api.effect.DummyEffect;
 import house.greenhouse.effectapi.api.effect.EffectAPIConditionalEffect;
-import house.greenhouse.effectapi.api.registry.EffectAPIRegistries;
 import house.greenhouse.effectapi.entity.api.effect.EntityAttributeEffect;
 import house.greenhouse.effectapi.entity.api.registry.EffectAPIEntityLootContextParamSets;
 import house.greenhouse.effectapi.entity.impl.effect.EntityResourceEffect;
@@ -25,6 +25,9 @@ public class EffectAPIEntityEffectTypes {
     public static final DataComponentType<List<EffectAPIConditionalEffect<EntityAttributeEffect>>> ENTITY_ATTRIBUTE = DataComponentType.<List<EffectAPIConditionalEffect<EntityAttributeEffect>>>builder()
             .persistent(EffectAPIConditionalEffect.codec(EntityAttributeEffect.CODEC, EffectAPIEntityLootContextParamSets.ENTITY).listOf())
             .build();
+    public static final DataComponentType<List<DummyEffect>> DUMMY = DataComponentType.<List<DummyEffect>>builder()
+            .persistent(DummyEffect.codec(EffectAPIEntityRegistries.EFFECT_COMPONENT_TYPE, EffectAPI.asResource("dummy"), EffectAPIEntityLootContextParamSets.ENTITY).listOf())
+            .build();
     public static final DataComponentType<List<EffectAPIConditionalEffect<EntityTickEffect<?>>>> ENTITY_TICK = DataComponentType.<List<EffectAPIConditionalEffect<EntityTickEffect<?>>>>builder()
             .persistent(EffectAPIConditionalEffect.codec(EntityTickEffect.CODEC, EffectAPIEntityLootContextParamSets.ENTITY).listOf())
             .build();
@@ -37,6 +40,7 @@ public class EffectAPIEntityEffectTypes {
 
     public static void registerAll(RegistrationCallback<DataComponentType<?>> callback) {
         callback.register(EffectAPIEntityRegistries.EFFECT_COMPONENT_TYPE, EffectAPI.asResource("attribute"), ENTITY_ATTRIBUTE);
+        callback.register(EffectAPIEntityRegistries.EFFECT_COMPONENT_TYPE, EffectAPI.asResource("dummy"), DUMMY);
         callback.register(EffectAPIEntityRegistries.EFFECT_COMPONENT_TYPE, EffectAPI.asResource("tick"), ENTITY_TICK);
         callback.register(EffectAPIEntityRegistries.EFFECT_COMPONENT_TYPE, EffectAPI.asResource("resource"), ENTITY_RESOURCE);
         callback.register(EffectAPIEntityRegistries.EFFECT_COMPONENT_TYPE, EffectAPI.asResource("trigger"), ENTITY_TRIGGER);
