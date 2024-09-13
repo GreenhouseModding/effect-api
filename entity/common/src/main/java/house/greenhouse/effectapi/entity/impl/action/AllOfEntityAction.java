@@ -8,7 +8,7 @@ import house.greenhouse.effectapi.entity.api.EffectAPIEntityActionTypes;
 import java.util.List;
 
 public record AllOfEntityAction(List<EffectAPIAction> actions) implements AllOfAction {
-    public static final MapCodec<AllOfEntityAction> CODEC = AllOfAction.createCodec(
+    public static final MapCodec<AllOfEntityAction> CODEC = AllOfAction.codec(
             EffectAPIEntityActionTypes.CODEC, AllOfEntityAction::new);
 
     @Override

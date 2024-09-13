@@ -11,7 +11,14 @@ import java.util.List;
 import java.util.function.Function;
 
 public interface AllOfAction extends EffectAPIAction {
-    static <T extends AllOfAction> MapCodec<T> createCodec(Codec<EffectAPIAction> actionCodec, Function<List<EffectAPIAction>, T> constructor) {
+    /**
+     * Creates a codec for an AllOfAction class for a specific base registry codec.
+     * @param actionCodec   The action codec, typically a dispatch codec from an action registry.
+     * @param constructor   The constructor for the AllOfAction class.
+     * @return              A MapCodec for the extended AllOfAction class.
+     * @param <T>           The AllOfAction class.
+     */
+    static <T extends AllOfAction> MapCodec<T> codec(Codec<EffectAPIAction> actionCodec, Function<List<EffectAPIAction>, T> constructor) {
         return RecordCodecBuilder.mapCodec(inst -> inst.group(
                 actionCodec.listOf().fieldOf("actions").forGetter(AllOfAction::actions)
         ).apply(inst, constructor));

@@ -10,8 +10,8 @@ import house.greenhouse.effectapi.entity.api.registry.EffectAPIEntityLootContext
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 
-public record EntityTickEffect<T extends EffectAPIAction>(T effect) implements TickEffect<T> {
-    public static final Codec<EntityTickEffect<?>> CODEC = EffectAPIEntityActionTypes.CODEC.xmap(EntityTickEffect::new, EntityTickEffect::effect);
+public record EntityTickEffect<A extends EffectAPIAction>(A action) implements TickEffect<A> {
+    public static final Codec<EntityTickEffect<?>> CODEC = EffectAPIEntityActionTypes.CODEC.xmap(EntityTickEffect::new, EntityTickEffect::action);
 
     @Override
     public DataComponentType<?> type() {

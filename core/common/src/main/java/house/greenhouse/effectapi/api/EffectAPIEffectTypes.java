@@ -3,7 +3,6 @@ package house.greenhouse.effectapi.api;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
-import house.greenhouse.effectapi.api.registry.EffectAPIRegistries;
 import house.greenhouse.effectapi.mixin.DataComponentMapBuilderAccessor;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;

@@ -7,7 +7,7 @@ import house.greenhouse.effectapi.entity.api.EffectAPIEntityActionTypes;
 import net.minecraft.util.random.SimpleWeightedRandomList;
 
 public record RandomEntityAction(SimpleWeightedRandomList<EffectAPIAction> actions) implements RandomAction {
-    public static final MapCodec<RandomEntityAction> CODEC = RandomAction.createCodec(
+    public static final MapCodec<RandomEntityAction> CODEC = RandomAction.codec(
             EffectAPIEntityActionTypes.CODEC, RandomEntityAction::new);
 
     @Override

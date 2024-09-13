@@ -6,10 +6,16 @@ import house.greenhouse.effectapi.api.action.EffectAPIAction;
 import net.minecraft.world.level.storage.loot.LootContext;
 
 import java.util.Optional;
-import java.util.function.BiFunction;
 
 public interface TriggerEffect extends EffectAPIEffect {
-    static <T extends TriggerEffect> Codec<T> createCodec(Codec<EffectAPIAction> actionCodec, Constructor<T> constructor) {
+    /**
+     * Creates a trigger effect codec with a specified action codec.
+     * @param actionCodec   An action codec, typically a dispatch codec associated with a registry.
+     * @param constructor   A constructor for the trigger effect class.
+     * @return              A trigger effect codec.
+     * @param <T>           The trigger effect class.
+     */
+    static <T extends TriggerEffect> Codec<T> codec(Codec<EffectAPIAction> actionCodec, Constructor<T> constructor) {
         return RecordCodecBuilder.create(inst -> inst.group(
                 actionCodec.optionalFieldOf("on_added").forGetter(TriggerEffect::onAdded),
                 actionCodec.optionalFieldOf("on_removed").forGetter(TriggerEffect::onRemoved),

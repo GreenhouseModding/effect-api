@@ -12,7 +12,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import java.util.Optional;
 
 public record EntityTriggerEffect(Optional<EffectAPIAction> onAdded, Optional<EffectAPIAction> onRemoved, Optional<EffectAPIAction> onRefresh) implements TriggerEffect {
-    public static final Codec<EntityTriggerEffect> CODEC = TriggerEffect.createCodec(
+    public static final Codec<EntityTriggerEffect> CODEC = TriggerEffect.codec(
             EffectAPIEntityActionTypes.CODEC, EntityTriggerEffect::new);
 
     @Override

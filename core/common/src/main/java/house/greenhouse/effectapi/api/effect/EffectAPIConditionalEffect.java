@@ -4,10 +4,6 @@ package house.greenhouse.effectapi.api.effect;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import house.greenhouse.effectapi.mixin.LootContextAccessor;
-import house.greenhouse.effectapi.mixin.LootParamsAccessor;
-import net.minecraft.Util;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -19,7 +15,7 @@ import java.util.Optional;
 import java.util.WeakHashMap;
 
 public class EffectAPIConditionalEffect<T extends EffectAPIEffect> implements EffectAPIEffect {
-    public static Codec<LootItemCondition> conditionCodec(LootContextParamSet paramSet) {
+    private static Codec<LootItemCondition> conditionCodec(LootContextParamSet paramSet) {
         return LootItemCondition.DIRECT_CODEC
                 .validate(
                         loot -> {
@@ -35,6 +31,13 @@ public class EffectAPIConditionalEffect<T extends EffectAPIEffect> implements Ef
                 );
     }
 
+    /**
+     * Creates a codec that wraps a specified effect within a conditional effect, making it conditional.
+     * @param codec     The codec of the inner effect.
+     * @param paramSet  The param set for validating the condition, should be the same as the param set of the effect.
+     * @return          A conditional effect codec.
+     * @param <T>       The inner effect class.
+     */
     public static <T extends EffectAPIEffect> Codec<EffectAPIConditionalEffect<T>> codec(Codec<T> codec, LootContextParamSet paramSet) {
         return RecordCodecBuilder.create(inst -> inst.group(
                 codec.fieldOf("effect").forGetter(EffectAPIConditionalEffect::effect),
@@ -48,7 +51,7 @@ public class EffectAPIConditionalEffect<T extends EffectAPIEffect> implements Ef
     private final int checkRate;
     private final LootContextParamSet paramSet;
 
-    private WeakHashMap<LootContext, Long> ticks = new WeakHashMap<>(64);
+    private final Map<LootContext, Long> ticks = new WeakHashMap<>(64);
     private boolean previousValue = false;
 
     public EffectAPIConditionalEffect(T effect, Optional<LootItemCondition> requirements, int checkRate, LootContextParamSet paramSet) {
