@@ -2,14 +2,12 @@ package house.greenhouse.effectapi.entity.platform;
 
 import house.greenhouse.effectapi.api.attachment.ResourcesAttachment;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
-import house.greenhouse.effectapi.entity.api.attachment.EntityEffectsAttachment;
+import house.greenhouse.effectapi.api.attachment.EffectsAttachment;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Map;
 
 public interface EffectAPIEntityPlatformHelper {
 
@@ -25,7 +23,7 @@ public interface EffectAPIEntityPlatformHelper {
     void removeResource(Entity entity, ResourceLocation id, ResourceLocation source);
 
     @Nullable
-    EntityEffectsAttachment getEntityEffects(Entity entity);
+    EffectsAttachment getEntityEffects(Entity entity);
 
     void addEntityEffect(Entity entity, EffectAPIEffect effect, ResourceLocation source);
 

@@ -96,12 +96,12 @@ public class TestCommand {
 
         PowersAttachment attachment = EffectAPIEntityTest.getHelper().getPowers(entity);
         if (attachment != null && attachment.hasPower(power)) {
-            context.getSource().sendFailure(Component.literal("Entity already has power '" + power.unwrapKey().map(ResourceKey::location).orElse(null) + "'."));
+            context.getSource().sendFailure(Component.literal("Entity already has power \"" + power.unwrapKey().map(ResourceKey::location).orElse(null) + "\"."));
             return 0;
         }
         attachment.addPower(power);
 
-        context.getSource().sendSuccess(() -> Component.literal("Added power '" + power.unwrapKey().map(ResourceKey::location).orElse(null) + "' to entity."), true);
+        context.getSource().sendSuccess(() -> Component.literal("Added power \"" + power.unwrapKey().map(ResourceKey::location).orElse(null) + "\" to entity."), true);
         return 1;
     }
 
@@ -112,7 +112,7 @@ public class TestCommand {
 
         PowersAttachment attachment = EffectAPIEntityTest.getHelper().getPowers(entity);
         if (attachment == null || !attachment.hasPower(power)) {
-            context.getSource().sendFailure(Component.literal("Entity does not have power '" + power.unwrapKey().map(ResourceKey::location).orElse(null) + "'."));
+            context.getSource().sendFailure(Component.literal("Entity does not have power \"" + power.unwrapKey().map(ResourceKey::location).orElse(null) + "\"."));
             return 0;
         }
 
@@ -121,12 +121,17 @@ public class TestCommand {
         if (attachment.totalPowers() == 0)
             EffectAPIEntityTest.getHelper().removePowerAttachment(entity);
 
-        context.getSource().sendSuccess(() -> Component.literal("Removed power '" + power.unwrapKey().map(ResourceKey::location).orElse(null) + "' from entity."), true);
+        context.getSource().sendSuccess(() -> Component.literal("Removed power \"" + power.unwrapKey().map(ResourceKey::location).orElse(null) + "\" from entity."), true);
         return 1;
     }
 
     private static int listPowers(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         Entity entity = EntityArgument.getEntity(context, "target");
+
+        if (!EffectAPIEntityTest.getHelper().hasPowers(entity)) {
+            context.getSource().sendFailure(Component.literal("Entity does not have any powers."));
+            return 0;
+        }
 
         PowersAttachment attachment = EffectAPIEntityTest.getHelper().getPowers(entity);
         if (attachment == null) {
@@ -178,12 +183,12 @@ public class TestCommand {
         }
 
         if (successes == 0)
-            context.getSource().sendFailure(Component.literal("None of the specified entities have the resource '" + resource.getId() + "'."));
+            context.getSource().sendFailure(Component.literal("None of the specified entities have the resource \"" + resource.getId() + "\"."));
         else if (successes == 1)
-            context.getSource().sendSuccess(() -> Component.literal("Set resource '" + resource.getId() + "' to " + value + " on entity."), true);
+            context.getSource().sendSuccess(() -> Component.literal("Set resource \"" + resource.getId() + "\" to " + value + " on entity."), true);
         else if (successes > 1) {
             int finalSuccesses = successes;
-            context.getSource().sendSuccess(() -> Component.literal("Set resource '" + resource.getId() + "' to " + value + " for " + finalSuccesses + " entities."), true);
+            context.getSource().sendSuccess(() -> Component.literal("Set resource \"" + resource.getId() + "\" to " + value + " for " + finalSuccesses + " entities."), true);
         }
 
         return successes;
@@ -195,13 +200,14 @@ public class TestCommand {
         EntityResourceEffect<Object> resource = EntityResourceArgument.getResource(context, "key");
 
         if (EffectAPIEntity.getHelper().getResources(entity) == null || !EffectAPIEntity.getHelper().getResources(entity).resources().containsKey(resource.getId())) {
-            context.getSource().sendFailure(Component.literal("Entity does not have resource '" + resource.getId() + "'."));
+            context.getSource().sendFailure(Component.literal("Entity does not have resource \"" + resource.getId() + "\"."));
             return 0;
         }
 
         Object value = EffectAPIEntity.getHelper().getResources(entity).getValue(resource.getId());
+        String stringValue = value instanceof String str ? "\"" + str + "\"" : value.toString();
 
-        context.getSource().sendSuccess(() -> Component.literal("Resource '" + resource.getId() + "' is " + value.toString() + "."), true);
+        context.getSource().sendSuccess(() -> Component.literal("Resource \"" + resource.getId() + "\" is " + stringValue + "."), true);
         if (value instanceof Number number)
             return number.intValue();
         if (value instanceof Boolean bool)

@@ -3,7 +3,7 @@ package house.greenhouse.effectapi.entity.platform;
 import house.greenhouse.effectapi.api.attachment.ResourcesAttachment;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
 import house.greenhouse.effectapi.entity.api.EntityEffectAPI;
-import house.greenhouse.effectapi.entity.api.attachment.EntityEffectsAttachment;
+import house.greenhouse.effectapi.api.attachment.EffectsAttachment;
 import house.greenhouse.effectapi.entity.impl.registry.EffectAPIEntityAttachments;
 import house.greenhouse.effectapi.impl.registry.EffectAPIAttachments;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
@@ -45,7 +45,7 @@ public class EffectAPIEntityPlatformHelperNeoForge implements EffectAPIEntityPla
     }
 
     @Override
-    public @Nullable EntityEffectsAttachment getEntityEffects(Entity entity) {
+    public @Nullable EffectsAttachment getEntityEffects(Entity entity) {
         return entity.getExistingData(EffectAPIEntityAttachments.ENTITY_EFFECTS).orElse(null);
     }
 
@@ -53,7 +53,7 @@ public class EffectAPIEntityPlatformHelperNeoForge implements EffectAPIEntityPla
     public void addEntityEffect(Entity entity, EffectAPIEffect effect, ResourceLocation source) {
         if (entity.hasData(EffectAPIEntityAttachments.ENTITY_EFFECTS) && entity.getData(EffectAPIEntityAttachments.ENTITY_EFFECTS).hasEffect(effect, true))
             return;
-        EntityEffectsAttachment attachment = entity.getData(EffectAPIEntityAttachments.ENTITY_EFFECTS);
+        EffectsAttachment attachment = entity.getData(EffectAPIEntityAttachments.ENTITY_EFFECTS);
         attachment.init(entity);
         attachment.addEffect(effect, source);
     }

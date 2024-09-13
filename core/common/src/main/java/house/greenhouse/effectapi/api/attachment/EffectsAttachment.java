@@ -1,10 +1,7 @@
-package house.greenhouse.effectapi.entity.api.attachment;
+package house.greenhouse.effectapi.api.attachment;
 
 import com.google.common.collect.ImmutableList;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
-import house.greenhouse.effectapi.entity.api.EntityEffectAPI;
-import house.greenhouse.effectapi.entity.api.registry.EffectAPIEntityLootContextParamSets;
-import house.greenhouse.effectapi.entity.impl.network.clientbound.SyncEntityEffectsAttachmentClientboundPacket;
 import house.greenhouse.effectapi.impl.EffectAPI;
 import house.greenhouse.effectapi.impl.util.InternalEffectUtil;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
@@ -12,8 +9,8 @@ import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
@@ -24,27 +21,33 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-// TODO: Move to generic effect attachment class.
-public class EntityEffectsAttachment {
-    public static final ResourceLocation ID = EffectAPI.asResource("entity_effects");
+public class EffectsAttachment<T> {
+    private final Map<EffectAPIEffect, LootContext> contexts = new HashMap<>();
+    private final ContextFunction<T> contextFunction;
+    private final NetworkFunction<T> networkFunction;
+    private final LootContextParamSet paramSet;
 
-    private Object2ObjectArrayMap<ResourceLocation, DataComponentMap> allComponents = new Object2ObjectArrayMap<>();
+    private Object2ObjectArrayMap<ResourceLocation, DataComponentMap> sourcesToComponents = new Object2ObjectArrayMap<>();
     private DataComponentMap combinedComponents = DataComponentMap.EMPTY;
     private DataComponentMap activeComponents = DataComponentMap.EMPTY;
-    private Entity provider;
-    private final Map<EffectAPIEffect, LootContext> contexts = new HashMap<>();
 
-    public EntityEffectsAttachment() {}
+    private T provider;
 
-    public void init(Entity entity) {
-        if (provider != null)
+    public EffectsAttachment(ContextFunction<T> contextFunction, NetworkFunction<T> networkFunction, LootContextParamSet paramSet) {
+        this.contextFunction = contextFunction;
+        this.networkFunction = networkFunction;
+        this.paramSet = paramSet;
+    }
+
+    public void init(T provider) {
+        if (this.provider != null)
             return;
-        this.provider = entity;
+        this.provider = provider;
         updateActiveComponents();
     }
 
     public boolean isEmpty() {
-        return allComponents.isEmpty();
+        return sourcesToComponents.isEmpty();
     }
 
     public <T extends EffectAPIEffect> List<T> getEffects(DataComponentType<List<T>> type, boolean includeInactive) {
@@ -83,7 +86,7 @@ public class EntityEffectsAttachment {
 
     private void updateActiveComponents() {
         DataComponentMap previous = activeComponents;
-        var newComponents = InternalEffectUtil.generateActiveEffectsIfNecessary(contexts, EffectAPIEntityLootContextParamSets.ENTITY, combinedComponents, previous);
+        var newComponents = InternalEffectUtil.generateActiveEffectsIfNecessary(contexts, paramSet, combinedComponents, previous);
         if (newComponents.isEmpty())
             return;
         activeComponents = newComponents.get();
@@ -91,20 +94,20 @@ public class EntityEffectsAttachment {
     }
 
     public void sync() {
-        EffectAPI.getHelper().sendClientboundTracking(new SyncEntityEffectsAttachmentClientboundPacket(provider.getId(), allComponents, activeComponents), provider);
+        networkFunction.send(provider, sourcesToComponents, activeComponents);
     }
 
     public void addEffect(EffectAPIEffect effect, ResourceLocation source) {
         Object2ObjectArrayMap<ResourceLocation, Map<DataComponentType<?>, List<EffectAPIEffect>>> newMap = new Object2ObjectArrayMap<>();
 
-        for (Map.Entry<ResourceLocation, DataComponentMap> holder : allComponents.entrySet()) {
+        for (Map.Entry<ResourceLocation, DataComponentMap> holder : sourcesToComponents.entrySet()) {
             for (var component : holder.getValue())
                 if (component.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect)
                     newMap.computeIfAbsent(holder.getKey(), k -> new Reference2ObjectArrayMap<>()).computeIfAbsent(component.type(), t -> new ArrayList<>()).addAll((Collection<? extends EffectAPIEffect>) list);
         }
 
         newMap.computeIfAbsent(source, k -> new Reference2ObjectArrayMap<>()).computeIfAbsent(effect.type(), t -> new ArrayList<>()).add(effect);
-        contexts.put(effect, EntityEffectAPI.createEntityOnlyContext(provider, source));
+        contexts.put(effect, contextFunction.apply(provider, effect, source));
 
         Object2ObjectArrayMap<ResourceLocation, DataComponentMap> finalMap = new Object2ObjectArrayMap<>();
         for (var entry : newMap.entrySet()) {
@@ -113,21 +116,21 @@ public class EntityEffectsAttachment {
                 builder.set((DataComponentType<? super List<EffectAPIEffect>>) val.getKey(), List.copyOf(val.getValue()));
             finalMap.put(entry.getKey(), builder.build());
         }
-        allComponents = finalMap;
+        sourcesToComponents = finalMap;
         combineComponents();
         updateActiveComponents();
     }
 
     public void removeEffect(EffectAPIEffect effect, ResourceLocation source) {
-        if (allComponents.isEmpty())
+        if (sourcesToComponents.isEmpty())
             return;
-        Object2ObjectArrayMap<ResourceLocation, DataComponentMap> newMap = new Object2ObjectArrayMap<>(allComponents);
+        Object2ObjectArrayMap<ResourceLocation, DataComponentMap> newMap = new Object2ObjectArrayMap<>(sourcesToComponents);
 
-        newMap.get(source).keySet().removeIf(type -> ((List<?>)allComponents.get(source).getOrDefault(type, List.of())).stream().anyMatch(object -> object == effect));
+        newMap.get(source).keySet().removeIf(type -> ((List<?>)sourcesToComponents.get(source).getOrDefault(type, List.of())).stream().anyMatch(object -> object == effect));
         if (newMap.get(source).isEmpty())
             newMap.remove(source);
 
-        allComponents = newMap;
+        sourcesToComponents = newMap;
         combineComponents();
         updateActiveComponents();
         contexts.remove(effect);
@@ -135,7 +138,7 @@ public class EntityEffectsAttachment {
 
     public void combineComponents() {
         Map<DataComponentType<?>, Set<EffectAPIEffect>> map = new HashMap<>();
-        for (DataComponentMap componentMap : allComponents.values()) {
+        for (DataComponentMap componentMap : sourcesToComponents.values()) {
             for (var value : componentMap)
                 map.computeIfAbsent(value.type(), t -> new HashSet<>()).addAll((Collection<? extends EffectAPIEffect>) value.value());
         }
@@ -147,8 +150,18 @@ public class EntityEffectsAttachment {
 
     @ApiStatus.Internal
     public void setComponents(Object2ObjectArrayMap<ResourceLocation, DataComponentMap> allComponents, DataComponentMap activeComponents) {
-        this.allComponents = allComponents;
+        this.sourcesToComponents = allComponents;
         combineComponents();
         this.activeComponents = activeComponents;
+    }
+
+    @FunctionalInterface
+    public interface ContextFunction<T> {
+        LootContext apply(T provider, EffectAPIEffect effect, ResourceLocation source);
+    }
+
+    @FunctionalInterface
+    public interface NetworkFunction<T> {
+        void send(T provider, Object2ObjectArrayMap<ResourceLocation, DataComponentMap> sourcesToComponents, DataComponentMap activeComponents);
     }
 }

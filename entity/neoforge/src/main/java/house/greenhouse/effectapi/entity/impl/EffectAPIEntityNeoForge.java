@@ -4,7 +4,7 @@ import house.greenhouse.effectapi.entity.api.EffectAPIEntityEffectTypes;
 import house.greenhouse.effectapi.entity.api.EffectAPIEntityActionTypes;
 import house.greenhouse.effectapi.entity.api.EffectAPIEntityRegistries;
 import house.greenhouse.effectapi.entity.api.EntityEffectAPI;
-import house.greenhouse.effectapi.entity.api.attachment.EntityEffectsAttachment;
+import house.greenhouse.effectapi.api.attachment.EffectsAttachment;
 import house.greenhouse.effectapi.entity.api.command.EntityResourceArgument;
 import house.greenhouse.effectapi.entity.api.command.EntityResourceValueArgument;
 import house.greenhouse.effectapi.entity.api.registry.EffectAPIEntityPredicates;
@@ -18,6 +18,7 @@ import house.greenhouse.effectapi.impl.registry.EffectAPIAttachments;
 import house.greenhouse.effectapi.impl.registry.internal.RegistrationCallback;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.core.registries.Registries;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -70,10 +71,10 @@ public class EffectAPIEntityNeoForge {
 
     @EventBusSubscriber(modid = EffectAPI.MOD_ID + "_entity", bus = EventBusSubscriber.Bus.GAME)
     public static class GameEvents {
-        @SubscribeEvent
+        @SubscribeEvent(priority = EventPriority.HIGH)
         public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
             if (event.getEntity().hasData(EffectAPIEntityAttachments.ENTITY_EFFECTS)) {
-                EntityEffectsAttachment attachment = event.getEntity().getData(EffectAPIEntityAttachments.ENTITY_EFFECTS);
+                EffectsAttachment attachment = event.getEntity().getData(EffectAPIEntityAttachments.ENTITY_EFFECTS);
                 attachment.init(event.getEntity());
                 attachment.refresh();
                 attachment.sync();
@@ -82,10 +83,10 @@ public class EffectAPIEntityNeoForge {
                 EffectAPI.getHelper().sendClientboundTracking(new SyncEntityResourcesAttachmentClientboundPacket(event.getEntity().getId(), event.getEntity().getData(EffectAPIAttachments.RESOURCES)), event.getEntity());
         }
 
-        @SubscribeEvent
+        @SubscribeEvent(priority = EventPriority.HIGH)
         public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
             if (event.getEntity().hasData(EffectAPIEntityAttachments.ENTITY_EFFECTS)) {
-                EntityEffectsAttachment attachment = event.getEntity().getData(EffectAPIEntityAttachments.ENTITY_EFFECTS);
+                EffectsAttachment attachment = event.getEntity().getData(EffectAPIEntityAttachments.ENTITY_EFFECTS);
                 attachment.init(event.getEntity());
                 attachment.refresh();
                 attachment.sync();
@@ -94,7 +95,7 @@ public class EffectAPIEntityNeoForge {
                 EffectAPI.getHelper().sendClientboundTracking(new SyncEntityResourcesAttachmentClientboundPacket(event.getEntity().getId(), event.getEntity().getData(EffectAPIAttachments.RESOURCES)), event.getEntity());
         }
 
-        @SubscribeEvent
+        @SubscribeEvent(priority = EventPriority.HIGH)
         public static void onStartTracking(PlayerEvent.StartTracking event) {
             if (event.getEntity().hasData(EffectAPIEntityAttachments.ENTITY_EFFECTS)) {
                 EntityEffectAPI.syncEffects(event.getEntity());
@@ -103,11 +104,11 @@ public class EffectAPIEntityNeoForge {
                 EffectAPI.getHelper().sendClientboundTracking(new SyncEntityResourcesAttachmentClientboundPacket(event.getTarget().getId(), event.getTarget().getData(EffectAPIAttachments.RESOURCES)), event.getTarget());
         }
 
-        @SubscribeEvent
+        @SubscribeEvent(priority = EventPriority.HIGH)
         public static void onPlayerClone(PlayerEvent.Clone event) {
             if (event.getOriginal().hasData(EffectAPIEntityAttachments.ENTITY_EFFECTS)) {
                 event.getEntity().setData(EffectAPIEntityAttachments.ENTITY_EFFECTS, event.getOriginal().getData(EffectAPIEntityAttachments.ENTITY_EFFECTS));
-                EntityEffectsAttachment attachment = event.getEntity().getData(EffectAPIEntityAttachments.ENTITY_EFFECTS);
+                EffectsAttachment attachment = event.getEntity().getData(EffectAPIEntityAttachments.ENTITY_EFFECTS);
                 attachment.init(event.getEntity());
                 attachment.refresh();
                 attachment.sync();

@@ -3,7 +3,7 @@ package house.greenhouse.effectapi.entity.platform;
 import house.greenhouse.effectapi.api.attachment.ResourcesAttachment;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
 import house.greenhouse.effectapi.entity.api.EntityEffectAPI;
-import house.greenhouse.effectapi.entity.api.attachment.EntityEffectsAttachment;
+import house.greenhouse.effectapi.api.attachment.EffectsAttachment;
 import house.greenhouse.effectapi.entity.impl.registry.EffectAPIEntityAttachments;
 import house.greenhouse.effectapi.impl.registry.EffectAPIAttachments;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
@@ -50,7 +50,7 @@ public class EffectAPIEntityPlatformHelperFabric implements EffectAPIEntityPlatf
 
 
     @Override
-    public @Nullable EntityEffectsAttachment getEntityEffects(Entity entity) {
+    public @Nullable EffectsAttachment getEntityEffects(Entity entity) {
         return entity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS);
     }
 
@@ -58,14 +58,14 @@ public class EffectAPIEntityPlatformHelperFabric implements EffectAPIEntityPlatf
     public void addEntityEffect(Entity entity, EffectAPIEffect effect, ResourceLocation source) {
         if (entity.hasAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS) && entity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS).hasEffect(effect, true))
             return;
-        EntityEffectsAttachment attachment =  entity.getAttachedOrCreate(EffectAPIEntityAttachments.ENTITY_EFFECTS);
+        EffectsAttachment attachment =  entity.getAttachedOrCreate(EffectAPIEntityAttachments.ENTITY_EFFECTS);
         attachment.init(entity);
         attachment.addEffect(effect, source);
     }
 
     @Override
     public void removeEntityEffect(Entity entity, EffectAPIEffect effect, ResourceLocation source) {
-        EntityEffectsAttachment attachment =  entity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS);
+        EffectsAttachment attachment =  entity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS);
         if (attachment == null || !attachment.hasEffect(effect, true))
             return;
         if (attachment.isActive(effect))

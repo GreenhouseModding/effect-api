@@ -6,6 +6,11 @@ import net.minecraft.world.entity.Entity;
 
 public class EffectAPITestHelperNeoForge implements EffectAPITestHelper {
     @Override
+    public boolean hasPowers(Entity entity) {
+        return entity.hasData(EffectAPITestNeoForge.POWERS);
+    }
+
+    @Override
     public PowersAttachment getPowers(Entity entity) {
         PowersAttachment attachment = entity.getData(EffectAPITestNeoForge.POWERS);
         attachment.init(entity);

@@ -6,6 +6,11 @@ import net.minecraft.world.entity.Entity;
 
 public class EffectAPITestHelperFabric implements EffectAPITestHelper {
     @Override
+    public boolean hasPowers(Entity entity) {
+        return entity.hasAttached(EffectAPITestFabric.POWERS);
+    }
+
+    @Override
     public PowersAttachment getPowers(Entity entity) {
         PowersAttachment attachment = entity.getAttachedOrCreate(EffectAPITestFabric.POWERS);
         attachment.init(entity);
