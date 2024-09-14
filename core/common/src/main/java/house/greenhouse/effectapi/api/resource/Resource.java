@@ -9,7 +9,6 @@ import house.greenhouse.effectapi.api.registry.EffectAPIRegistries;
 import house.greenhouse.effectapi.api.registry.EffectAPIRegistryKeys;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.RegistryFixedCodec;
-import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
 import java.util.Map;
