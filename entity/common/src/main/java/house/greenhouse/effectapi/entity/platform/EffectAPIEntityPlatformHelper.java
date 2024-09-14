@@ -2,10 +2,12 @@ package house.greenhouse.effectapi.entity.platform;
 
 import house.greenhouse.effectapi.api.attachment.EffectsAttachment;
 import house.greenhouse.effectapi.api.attachment.ResourcesAttachment;
+import house.greenhouse.effectapi.api.resource.Resource;
 import house.greenhouse.effectapi.impl.attachment.ResourcesAttachmentImpl;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
 import house.greenhouse.effectapi.impl.attachment.EffectsAttachmentImpl;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -16,13 +18,14 @@ public interface EffectAPIEntityPlatformHelper {
     @Nullable
     ResourcesAttachment getResources(Entity entity);
 
-    boolean hasResource(Entity entity, ResourceLocation id);
+    <T> boolean hasResource(Entity entity, Holder<Resource<T>> resource);
 
     void setResourcesAttachment(Entity entity, ResourcesAttachment attachment);
 
-    <T> T setResource(Entity entity, ResourceLocation id, T value, ResourceLocation source);
+    @Nullable
+    <T> T setResource(Entity entity, Holder<Resource<T>> resource, T value, @Nullable ResourceLocation source);
 
-    void removeResource(Entity entity, ResourceLocation id, ResourceLocation source);
+    <T> void removeResource(Entity entity, Holder<Resource<T>> resource, ResourceLocation source);
 
     @Nullable
     EffectsAttachment<Entity> getEntityEffects(Entity entity);

@@ -1,7 +1,6 @@
 package house.greenhouse.effectapi.impl.client;
 
 import house.greenhouse.effectapi.impl.EffectAPI;
-import house.greenhouse.effectapi.impl.util.InternalResourceUtil;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;

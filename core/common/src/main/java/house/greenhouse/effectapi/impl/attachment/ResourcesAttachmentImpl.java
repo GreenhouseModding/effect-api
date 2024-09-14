@@ -8,8 +8,12 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapLike;
 import house.greenhouse.effectapi.api.attachment.ResourcesAttachment;
 import house.greenhouse.effectapi.api.effect.ResourceEffect;
+import house.greenhouse.effectapi.api.registry.EffectAPIRegistryKeys;
+import house.greenhouse.effectapi.api.resource.Resource;
 import house.greenhouse.effectapi.impl.EffectAPI;
-import house.greenhouse.effectapi.impl.util.InternalResourceUtil;
+import net.minecraft.core.Holder;
+import net.minecraft.resources.RegistryOps;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,7 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-public record ResourcesAttachmentImpl(Map<ResourceLocation, Pair<ResourceEffect.ResourceHolder<Object>, Set<ResourceLocation>>> resources) implements ResourcesAttachment {
+public record ResourcesAttachmentImpl(Map<Holder<Resource<Object>>, Pair<ResourceEffect.ResourceHolder<Object>, Set<ResourceLocation>>> resources) implements ResourcesAttachment {
     public static final Codec<ResourcesAttachment> CODEC = new AttachmentCodec();
 
     @Override
@@ -30,43 +34,46 @@ public record ResourcesAttachmentImpl(Map<ResourceLocation, Pair<ResourceEffect.
         return resources.isEmpty();
     }
 
-    public boolean hasResource(ResourceLocation id) {
-        return resources.containsKey(id);
+    public <T> boolean hasResource(Holder<Resource<T>> resource) {
+        return resources.containsKey(resource);
     }
 
     @Nullable
-    public <T> T getValue(ResourceLocation id) {
+    public <T> T getValue(Holder<Resource<T>> id) {
         return (T) Optional.ofNullable(resources.get(id)).map(pair -> pair.getFirst().getValue()).orElse(null);
     }
 
-    public <T> T setValue(ResourceLocation id, T value, ResourceLocation source) {
-        if (!resources.containsKey(id)) {
-            var holder = new ResourceEffect.ResourceHolder<>(InternalResourceUtil.getEffectFromId(id));
+    public <T> T setValue(Holder<Resource<T>> resource, T value, ResourceLocation source) {
+        if (!resources.containsKey(resource)) {
+            var holder = new ResourceEffect.ResourceHolder<>(resource);
             holder.setValue(value);
             Set<ResourceLocation> sources = new HashSet<>();
             sources.add(source);
-            resources.put(id, Pair.of(holder, sources));
-        } else
-            resources.get(id).getSecond().add(source);
+            resources.put((Holder) resource, Pair.of((ResourceEffect.ResourceHolder<Object>) holder, sources));
+        } else {
+            resources.get(resource).getFirst().setValue(value);
+            if (source != null)
+                resources.get(resource).getSecond().add(source);
+        }
         return value;
     }
 
-    public void removeValue(ResourceLocation id, ResourceLocation source) {
-        if (!resources.containsKey(id))
+    public <T> void removeValue(Holder<Resource<T>> resource, ResourceLocation source) {
+        if (!resources.containsKey(resource))
             return;
-        resources.get(id).getSecond().remove(source);
-        if (resources.get(id).getSecond().isEmpty())
-            resources.remove(id);
+        resources.get(resource).getSecond().remove(source);
+        if (resources.get(resource).getSecond().isEmpty())
+            resources.remove(resource);
     }
 
     @Nullable
-    public <T> ResourceEffect.ResourceHolder<T> getResourceHolder(ResourceLocation id) {
-        return resources.containsKey(id) ? (ResourceEffect.ResourceHolder<T>) resources.get(id).getFirst() : null;
+    public <T> ResourceEffect.ResourceHolder<T> getResourceHolder(Holder<Resource<T>> resource) {
+        return resources.containsKey(resource) ? (ResourceEffect.ResourceHolder<T>) resources.get(resource).getFirst() : null;
     }
 
     @Nullable
-    public Collection<ResourceLocation> getSources(ResourceLocation id) {
-        return resources.containsKey(id) ? resources.get(id).getSecond() : ImmutableSet.of();
+    public <T> Collection<ResourceLocation> getSources(Holder<Resource<T>> resource) {
+        return resources.containsKey(resource) ? resources.get(resource).getSecond() : ImmutableSet.of();
     }
 
     public static class AttachmentCodec implements Codec<ResourcesAttachment> {
@@ -74,53 +81,49 @@ public record ResourcesAttachmentImpl(Map<ResourceLocation, Pair<ResourceEffect.
 
         @Override
         public <T> DataResult<Pair<ResourcesAttachment, T>> decode(DynamicOps<T> ops, T input) {
-            DataResult<MapLike<T>> map = ops.getMap(input);
+            if (!(ops instanceof RegistryOps<T> registryOps))
+                return DataResult.error(() -> "Cannot decode resources attachment from a non registry context.");
+
+            DataResult<MapLike<T>> map = registryOps.getMap(input);
             if (map.isError()) {
                 return DataResult.error(() -> map.error().get().message());
             }
 
-            Map<ResourceLocation, Pair<ResourceEffect.ResourceHolder<Object>, Set<ResourceLocation>>> finalMap = new HashMap<>();
+            Map<Holder<Resource<Object>>, Pair<ResourceEffect.ResourceHolder<Object>, Set<ResourceLocation>>> finalMap = new HashMap<>();
             List<String> errors = new ArrayList<>();
 
             for (Pair<T, T> entry : map.getOrThrow().entries().toList()) {
-                DataResult<Pair<ResourceLocation, T>> id = ResourceLocation.CODEC.decode(ops, entry.getFirst());
-                DataResult<MapLike<T>> mapLike = ops.getMap(entry.getSecond());
-                if (id.isError()) {
-                    errors.add("Failed to parse id \"" + id + "\" in attachment. (Skipping). " + id.error().get().message());
+                DataResult<Pair<Holder<Resource<?>>, T>> resource = Resource.CODEC.decode(ops, entry.getFirst());
+                DataResult<MapLike<T>> mapLike = registryOps.getMap(entry.getSecond());
+                if (resource.isError()) {
+                    errors.add("Failed to parse resource \"" + resource.error().get().getOrThrow().getSecond() + "\" in attachment. (Skipping). " + resource.error().get().message());
                     continue;
                 }
                 if (mapLike.isError()) {
-                    errors.add("Attempt to deserialize resource \"" + id + "\" that is not a map. (Skipping). " + id.error().get().message());
+                    errors.add("Attempted to deserialize resource \"" + resource.getOrThrow().getFirst().unwrapKey().get().location() + "\" that is not a map. (Skipping). " + mapLike.error().get().message());
                     continue;
                 }
 
-                ResourceEffect<Object> effect = InternalResourceUtil.getEffectFromId(id.getOrThrow().getFirst());
-
-                if (effect == null) {
-                    errors.add("Could not find resource effect with id '" + id.getOrThrow() + "'. (Skipping).");
-                    continue;
-                }
-
-                var value = effect.getDefaultValue();
+                var value = resource.getOrThrow().getFirst().value().defaultValue();
                 if (mapLike.getOrThrow().get("value") != null) {
-                    var newValue = effect.getResourceTypeCodec().decode(ops, mapLike.getOrThrow().get("value"));
+                    var newValue = resource.getOrThrow().getFirst().value().typeCodec().decode(registryOps, mapLike.getOrThrow().get("value"));
                     if (newValue.isError()) {
-                        errors.add("Failed to decode value of resource \"" + id.getOrThrow() + "\" to attachment. (Skipping). " + newValue.error().get().message());
+                        errors.add("Failed to decode value of resource \"" + resource.getOrThrow().getFirst().unwrapKey().get().location() + "\" to attachment. (Skipping). " + newValue.error().get().message());
                         continue;
                     }
                     value = newValue.getOrThrow().getFirst();
                 }
 
-                var newSources = ResourceLocation.CODEC.listOf().decode(ops, mapLike.getOrThrow().get("sources"));
+                var newSources = ResourceLocation.CODEC.listOf().decode(registryOps, mapLike.getOrThrow().get("sources"));
                 if (newSources.isError()) {
-                    errors.add("Failed to decode sources of resource \"" + id.getOrThrow() + "\" to attachment. (Skipping). " + newSources.error().get().message());
+                    errors.add("Failed to decode sources of resource \"" + resource.getOrThrow().getFirst().unwrapKey().get().location() + "\" to attachment. (Skipping). " + newSources.error().get().message());
                     continue;
                 }
 
-                ResourceEffect.ResourceHolder<Object> holder = new ResourceEffect.ResourceHolder<>(effect);
+                ResourceEffect.ResourceHolder<Object> holder = new ResourceEffect.ResourceHolder(resource.getOrThrow().getFirst());
                 holder.setValue(value);
 
-                finalMap.put(id.getOrThrow().getFirst(), Pair.of(holder, new HashSet<>(newSources.getOrThrow().getFirst())));
+                finalMap.put((Holder) resource.getOrThrow().getFirst(), Pair.of(holder, new HashSet<>(newSources.getOrThrow().getFirst())));
             }
 
             for (String error : errors) {
@@ -132,18 +135,21 @@ public record ResourcesAttachmentImpl(Map<ResourceLocation, Pair<ResourceEffect.
 
         @Override
         public <T> DataResult<T> encode(ResourcesAttachment input, DynamicOps<T> ops, T prefix) {
+            if (!(ops instanceof RegistryOps<T> registryOps))
+                return DataResult.error(() -> "Cannot decode resources attachment from a non registry context.");
+
             Map<T, T> map = new HashMap<>();
-            for (Map.Entry<ResourceLocation, Pair<ResourceEffect.ResourceHolder<Object>, Set<ResourceLocation>>> entry : ((ResourcesAttachmentImpl)input).resources.entrySet()) {
+            for (Map.Entry<Holder<Resource<Object>>, Pair<ResourceEffect.ResourceHolder<Object>, Set<ResourceLocation>>> entry : ((ResourcesAttachmentImpl)input).resources.entrySet()) {
                 try {
                     Map<T, T> innerMap = new HashMap<>();
-                    innerMap.put(ops.createString("value"), entry.getValue().getFirst().getEffect().getResourceTypeCodec().encodeStart(ops, entry.getValue().getFirst().getValue()).getOrThrow());
-                    innerMap.put(ops.createString("sources"), ResourceLocation.CODEC.listOf().encodeStart(ops, new ArrayList<>(entry.getValue().getSecond())).getOrThrow());
-                    map.put(ResourceLocation.CODEC.encodeStart(ops, entry.getKey()).getOrThrow(), ops.createMap(innerMap));
+                    innerMap.put(registryOps.createString("value"), entry.getValue().getFirst().getResource().value().typeCodec().encodeStart(registryOps, entry.getValue().getFirst().getValue()).getOrThrow());
+                    innerMap.put(registryOps.createString("sources"), ResourceLocation.CODEC.listOf().encodeStart(registryOps, new ArrayList<>(entry.getValue().getSecond())).getOrThrow());
+                    map.put((T) Resource.CODEC.encodeStart(registryOps, (Holder) entry.getKey()).getOrThrow(), registryOps.createMap(innerMap));
                 } catch (Exception ex) {
                     EffectAPI.LOG.error("Failed to encode resource '{}' to attachment. (Skipping).", entry.getKey(), ex);
                 }
             }
-            return DataResult.success(ops.createMap(map));
+            return DataResult.success(registryOps.createMap(map));
         }
     }
 }

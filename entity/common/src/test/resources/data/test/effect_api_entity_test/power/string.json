@@ -1,9 +1,7 @@
 {
   "effect_api:resource": [
     {
-      "id": "test:string",
-      "resource_type": "effect_api:string",
-      "default_value": "It's that shrimple!"
+      "resource": "test:string"
     }
   ]
 }

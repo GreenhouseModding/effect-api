@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import house.greenhouse.effectapi.api.resource.Resource;
 import house.greenhouse.effectapi.entity.api.EntityResourceAPI;
 import house.greenhouse.effectapi.entity.api.command.EntityResourceArgument;
 import house.greenhouse.effectapi.entity.api.command.EntityResourceValueArgument;
@@ -66,14 +67,14 @@ public class TestCommand {
         LiteralCommandNode<CommandSourceStack> setResourceNode = Commands
                 .literal("set")
                 .then(Commands.argument("targets", EntityArgument.entities())
-                        .then(Commands.argument("key", EntityResourceArgument.resource("targets", "effectapi resource set", EffectAPIEntityTest.MOD_ID))
-                                .then(Commands.argument("value", EntityResourceValueArgument.value("key","effectapi resource set <targets>"))
+                        .then(Commands.argument("key", EntityResourceArgument.resource(context, "targets", "effectapi resource set", EffectAPIEntityTest.MOD_ID))
+                                .then(Commands.argument("value", EntityResourceValueArgument.value(context, "key","effectapi resource set <targets>"))
                                     .executes(TestCommand::setResource))))
                 .build();
         LiteralCommandNode<CommandSourceStack> getResourceNode = Commands
                 .literal("get")
                 .then(Commands.argument("target", EntityArgument.entity())
-                        .then(Commands.argument("key", EntityResourceArgument.resource("target", "effectapi resource get", EffectAPIEntityTest.MOD_ID))
+                        .then(Commands.argument("key", EntityResourceArgument.resource(context, "target", "effectapi resource get", EffectAPIEntityTest.MOD_ID))
                                 .executes(TestCommand::getResource)))
                 .build();
 
@@ -173,25 +174,25 @@ public class TestCommand {
     private static int setResource(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         Collection<? extends Entity> entities = EntityArgument.getEntities(context, "targets");
 
-        EntityResourceEffect<Object> resource = EntityResourceArgument.getResource(context, "key");
+        Holder<Resource<Object>> resource = EntityResourceArgument.getResource(context, "key");
         Object value = EntityResourceValueArgument.getResourceValue(context, "value");
 
         int successes = 0;
 
         for (Entity entity : entities) {
-            if (EffectAPIEntity.getHelper().getResources(entity) != null && EffectAPIEntity.getHelper().getResources(entity).hasResource(resource.getId())) {
-                EntityResourceAPI.setResourceValue(entity, resource.getId(), value, EffectAPIEntityTest.POWER.location());
+            if (EffectAPIEntity.getHelper().getResources(entity) != null && EffectAPIEntity.getHelper().getResources(entity).hasResource(resource)) {
+                EntityResourceAPI.setResourceValue(entity, resource, value);
                 ++successes;
             }
         }
 
         if (successes == 0)
-            context.getSource().sendFailure(Component.literal("None of the specified entities have the resource \"" + resource.getId() + "\"."));
+            context.getSource().sendFailure(Component.literal("None of the specified entities have the resource \"" + resource.unwrapKey().get().location() + "\"."));
         else if (successes == 1)
-            context.getSource().sendSuccess(() -> Component.literal("Set resource \"" + resource.getId() + "\" to " + value + " on entity."), true);
+            context.getSource().sendSuccess(() -> Component.literal("Set resource \"" + resource.unwrapKey().get().location() + "\" to " + value + " on entity."), true);
         else if (successes > 1) {
             int finalSuccesses = successes;
-            context.getSource().sendSuccess(() -> Component.literal("Set resource \"" + resource.getId() + "\" to " + value + " for " + finalSuccesses + " entities."), true);
+            context.getSource().sendSuccess(() -> Component.literal("Set resource \"" + resource.unwrapKey().get().location() + "\" to " + value + " for " + finalSuccesses + " entities."), true);
         }
 
         return successes;
@@ -200,17 +201,17 @@ public class TestCommand {
     private static int getResource(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         Entity entity = EntityArgument.getEntity(context, "target");
 
-        EntityResourceEffect<Object> resource = EntityResourceArgument.getResource(context, "key");
+        Holder<Resource<Object>> resource = EntityResourceArgument.getResource(context, "key");
 
-        if (EffectAPIEntity.getHelper().getResources(entity) == null || !EffectAPIEntity.getHelper().getResources(entity).hasResource(resource.getId())) {
-            context.getSource().sendFailure(Component.literal("Entity does not have resource \"" + resource.getId() + "\"."));
+        if (EffectAPIEntity.getHelper().getResources(entity) == null || !EffectAPIEntity.getHelper().getResources(entity).hasResource(resource)) {
+            context.getSource().sendFailure(Component.literal("Entity does not have resource \"" + resource + "\"."));
             return 0;
         }
 
-        Object value = EntityResourceAPI.getResourceValue(entity, resource.getId());
+        Object value = EntityResourceAPI.getResourceValue(entity, resource);
         String stringValue = value instanceof String str ? "\"" + str + "\"" : value.toString();
 
-        context.getSource().sendSuccess(() -> Component.literal("Resource \"" + resource.getId() + "\" is " + stringValue + "."), true);
+        context.getSource().sendSuccess(() -> Component.literal("Resource \"" + resource.unwrapKey().get().location() + "\" is " + stringValue + "."), true);
         if (value instanceof Number number)
             return number.intValue();
         if (value instanceof Boolean bool)

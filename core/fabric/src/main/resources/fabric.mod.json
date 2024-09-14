@@ -22,9 +22,6 @@
         "main": [
             "house.greenhouse.effectapi.impl.EffectAPIFabric"
         ],
-        "client": [
-            "house.greenhouse.effectapi.impl.client.EffectAPIFabricClient"
-        ],
         "preLaunch": [
             "house.greenhouse.effectapi.impl.EffectAPIFabricPre"
         ]

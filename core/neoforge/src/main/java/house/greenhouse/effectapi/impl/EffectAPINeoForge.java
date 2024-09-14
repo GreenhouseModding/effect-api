@@ -3,6 +3,8 @@ package house.greenhouse.effectapi.impl;
 import house.greenhouse.effectapi.api.EffectAPIResourceTypes;
 import house.greenhouse.effectapi.api.effect.ResourceEffect;
 import house.greenhouse.effectapi.api.registry.EffectAPIRegistries;
+import house.greenhouse.effectapi.api.registry.EffectAPIRegistryKeys;
+import house.greenhouse.effectapi.api.resource.Resource;
 import house.greenhouse.effectapi.impl.registry.EffectAPIAttachments;
 import house.greenhouse.effectapi.impl.registry.internal.RegistrationCallback;
 import house.greenhouse.effectapi.platform.EffectAPIPlatformHelperNeoForge;
@@ -11,6 +13,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
+import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
@@ -37,15 +40,11 @@ public class EffectAPINeoForge {
 
         @SubscribeEvent
         public static void createNewRegistries(NewRegistryEvent event) {
-            event.register(EffectAPIRegistries.RESOURCE_TYPE);
+            event.register(EffectAPIRegistries.VARIABLE_TYPE);
         }
-    }
-
-    @EventBusSubscriber(modid = EffectAPI.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
-    public static class GameEvents {
         @SubscribeEvent
-        public static void onServerStop(ServerStoppedEvent event) {
-            ResourceEffect.ResourceEffectCodec.clearLoadedEffects();
+        public static void createNewDataPackRegistries(DataPackRegistryEvent.NewRegistry event) {
+            event.dataPackRegistry(EffectAPIRegistryKeys.RESOURCE, Resource.DIRECT_CODEC, Resource.DIRECT_CODEC);
         }
     }
 }

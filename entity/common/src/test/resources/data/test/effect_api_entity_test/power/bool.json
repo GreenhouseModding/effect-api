@@ -1,9 +1,7 @@
 {
   "effect_api:resource": [
     {
-      "id": "test:bool",
-      "resource_type": "effect_api:bool",
-      "default_value": false
+      "resource": "test:bool"
     }
   ]
 }

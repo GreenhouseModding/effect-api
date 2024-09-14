@@ -9,34 +9,39 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import house.greenhouse.effectapi.api.EffectAPIResourceTypes;
-import house.greenhouse.effectapi.api.effect.ResourceEffect;
-import house.greenhouse.effectapi.entity.impl.effect.EntityResourceEffect;
-import house.greenhouse.effectapi.impl.util.InternalResourceUtil;
+import house.greenhouse.effectapi.api.registry.EffectAPIRegistryKeys;
+import house.greenhouse.effectapi.api.resource.Resource;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class EntityResourceValueArgument implements ArgumentType<Object> {
     public static final SimpleCommandExceptionType ERROR_RESOURCE_NOT_PRESENT = new SimpleCommandExceptionType(Component.translatable("argument.effectapi.resource.not_present"));
     private final String keyParam;
     private final int whitespaceBeforeKey;
+    private final HolderLookup<Resource<?>> registryLookup;
 
-    protected EntityResourceValueArgument(String keyParam, int whitespaceBeforeKey) {
+    protected EntityResourceValueArgument(CommandBuildContext context, String keyParam, int whitespaceBeforeKey) {
         this.keyParam = keyParam;
         this.whitespaceBeforeKey = whitespaceBeforeKey;
+        this.registryLookup = context.lookupOrThrow(EffectAPIRegistryKeys.RESOURCE);
     }
 
-    public static EntityResourceValueArgument value(String keyParam, String commandUntilKey) {
-        return new EntityResourceValueArgument(keyParam, commandUntilKey.split(" ").length);
+    public static EntityResourceValueArgument value(CommandBuildContext context, String keyParam, String commandUntilKey) {
+        return new EntityResourceValueArgument(context, keyParam, commandUntilKey.split(" ").length);
     }
 
-    public static EntityResourceValueArgument value(String keyParam, int whitespaceBeforeKey) {
-        return new EntityResourceValueArgument(keyParam, whitespaceBeforeKey);
+    public static EntityResourceValueArgument value(CommandBuildContext context, String keyParam, int whitespaceBeforeKey) {
+        return new EntityResourceValueArgument(context, keyParam, whitespaceBeforeKey);
     }
 
     public static <T> T getResourceValue(CommandContext<CommandSourceStack> context, String param) {
@@ -57,17 +62,17 @@ public class EntityResourceValueArgument implements ArgumentType<Object> {
         }
         reader.setCursor(index);
         String typeId = reader.getRemaining().split(" ", 2)[0];
-        ResourceEffect<Object> resource = InternalResourceUtil.getEffectFromId(ResourceLocation.parse(typeId));
-        if (resource == null)
+        Optional<Holder.Reference<Resource<?>>> resource = registryLookup.get(ResourceKey.create(EffectAPIRegistryKeys.RESOURCE, ResourceLocation.parse(typeId)));
+        if (resource.isEmpty())
             throw ERROR_RESOURCE_NOT_PRESENT.createWithContext(reader);;
         reader.setCursor(valueStart);
-        return EffectAPIResourceTypes.getArgumentType(resource.getResourceTypeCodec()).parse(reader);
+        return EffectAPIResourceTypes.getArgumentType(resource.get().value().typeCodec()).parse(reader);
     }
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {
-        EntityResourceEffect<Object> resource = context.getArgument(keyParam, EntityResourceEffect.class);
-        return EffectAPIResourceTypes.getArgumentType(resource.getResourceTypeCodec()).listSuggestions(context, builder);
+        Holder<Resource<Object>> resource = context.getArgument(keyParam, Holder.class);
+        return EffectAPIResourceTypes.getArgumentType(resource.value().typeCodec()).listSuggestions(context, builder);
     }
 
     public static class Info implements ArgumentTypeInfo<EntityResourceValueArgument, EntityResourceValueArgument.Info.Template> {
@@ -101,7 +106,7 @@ public class EntityResourceValueArgument implements ArgumentType<Object> {
             }
 
             public EntityResourceValueArgument instantiate(CommandBuildContext context) {
-                return new EntityResourceValueArgument(this.keyParam, this.whitespaceBeforeKey);
+                return new EntityResourceValueArgument(context, this.keyParam, this.whitespaceBeforeKey);
             }
 
             @Override

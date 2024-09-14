@@ -1,9 +1,7 @@
 {
   "effect_api:resource": [
     {
-      "id": "test:int",
-      "resource_type": "effect_api:int",
-      "default_value": 1500
+      "resource": "test:int"
     }
   ]
 }

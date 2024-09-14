@@ -1,9 +1,7 @@
 {
   "effect_api:resource": [
     {
-      "id": "test:float",
-      "resource_type": "effect_api:float",
-      "default_value": 5.0
+      "resource": "test:float"
     }
   ]
 }

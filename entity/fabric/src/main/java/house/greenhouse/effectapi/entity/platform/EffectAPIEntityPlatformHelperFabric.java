@@ -2,6 +2,7 @@ package house.greenhouse.effectapi.entity.platform;
 
 import house.greenhouse.effectapi.api.attachment.EffectsAttachment;
 import house.greenhouse.effectapi.api.attachment.ResourcesAttachment;
+import house.greenhouse.effectapi.api.resource.Resource;
 import house.greenhouse.effectapi.impl.attachment.ResourcesAttachmentImpl;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
 import house.greenhouse.effectapi.entity.api.EntityEffectAPI;
@@ -9,6 +10,7 @@ import house.greenhouse.effectapi.impl.attachment.EffectsAttachmentImpl;
 import house.greenhouse.effectapi.entity.impl.registry.EffectAPIEntityAttachments;
 import house.greenhouse.effectapi.impl.registry.EffectAPIAttachments;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -25,27 +27,29 @@ public class EffectAPIEntityPlatformHelperFabric implements EffectAPIEntityPlatf
     }
 
     @Override
-    public boolean hasResource(Entity entity, ResourceLocation id) {
-        return Optional.ofNullable(entity.getAttached(EffectAPIAttachments.RESOURCES)).map(attachment -> attachment.hasResource(id)).orElse(false);
+    public <T> boolean hasResource(Entity entity, Holder<Resource<T>> resource) {
+        return Optional.ofNullable(entity.getAttached(EffectAPIAttachments.RESOURCES)).map(attachment -> attachment.hasResource(resource)).orElse(false);
     }
 
     @Override
     public void setResourcesAttachment(Entity entity, ResourcesAttachment attachment) {
-        entity.setAttached(EffectAPIAttachments.RESOURCES, (ResourcesAttachmentImpl) attachment);
+        entity.setAttached(EffectAPIAttachments.RESOURCES, attachment);
     }
 
     @Override
-    public <T> T setResource(Entity entity, ResourceLocation id, T value, ResourceLocation source) {
+    public <T> T setResource(Entity entity, Holder<Resource<T>> resource, T value, ResourceLocation source) {
+        if (source == null && !entity.hasAttached(EffectAPIAttachments.RESOURCES))
+            return null;
         ResourcesAttachment attachment = entity.getAttachedOrCreate(EffectAPIAttachments.RESOURCES);
-        return attachment.setValue(id, value, source);
+        return attachment.setValue(resource, value, source);
     }
 
     @Override
-    public void removeResource(Entity entity, ResourceLocation id, ResourceLocation source) {
+    public <T> void removeResource(Entity entity, Holder<Resource<T>> resource, ResourceLocation source) {
         ResourcesAttachment attachment = getResources(entity);
         if (attachment == null)
             return;
-        attachment.removeValue(id, source);
+        attachment.removeValue(resource, source);
         if (attachment.isEmpty())
             entity.removeAttached(EffectAPIAttachments.RESOURCES);
     }

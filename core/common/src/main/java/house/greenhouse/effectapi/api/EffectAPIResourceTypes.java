@@ -14,17 +14,17 @@ public class EffectAPIResourceTypes {
     private static final Map<ResourceLocation, ArgumentType<?>> ARGUMENT_TYPES = new HashMap<>();
 
     public static void registerAll(RegistrationCallback<Codec<?>> callback) {
-        callback.register(EffectAPIRegistries.RESOURCE_TYPE, EffectAPI.asResource("bool"), Codec.BOOL);
-        callback.register(EffectAPIRegistries.RESOURCE_TYPE, EffectAPI.asResource("double"), Codec.DOUBLE);
-        callback.register(EffectAPIRegistries.RESOURCE_TYPE, EffectAPI.asResource("float"), Codec.FLOAT);
-        callback.register(EffectAPIRegistries.RESOURCE_TYPE, EffectAPI.asResource("int"), Codec.INT);
-        callback.register(EffectAPIRegistries.RESOURCE_TYPE, EffectAPI.asResource("string"), Codec.STRING);
+        callback.register(EffectAPIRegistries.VARIABLE_TYPE, EffectAPI.asResource("bool"), Codec.BOOL);
+        callback.register(EffectAPIRegistries.VARIABLE_TYPE, EffectAPI.asResource("double"), Codec.DOUBLE);
+        callback.register(EffectAPIRegistries.VARIABLE_TYPE, EffectAPI.asResource("float"), Codec.FLOAT);
+        callback.register(EffectAPIRegistries.VARIABLE_TYPE, EffectAPI.asResource("int"), Codec.INT);
+        callback.register(EffectAPIRegistries.VARIABLE_TYPE, EffectAPI.asResource("string"), Codec.STRING);
 
         registerArgumentTypes();
     }
 
     public static <T> ArgumentType<T> getArgumentType(Codec<T> resourceType) {
-        ResourceLocation id = EffectAPIRegistries.RESOURCE_TYPE.getKey(resourceType);
+        ResourceLocation id = EffectAPIRegistries.VARIABLE_TYPE.getKey(resourceType);
         if (!ARGUMENT_TYPES.containsKey(id))
             throw new NullPointerException("Could not find argument type for resource type '" + id + "'. Please check that an associated argument type has been registered.");
         return (ArgumentType<T>) ARGUMENT_TYPES.get(id);
