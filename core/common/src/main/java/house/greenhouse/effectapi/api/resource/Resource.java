@@ -30,12 +30,12 @@ public record Resource<T>(Codec<T> typeCodec, T defaultValue) {
 
             var resourceType = EffectAPIRegistries.VARIABLE_TYPE.byNameCodec().decode(ops, mapLike.getOrThrow().get("resource_type"));
             if (resourceType.isError())
-                return DataResult.error(() -> "Failed to decode 'resource_type' field for `effect_api:resource` effect." + resourceType.error().get().message());
+                return DataResult.error(() -> "Failed to decode 'resource_type' field for resource effect." + resourceType.error().get().message());
 
             Codec<Object> resourceTypeCodec = (Codec<Object>) resourceType.getOrThrow().getFirst();
             var defaultValue = resourceTypeCodec.decode(ops, mapLike.getOrThrow().get("default_value"));
             if (defaultValue.isError())
-                return DataResult.error(() -> "Failed to decode 'default_value' field for `effect_api:resource` effect." + resourceType.error().get().message());
+                return DataResult.error(() -> "Failed to decode 'default_value' field for resource effect." + defaultValue.error().get().message());
 
             Resource<?> resource = new Resource<>(resourceTypeCodec, defaultValue.getOrThrow().getFirst());
             return DataResult.success(Pair.of(resource, input));
