@@ -1,7 +1,6 @@
 package house.greenhouse.test;
 
 import house.greenhouse.effectapi.entity.api.EffectAPIEntityRegistries;
-import house.greenhouse.effectapi.impl.EffectAPIFabric;
 import house.greenhouse.test.attachment.PowersAttachment;
 import house.greenhouse.test.command.TestCommand;
 import house.greenhouse.test.network.clientbound.SyncPowerAttachmentClientboundPacket;

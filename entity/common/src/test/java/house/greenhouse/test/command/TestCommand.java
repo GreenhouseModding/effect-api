@@ -9,7 +9,6 @@ import house.greenhouse.effectapi.entity.api.EntityResourceAPI;
 import house.greenhouse.effectapi.entity.api.command.EntityResourceArgument;
 import house.greenhouse.effectapi.entity.api.command.EntityResourceValueArgument;
 import house.greenhouse.effectapi.entity.impl.EffectAPIEntity;
-import house.greenhouse.effectapi.entity.impl.effect.EntityResourceEffect;
 import house.greenhouse.test.EffectAPIEntityTest;
 import house.greenhouse.test.Power;
 import house.greenhouse.test.attachment.PowersAttachment;
