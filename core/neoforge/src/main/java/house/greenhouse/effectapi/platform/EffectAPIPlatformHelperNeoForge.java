@@ -4,6 +4,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLLoader;
@@ -36,6 +37,11 @@ public class EffectAPIPlatformHelperNeoForge implements EffectAPIPlatformHelper 
     @Override
     public MinecraftServer getServer() {
         return ServerLifecycleHooks.getCurrentServer();
+    }
+
+    @Override
+    public void sendClientbound(CustomPacketPayload payload, ServerPlayer player, boolean required) {
+        PacketDistributor.sendToPlayer(player, payload);
     }
 
     @Override

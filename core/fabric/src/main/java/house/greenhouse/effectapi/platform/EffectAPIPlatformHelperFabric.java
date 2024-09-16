@@ -39,13 +39,19 @@ public class EffectAPIPlatformHelperFabric implements EffectAPIPlatformHelper {
     }
 
     @Override
+    public void sendClientbound(CustomPacketPayload payload, ServerPlayer player, boolean required) {
+        if (required || ServerPlayNetworking.canSend(player, payload.type()))
+            ServerPlayNetworking.send(player, payload);
+    }
+
+    @Override
     public void sendClientboundTracking(CustomPacketPayload payload, Entity entity, boolean required) {
         for (ServerPlayer other : PlayerLookup.tracking(entity)) {
-            if (!required || ServerPlayNetworking.canSend(other, payload.type()))
+            if (required || ServerPlayNetworking.canSend(other, payload.type()))
                 ServerPlayNetworking.send(other, payload);
         }
         if (entity instanceof ServerPlayer player)
-            if (!required || ServerPlayNetworking.canSend(player, payload.type()))
+            if (required || ServerPlayNetworking.canSend(player, payload.type()))
                 ServerPlayNetworking.send(player, payload);
     }
 }

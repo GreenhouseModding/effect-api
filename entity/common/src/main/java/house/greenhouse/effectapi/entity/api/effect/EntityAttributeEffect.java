@@ -29,13 +29,23 @@ public record EntityAttributeEffect(ResourceLocation id, Holder<Attribute> attri
     @Override
     public void onAdded(LootContext context) {
         if (context.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof LivingEntity living)
-            living.getAttributes().addTransientAttributeModifiers(this.makeAttributeMap(context));
+            living.getAttributes().addTransientAttributeModifiers(makeAttributeMap(context));
     }
 
     @Override
     public void onRemoved(LootContext context) {
         if (context.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof LivingEntity living)
-            living.getAttributes().removeAttributeModifiers(this.makeAttributeMap(context));
+            living.getAttributes().removeAttributeModifiers(makeAttributeMap(context));
+    }
+
+    @Override
+    public void onActivated(LootContext context) {
+        onAdded(context);
+    }
+
+    @Override
+    public void onDeactivated(LootContext context) {
+        onRemoved(context);
     }
 
     private HashMultimap<Holder<Attribute>, AttributeModifier> makeAttributeMap(LootContext context) {

@@ -5,7 +5,7 @@ import com.mojang.serialization.MapCodec;
 import house.greenhouse.effectapi.api.EffectAPIActionTypes;
 import house.greenhouse.effectapi.api.action.EffectAPIAction;
 import house.greenhouse.effectapi.entity.impl.action.AllOfEntityAction;
-import house.greenhouse.effectapi.entity.api.effect.EnchantmentEntityEffectAction;
+import house.greenhouse.effectapi.entity.api.action.EnchantmentEntityEffectAction;
 import house.greenhouse.effectapi.entity.impl.action.RandomEntityAction;
 import house.greenhouse.effectapi.entity.api.registry.EffectAPIEntityLootContextParamSets;
 import house.greenhouse.effectapi.impl.EffectAPI;

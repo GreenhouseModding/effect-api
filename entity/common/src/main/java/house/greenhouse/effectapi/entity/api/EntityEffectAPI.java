@@ -4,6 +4,7 @@ import house.greenhouse.effectapi.api.attachment.EffectsAttachment;
 import house.greenhouse.effectapi.api.effect.EffectAPIConditionalEffect;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
 import house.greenhouse.effectapi.api.registry.EffectAPILootContextParams;
+import house.greenhouse.effectapi.api.variable.VariableHolder;
 import house.greenhouse.effectapi.impl.attachment.EffectsAttachmentImpl;
 import house.greenhouse.effectapi.entity.api.registry.EffectAPIEntityLootContextParamSets;
 import house.greenhouse.effectapi.entity.impl.EffectAPIEntity;
@@ -91,7 +92,7 @@ public class EntityEffectAPI {
      * @param effect    The effect to add.
      * @param source    The source of the effect.
      */
-    public static void addEffect(Entity entity, EffectAPIEffect effect, ResourceLocation source) {
+    public static void addEffect(Entity entity, VariableHolder<EffectAPIEffect> effect, ResourceLocation source) {
         EffectAPIEntity.getHelper().addEntityEffect(entity, effect, source);
     }
 
@@ -102,8 +103,8 @@ public class EntityEffectAPI {
      * @param effects   The effects to add.
      * @param source    The source of the effects.
      */
-    public static void addEffects(Entity entity, List<? extends EffectAPIEffect> effects, ResourceLocation source) {
-        for (EffectAPIEffect effect : effects) {
+    public static void addEffects(Entity entity, List<? extends VariableHolder<EffectAPIEffect>> effects, ResourceLocation source) {
+        for (VariableHolder<EffectAPIEffect> effect : effects) {
             EffectAPIEntity.getHelper().addEntityEffect(entity, effect, source);
         }
     }
@@ -115,7 +116,7 @@ public class EntityEffectAPI {
      * @param effect    The effect to remove.
      * @param source    The source of the effect.
      */
-    public static void removeEffect(Entity entity, EffectAPIEffect effect, ResourceLocation source) {
+    public static void removeEffect(Entity entity, VariableHolder<EffectAPIEffect> effect, ResourceLocation source) {
         EffectAPIEntity.getHelper().removeEntityEffect(entity, effect, source);
     }
 
@@ -126,8 +127,8 @@ public class EntityEffectAPI {
      * @param effects   The effects to remove.
      * @param source    The source of the effect.
      */
-    public static void removeEffects(Entity entity, List<? extends EffectAPIEffect> effects, ResourceLocation source) {
-        for (EffectAPIEffect effect : effects) {
+    public static void removeEffects(Entity entity, List<? extends VariableHolder<EffectAPIEffect>> effects, ResourceLocation source) {
+        for (VariableHolder<EffectAPIEffect> effect : effects) {
             EffectAPIEntity.getHelper().removeEntityEffect(entity, effect, source);
         }
     }

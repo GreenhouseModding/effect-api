@@ -22,7 +22,7 @@ public class EffectAPIActionTypes {
                             var map = collector.get();
                             if (map.isEmpty())
                                 return DataResult.success(action);
-                            return DataResult.error(() -> "Validation error in Effect API action condition:" + collector.getReport().orElse("Unknown error."));
+                            return DataResult.error(() -> "Validation error in Effect API action:" + collector.getReport().orElse("Unknown error."));
                         }
                 );
     }

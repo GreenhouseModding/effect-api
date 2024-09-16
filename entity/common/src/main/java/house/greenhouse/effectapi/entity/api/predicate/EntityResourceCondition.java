@@ -54,7 +54,7 @@ public record EntityResourceCondition(Holder<Resource<Object>> resource, Object 
             if (effect.isEmpty())
                 return DataResult.error(() -> "Could not find resource effect with id '" + id.getOrThrow() + "'.");
 
-            var newValue = effect.get().value().typeCodec().decode(ops, mapLike.get("value"));
+            var newValue = effect.get().value().dataType().codec().decode(ops, mapLike.get("value"));
             if (newValue.isError())
                 return DataResult.error(() -> "Failed to decode value for entity resource condition for: '" + id.getOrThrow() + "'." + newValue.error().get().message());
             var value = newValue.getOrThrow().getFirst();
@@ -67,7 +67,7 @@ public record EntityResourceCondition(Holder<Resource<Object>> resource, Object 
         @Override
         public <T> RecordBuilder<T> encode(EntityResourceCondition input, DynamicOps<T> ops, RecordBuilder<T> prefix) {
             prefix.add("id", ops.createString(input.resource.unwrapKey().get().location().toString()));
-            prefix.add("value", input.resource.value().typeCodec().encodeStart(ops, input.value));
+            prefix.add("value", input.resource.value().dataType().codec().encodeStart(ops, input.value));
             prefix.add("target", LootContext.EntityTarget.CODEC.encodeStart(ops, input.entityTarget));
             return prefix;
         }

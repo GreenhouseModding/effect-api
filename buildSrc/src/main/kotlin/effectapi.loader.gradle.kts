@@ -38,6 +38,11 @@ dependencies {
             requireCapability("${Properties.GROUP}:${props.modId}-common")
         }
     }
+    testCompileOnly(project(":${getCommonProjectName()}")) {
+        capabilities {
+            requireCapability("${Properties.GROUP}:${props.modId}-common")
+        }
+    }
     testCompileOnly(project(":${getCommonProjectName()}", "commonTestJava"))
 
     "commonJava"(project(":${getCommonProjectName()}", "commonJava"))

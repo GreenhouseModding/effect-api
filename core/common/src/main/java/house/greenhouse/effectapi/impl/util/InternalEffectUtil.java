@@ -1,6 +1,7 @@
 package house.greenhouse.effectapi.impl.util;
 
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
+import house.greenhouse.effectapi.api.variable.VariableHolder;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class InternalEffectUtil {
@@ -21,8 +23,11 @@ public class InternalEffectUtil {
                 list.forEach(effect -> consumer.accept((EffectAPIEffect)effect));
     }
 
-    public static Optional<DataComponentMap> generateActiveEffectsIfNecessary(Map<EffectAPIEffect, LootContext> contexts, LootContextParamSet paramSet,
-                                                                              DataComponentMap combined, DataComponentMap previousMap) {
+    public static Optional<DataComponentMap> generateActiveEffectsIfNecessary(Map<VariableHolder<EffectAPIEffect>, LootContext> contexts,
+                                                                              Set<VariableHolder<EffectAPIEffect>> holdersToRefresh,
+                                                                              Map<EffectAPIEffect, VariableHolder<EffectAPIEffect>> reverseLookup,
+                                                                              LootContextParamSet paramSet, DataComponentMap combined, DataComponentMap previousMap,
+                                                                              int tickCount) {
         Map<DataComponentType<?>, List<EffectAPIEffect>> newMap = new Reference2ObjectArrayMap<>();
         boolean createNewMap = false;
 
@@ -30,16 +35,25 @@ public class InternalEffectUtil {
             if (component.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect)
                 for (EffectAPIEffect effect : ((List<EffectAPIEffect>) list)) {
                     if (effect.paramSet() == paramSet) {
-                        LootContext context = contexts.get(effect);
-                        if (effect.isActive(context)) {
+                        LootContext context = contexts.get(reverseLookup.get(effect));
+                        if (holdersToRefresh.contains(reverseLookup.get(effect))) {
+                            if (effect.isActive(context, tickCount)) {
+                                effect.onAdded(context);
+                                newMap.computeIfAbsent(component.type(), type -> new ArrayList<>()).add(effect);
+                            }
+                            createNewMap = true;
+                            continue;
+                        }
+
+                        if (effect.isActive(context, tickCount)) {
                             newMap.computeIfAbsent(component.type(), type -> new ArrayList<>()).add(effect);
                             if (previousMap.stream().map(c -> ((List<?>) c.value())).noneMatch(ls -> ls.contains(effect))) {
-                                effect.onAdded(context);
+                                effect.onActivated(context);
                                 createNewMap = true;
                             }
                         } else {
                             if (previousMap.stream().map(c -> ((List<?>) c.value())).anyMatch(ls -> ls.contains(effect))) {
-                                effect.onRemoved(context);
+                                effect.onDeactivated(context);
                                 createNewMap = true;
                             }
                         }

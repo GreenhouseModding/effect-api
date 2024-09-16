@@ -7,13 +7,14 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapLike;
 import house.greenhouse.effectapi.api.registry.EffectAPIRegistries;
 import house.greenhouse.effectapi.api.registry.EffectAPIRegistryKeys;
+import house.greenhouse.effectapi.api.variable.DataType;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.RegistryFixedCodec;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public record Resource<T>(Codec<T> typeCodec, T defaultValue) {
+public record Resource<T>(DataType<T> dataType, T defaultValue) {
     public static final Codec<Resource<?>> DIRECT_CODEC = new ResourceCodec();
     public static final Codec<Holder<Resource<?>>> CODEC = RegistryFixedCodec.create(EffectAPIRegistryKeys.RESOURCE);
 
@@ -28,12 +29,12 @@ public record Resource<T>(Codec<T> typeCodec, T defaultValue) {
             if (mapLike.isError())
                 return DataResult.error(() -> mapLike.error().get().message());
 
-            var resourceType = EffectAPIRegistries.VARIABLE_TYPE.byNameCodec().decode(ops, mapLike.getOrThrow().get("resource_type"));
-            if (resourceType.isError())
-                return DataResult.error(() -> "Failed to decode 'resource_type' field for resource effect." + resourceType.error().get().message());
+            var dataType = EffectAPIRegistries.DATA_TYPE.byNameCodec().decode(ops, mapLike.getOrThrow().get("data_type"));
+            if (dataType.isError())
+                return DataResult.error(() -> "Failed to decode 'data_type' field for resource effect." + dataType.error().get().message());
 
-            Codec<Object> resourceTypeCodec = (Codec<Object>) resourceType.getOrThrow().getFirst();
-            var defaultValue = resourceTypeCodec.decode(ops, mapLike.getOrThrow().get("default_value"));
+            DataType<Object> resourceTypeCodec = (DataType<Object>) dataType.getOrThrow().getFirst();
+            var defaultValue = resourceTypeCodec.codec().decode(ops, mapLike.getOrThrow().get("default_value"));
             if (defaultValue.isError())
                 return DataResult.error(() -> "Failed to decode 'default_value' field for resource effect." + defaultValue.error().get().message());
 
@@ -44,8 +45,8 @@ public record Resource<T>(Codec<T> typeCodec, T defaultValue) {
         @Override
         public <T> DataResult<T> encode(Resource<?> input, DynamicOps<T> ops, T prefix) {
             Map<T, T> map = new HashMap<>();
-            map.put(ops.createString("resource_type"), EffectAPIRegistries.VARIABLE_TYPE.byNameCodec().encodeStart(ops, input.typeCodec).getOrThrow());
-            map.put(ops.createString("default_value"), ((Codec<Object>)input.typeCodec).encodeStart(ops, input.defaultValue).getOrThrow());
+            map.put(ops.createString("data_type"), EffectAPIRegistries.DATA_TYPE.byNameCodec().encodeStart(ops, input.dataType).getOrThrow());
+            map.put(ops.createString("default_value"), ((DataType<Object>)input.dataType).codec().encodeStart(ops, input.defaultValue).getOrThrow());
             return DataResult.success(ops.createMap(map));
         }
     }

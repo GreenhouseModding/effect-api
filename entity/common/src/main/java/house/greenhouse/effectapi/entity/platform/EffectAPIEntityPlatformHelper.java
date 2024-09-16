@@ -3,6 +3,7 @@ package house.greenhouse.effectapi.entity.platform;
 import house.greenhouse.effectapi.api.attachment.EffectsAttachment;
 import house.greenhouse.effectapi.api.attachment.ResourcesAttachment;
 import house.greenhouse.effectapi.api.resource.Resource;
+import house.greenhouse.effectapi.api.variable.VariableHolder;
 import house.greenhouse.effectapi.impl.attachment.ResourcesAttachmentImpl;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
 import house.greenhouse.effectapi.impl.attachment.EffectsAttachmentImpl;
@@ -30,9 +31,9 @@ public interface EffectAPIEntityPlatformHelper {
     @Nullable
     EffectsAttachment<Entity> getEntityEffects(Entity entity);
 
-    void addEntityEffect(Entity entity, EffectAPIEffect effect, ResourceLocation source);
+    void addEntityEffect(Entity entity, VariableHolder<EffectAPIEffect> effect, ResourceLocation source);
 
-    void removeEntityEffect(Entity entity, EffectAPIEffect effect, ResourceLocation source);
+    void removeEntityEffect(Entity entity, VariableHolder<EffectAPIEffect> effect, ResourceLocation source);
 
-    void setEntityEffects(Entity entity, Object2ObjectArrayMap<ResourceLocation, DataComponentMap> alLComponents, DataComponentMap activeComponents);
+    void setEntityEffects(Entity entity, DataComponentMap combinedComponents, DataComponentMap activeComponents);
 }

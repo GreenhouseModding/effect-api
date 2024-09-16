@@ -51,7 +51,6 @@ public class EffectAPIConditionalEffect<T extends EffectAPIEffect> implements Ef
     private final int checkRate;
     private final LootContextParamSet paramSet;
 
-    private final Map<LootContext, Long> ticks = new WeakHashMap<>(64);
     private boolean previousValue = false;
 
     public EffectAPIConditionalEffect(T effect, Optional<LootItemCondition> requirements, int checkRate, LootContextParamSet paramSet) {
@@ -73,8 +72,14 @@ public class EffectAPIConditionalEffect<T extends EffectAPIEffect> implements Ef
         return checkRate;
     }
 
-    public boolean previousValue() {
-        return previousValue;
+    @Override
+    public void onActivated(LootContext context) {
+        effect.onActivated(context);
+    }
+
+    @Override
+    public void onDeactivated(LootContext context) {
+        effect.onDeactivated(context);
     }
 
     @Override
@@ -93,22 +98,21 @@ public class EffectAPIConditionalEffect<T extends EffectAPIEffect> implements Ef
     }
 
     @Override
-    public boolean isActive(LootContext context) {
-        if (getTicks(context) % checkRate == 0) {
+    public boolean isActive(LootContext context, int tickCount) {
+        if (tickCount % checkRate == 0) {
             previousValue = requirements.isEmpty() || requirements.get().test(context);
         }
         return previousValue;
     }
 
     @Override
-    public void tick(LootContext context) {
-        ticks.computeIfPresent(context, (ctx, l) -> l + 1);
-        if (effect.shouldTick(context, previousValue && effect.isActive(context)))
-            effect.tick(context);
+    public void tick(LootContext context, int tickCount) {
+        if (effect.shouldTick(context, previousValue && effect.isActive(context, tickCount), tickCount))
+            effect.tick(context, tickCount);
     }
 
     @Override
-    public boolean shouldTick(LootContext context, boolean isActive) {
+    public boolean shouldTick(LootContext context, boolean isActive, int tickCount) {
         return true;
     }
 
@@ -120,12 +124,5 @@ public class EffectAPIConditionalEffect<T extends EffectAPIEffect> implements Ef
     @Override
     public LootContextParamSet paramSet() {
         return paramSet;
-    }
-
-    private long getTicks(LootContext context) {
-        if (ticks.keySet().stream().noneMatch(context1 -> context1 == context)) {
-            ticks.put(context, 0L);
-        }
-        return ticks.get(context);
     }
 }

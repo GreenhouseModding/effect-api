@@ -19,6 +19,8 @@ public interface TriggerEffect extends EffectAPIEffect {
         return RecordCodecBuilder.create(inst -> inst.group(
                 actionCodec.optionalFieldOf("on_added").forGetter(TriggerEffect::onAdded),
                 actionCodec.optionalFieldOf("on_removed").forGetter(TriggerEffect::onRemoved),
+                actionCodec.optionalFieldOf("on_activated").forGetter(TriggerEffect::onActivated),
+                actionCodec.optionalFieldOf("on_deactivated").forGetter(TriggerEffect::onDeactivated),
                 actionCodec.optionalFieldOf("on_refresh").forGetter(TriggerEffect::onRefresh)
         ).apply(inst, constructor::apply));
     }
@@ -34,6 +36,16 @@ public interface TriggerEffect extends EffectAPIEffect {
     }
 
     @Override
+    default void onActivated(LootContext context) {
+        onActivated().ifPresent(effect -> effect.apply(context));
+    }
+
+    @Override
+    default void onDeactivated(LootContext context) {
+        onDeactivated().ifPresent(effect -> effect.apply(context));
+    }
+
+    @Override
     default void onRefreshed(LootContext context) {
         onRefresh().ifPresent(effect -> effect.apply(context));
     }
@@ -42,10 +54,14 @@ public interface TriggerEffect extends EffectAPIEffect {
 
     Optional<EffectAPIAction> onRemoved();
 
+    Optional<EffectAPIAction> onActivated();
+
+    Optional<EffectAPIAction> onDeactivated();
+
     Optional<EffectAPIAction> onRefresh();
 
     @FunctionalInterface
     interface Constructor<T> {
-        T apply(Optional<EffectAPIAction> onAdded, Optional<EffectAPIAction> onRemoved, Optional<EffectAPIAction> onRefreshed);
+        T apply(Optional<EffectAPIAction> onAdded, Optional<EffectAPIAction> onRemoved, Optional<EffectAPIAction> onActivated, Optional<EffectAPIAction> onDeactivated, Optional<EffectAPIAction> onRefreshed);
     }
 }

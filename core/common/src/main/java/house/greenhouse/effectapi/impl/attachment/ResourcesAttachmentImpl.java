@@ -8,12 +8,10 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapLike;
 import house.greenhouse.effectapi.api.attachment.ResourcesAttachment;
 import house.greenhouse.effectapi.api.effect.ResourceEffect;
-import house.greenhouse.effectapi.api.registry.EffectAPIRegistryKeys;
 import house.greenhouse.effectapi.api.resource.Resource;
 import house.greenhouse.effectapi.impl.EffectAPI;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.RegistryOps;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
@@ -106,7 +104,7 @@ public record ResourcesAttachmentImpl(Map<Holder<Resource<Object>>, Pair<Resourc
 
                 var value = resource.getOrThrow().getFirst().value().defaultValue();
                 if (mapLike.getOrThrow().get("value") != null) {
-                    var newValue = resource.getOrThrow().getFirst().value().typeCodec().decode(registryOps, mapLike.getOrThrow().get("value"));
+                    var newValue = resource.getOrThrow().getFirst().value().dataType().codec().decode(registryOps, mapLike.getOrThrow().get("value"));
                     if (newValue.isError()) {
                         errors.add("Failed to decode value of resource \"" + resource.getOrThrow().getFirst().unwrapKey().get().location() + "\" to attachment. (Skipping). " + newValue.error().get().message());
                         continue;
@@ -142,7 +140,7 @@ public record ResourcesAttachmentImpl(Map<Holder<Resource<Object>>, Pair<Resourc
             for (Map.Entry<Holder<Resource<Object>>, Pair<ResourceEffect.ResourceHolder<Object>, Set<ResourceLocation>>> entry : ((ResourcesAttachmentImpl)input).resources.entrySet()) {
                 try {
                     Map<T, T> innerMap = new HashMap<>();
-                    innerMap.put(registryOps.createString("value"), entry.getValue().getFirst().getResource().value().typeCodec().encodeStart(registryOps, entry.getValue().getFirst().getValue()).getOrThrow());
+                    innerMap.put(registryOps.createString("value"), entry.getValue().getFirst().getResource().value().dataType().codec().encodeStart(registryOps, entry.getValue().getFirst().getValue()).getOrThrow());
                     innerMap.put(registryOps.createString("sources"), ResourceLocation.CODEC.listOf().encodeStart(registryOps, new ArrayList<>(entry.getValue().getSecond())).getOrThrow());
                     map.put((T) Resource.CODEC.encodeStart(registryOps, (Holder) entry.getKey()).getOrThrow(), registryOps.createMap(innerMap));
                 } catch (Exception ex) {

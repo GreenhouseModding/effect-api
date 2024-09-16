@@ -1,9 +1,12 @@
 package house.greenhouse.test;
 
+import house.greenhouse.effectapi.entity.api.EffectAPIEntityRegistries;
+import house.greenhouse.effectapi.entity.api.EffectAPIEntityRegistryKeys;
 import house.greenhouse.test.attachment.PowersAttachment;
 import house.greenhouse.test.command.TestCommand;
 import house.greenhouse.test.network.clientbound.SyncPowerAttachmentClientboundPacket;
 import house.greenhouse.test.platform.EffectAPITestHelperNeoForge;
+import house.greenhouse.test.variable.HealthVariable;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -34,6 +37,7 @@ public class EffectAPITestNeoForge {
         @SubscribeEvent
         public static void registerContent(RegisterEvent event) {
             event.register(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, EffectAPIEntityTest.POWERS_ATTACHMENT_KEY, () -> POWERS);
+            event.register(EffectAPIEntityRegistryKeys.VARIABLE, EffectAPIEntityTest.asResource("health"), () -> HealthVariable.CODEC);
         }
 
         @SubscribeEvent
@@ -44,7 +48,7 @@ public class EffectAPITestNeoForge {
 
         @SubscribeEvent
         public static void createNewDataPackRegistry(DataPackRegistryEvent.NewRegistry event) {
-            event.dataPackRegistry(EffectAPIEntityTest.POWER, Power.DIRECT_CODEC, Power.DIRECT_CODEC);
+            event.dataPackRegistry(EffectAPIEntityTest.POWER, Power.DIRECT_CODEC, Power.NETWORK_DIRECT_CODEC);
         }
     }
 

@@ -1,0 +1,14 @@
+{
+  "effect_api:attribute": [
+    {
+      "effect": {
+        "id": "test:health_to_speed",
+        "attribute": "minecraft:generic.movement_speed",
+        "amount": {
+          "effect_api:variable_type": "effect_api_entity_test:health"
+        },
+        "operation": "add_multiplied_total"
+      }
+    }
+  ]
+}

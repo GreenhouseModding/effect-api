@@ -3,6 +3,7 @@ package house.greenhouse.effectapi.entity.platform;
 import house.greenhouse.effectapi.api.attachment.EffectsAttachment;
 import house.greenhouse.effectapi.api.attachment.ResourcesAttachment;
 import house.greenhouse.effectapi.api.resource.Resource;
+import house.greenhouse.effectapi.api.variable.VariableHolder;
 import house.greenhouse.effectapi.impl.attachment.ResourcesAttachmentImpl;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
 import house.greenhouse.effectapi.entity.api.EntityEffectAPI;
@@ -61,7 +62,7 @@ public class EffectAPIEntityPlatformHelperFabric implements EffectAPIEntityPlatf
     }
 
     @Override
-    public void addEntityEffect(Entity entity, EffectAPIEffect effect, ResourceLocation source) {
+    public void addEntityEffect(Entity entity, VariableHolder<EffectAPIEffect> effect, ResourceLocation source) {
         if (entity.hasAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS) && entity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS).hasEffect(effect, true))
             return;
         EffectsAttachment<Entity> attachment =  entity.getAttachedOrCreate(EffectAPIEntityAttachments.ENTITY_EFFECTS);
@@ -70,22 +71,20 @@ public class EffectAPIEntityPlatformHelperFabric implements EffectAPIEntityPlatf
     }
 
     @Override
-    public void removeEntityEffect(Entity entity, EffectAPIEffect effect, ResourceLocation source) {
+    public void removeEntityEffect(Entity entity, VariableHolder<EffectAPIEffect> effect, ResourceLocation source) {
         EffectsAttachment<Entity> attachment =  entity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS);
         if (attachment == null || !attachment.hasEffect(effect, true))
             return;
-        if (attachment.isActive(effect))
-            effect.onRemoved(EntityEffectAPI.createEntityOnlyContext(entity));
         attachment.removeEffect(effect, source);
         if (attachment.isEmpty())
             entity.removeAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS);
     }
 
     @Override
-    public void setEntityEffects(Entity entity, Object2ObjectArrayMap<ResourceLocation, DataComponentMap> alLComponents, DataComponentMap activeComponents) {
-        if (alLComponents.isEmpty())
+    public void setEntityEffects(Entity entity, DataComponentMap combinedComponents, DataComponentMap activeComponents) {
+        if (combinedComponents.isEmpty())
             entity.removeAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS);
         else
-            entity.getAttachedOrCreate(EffectAPIEntityAttachments.ENTITY_EFFECTS).setComponents(alLComponents, activeComponents);
+            entity.getAttachedOrCreate(EffectAPIEntityAttachments.ENTITY_EFFECTS).setComponents(combinedComponents, activeComponents);
     }
 }

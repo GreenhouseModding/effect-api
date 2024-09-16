@@ -1,4 +1,4 @@
-package house.greenhouse.effectapi.entity.api.effect;
+package house.greenhouse.effectapi.entity.api.action;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

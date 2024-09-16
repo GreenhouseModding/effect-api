@@ -27,13 +27,13 @@ public class EntityResourceEffect<T> extends ResourceEffect<T> {
     @Override
     public void onAdded(LootContext lootContext) {
         Entity entity = lootContext.getParam(LootContextParams.THIS_ENTITY);
-        EntityResourceAPI.addResourceValue(entity, resource, EntityResourceAPI.hasResource(entity, resource) ? EntityResourceAPI.getResourceValue(entity, resource) : resource.value().defaultValue(), lootContext.getParamOrNull(EffectAPILootContextParams.SOURCE));
+        EntityResourceAPI.addResourceValue(entity, resource, EntityResourceAPI.hasResource(entity, resource) ? EntityResourceAPI.getResourceValue(entity, resource) : resource.value().defaultValue(), lootContext.getParam(EffectAPILootContextParams.SOURCE));
     }
 
     @Override
     public void onRemoved(LootContext lootContext) {
         Entity entity = lootContext.getParam(LootContextParams.THIS_ENTITY);
-        EntityResourceAPI.removeResource(entity, resource, lootContext.getParamOrNull(EffectAPILootContextParams.SOURCE));
+        EntityResourceAPI.removeResource(entity, resource, lootContext.getParam(EffectAPILootContextParams.SOURCE));
     }
 
     @Override

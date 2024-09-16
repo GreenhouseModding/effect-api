@@ -22,10 +22,25 @@ public interface EffectAPIEffect {
      * Runs whenever an effect turns from inactive to active within an attachment.
      * @param context   The context of the effect within the attachment.
      */
-    default void onAdded(LootContext context) {}
+    default void onActivated(LootContext context) {}
 
     /**
      * Runs whenever an effect turns from active to inactive within an attachment.
+     * @param context   The context of the effect within the attachment.
+     */
+    default void onDeactivated(LootContext context) {}
+
+    /**
+     * Runs whenever an effect is added to an entity.
+     * This includes when variables swap.
+     * @param context   The context of the effect within the attachment.
+     */
+    default void onAdded(LootContext context) {}
+
+
+    /**
+     * Runs whenever an effect is removed from an entity.
+     * This includes when variables swap.
      * @param context   The context of the effect within the attachment.
      */
     default void onRemoved(LootContext context) {}
@@ -43,14 +58,14 @@ public interface EffectAPIEffect {
      * Runs whenever an effect should tick.
      * @param context   The context of the effect within the attachment.
      */
-    default void tick(LootContext context) {}
+    default void tick(LootContext context, int tickCount) {}
 
     /**
      * Whether this effect should tick.
      * @param context   The context of the effect within the attachment.
      * @param isActive  Whether this effect is active. This field exists to avoid double up conditional checks.
      */
-    default boolean shouldTick(LootContext context, boolean isActive) {
+    default boolean shouldTick(LootContext context, boolean isActive, int tickCount) {
         return false;
     }
 
@@ -58,7 +73,7 @@ public interface EffectAPIEffect {
      * Whether this effect is active.
      * @param context   The context of the effect within the attachment.
      */
-    default boolean isActive(LootContext context) {
+    default boolean isActive(LootContext context, int tickCount) {
         return true;
     }
 

@@ -37,14 +37,14 @@ public class ChangeEntityResourceClientboundPacket<T> implements CustomPacketPay
         entityId = buf.readInt();
         resource = (Holder)ByteBufCodecs.holderRegistry(EffectAPIRegistryKeys.RESOURCE).decode(buf);
         source = ByteBufCodecs.optional(ResourceLocation.STREAM_CODEC).decode(buf);
-        value = ByteBufCodecs.optional(ByteBufCodecs.fromCodecWithRegistries(resource.value().typeCodec())).decode(buf);
+        value = ByteBufCodecs.optional(ByteBufCodecs.fromCodecWithRegistries(resource.value().dataType().codec())).decode(buf);
     }
 
     public static void write(RegistryFriendlyByteBuf buf, ChangeEntityResourceClientboundPacket<?> packet) {
         buf.writeInt(packet.entityId);
         ByteBufCodecs.holderRegistry(EffectAPIRegistryKeys.RESOURCE).encode(buf, (Holder)packet.resource);
         ByteBufCodecs.optional(ResourceLocation.STREAM_CODEC).encode(buf, packet.source);
-        ByteBufCodecs.optional(ByteBufCodecs.fromCodecWithRegistries(packet.resource.value().typeCodec())).encode(buf, (Optional)packet.value);
+        ByteBufCodecs.optional(ByteBufCodecs.fromCodecWithRegistries(packet.resource.value().dataType().codec())).encode(buf, (Optional)packet.value);
     }
 
     public void handle() {

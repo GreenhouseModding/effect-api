@@ -2,7 +2,7 @@
   "effect_api:trigger": [
     {
       "effect": {
-        "on_added": {
+        "on_activated": {
           "type": "effect_api:all_of",
           "actions": [
             {
@@ -25,7 +25,7 @@
             }
           ]
         },
-        "on_removed": {
+        "on_deactivated": {
           "type": "effect_api:all_of",
           "actions": [
             {
