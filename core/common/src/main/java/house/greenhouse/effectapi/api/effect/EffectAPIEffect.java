@@ -32,7 +32,6 @@ public interface EffectAPIEffect {
 
     /**
      * Runs whenever an effect is added to an entity.
-     * This includes when variables swap.
      * @param context   The context of the effect within the attachment.
      */
     default void onAdded(LootContext context) {}
@@ -40,7 +39,6 @@ public interface EffectAPIEffect {
 
     /**
      * Runs whenever an effect is removed from an entity.
-     * This includes when variables swap.
      * @param context   The context of the effect within the attachment.
      */
     default void onRemoved(LootContext context) {}

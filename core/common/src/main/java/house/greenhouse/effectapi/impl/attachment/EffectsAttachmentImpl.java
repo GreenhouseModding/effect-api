@@ -86,11 +86,8 @@ public abstract class EffectsAttachmentImpl<T> implements EffectsAttachment<T> {
     public void tick() {
         var holders = effectLookup.keySet().stream().filter(holder -> !holder.getPreviousValues(contexts.get(holder)).equals(this.variableValues.get(holder))).collect(Collectors.toMap(Function.identity(), this::getEffect));
 
-        if (!holders.isEmpty()) {
-            for (Map.Entry<EffectHolder<EffectAPIEffect>, EffectAPIEffect> effect : holders.entrySet())
-                effect.getValue().onRemoved(contexts.get(effect.getKey()));
+        if (!holders.isEmpty())
             combineComponents();
-        }
 
         updateActiveComponents(holders);
         InternalEffectUtil.executeOnAllEffects(combinedComponents, effect -> {

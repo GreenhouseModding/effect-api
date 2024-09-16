@@ -39,7 +39,6 @@ public class InternalEffectUtil {
                         LootContext context = contexts.get(reverseLookup.get(effect));
                         if (holdersToRefresh.containsKey(reverseLookup.get(effect))) {
                             boolean active = effect.isActive(context, tickCount);
-                            effect.onAdded(context);
                             effect.onChanged(context, holdersToRefresh.get(reverseLookup.get(effect)), active);
                             if (active) {
                                 newMap.computeIfAbsent(component.type(), type -> new ArrayList<>()).add(effect);

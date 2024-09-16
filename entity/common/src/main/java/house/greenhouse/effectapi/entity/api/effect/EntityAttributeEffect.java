@@ -45,6 +45,7 @@ public record EntityAttributeEffect(ResourceLocation id, Holder<Attribute> attri
 
     @Override
     public void onChanged(LootContext context, EffectAPIEffect previous, boolean active) {
+        previous.onDeactivated(context);
         if (active)
             onActivated(context);
     }
