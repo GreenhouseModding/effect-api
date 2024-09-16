@@ -106,6 +106,7 @@ public abstract class EffectsAttachmentImpl<T> implements EffectsAttachment<T> {
         variableHolderComponents.computeIfAbsent(source, s -> new ObjectArrayList<>()).add(effect);
         combineComponents();
         updateActiveComponents(Set.of());
+        effectLookup.get(effect).onAdded(contexts.get(effect));
     }
 
     public void removeEffect(EffectHolder<EffectAPIEffect> effect, ResourceLocation source) {
