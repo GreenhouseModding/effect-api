@@ -50,9 +50,7 @@ public interface EffectAPIEffect {
      * Some examples of when an effect should be refreshed are an entity joining a level, and on entity respawn.
      * @param context   The context of the effect within the attachment.
      */
-    default void onRefreshed(LootContext context) {
-        onRemoved(context);
-    }
+    default void onRefreshed(LootContext context) {}
 
     /**
      * Runs whenever an effect should tick.

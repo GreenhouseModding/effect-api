@@ -98,6 +98,7 @@ public abstract class EffectsAttachmentImpl<T> implements EffectsAttachment<T> {
     }
 
     public void refresh() {
+
         InternalEffectUtil.executeOnAllEffects(activeComponents, effect ->
                 effect.onRefreshed(contexts.get(reverseEffectLookup.get(effect))));
     }
@@ -145,14 +146,15 @@ public abstract class EffectsAttachmentImpl<T> implements EffectsAttachment<T> {
         Map<DataComponentType<?>, Set<EffectAPIEffect>> map = new HashMap<>();
         for (Map.Entry<ResourceLocation, List<EffectHolder<EffectAPIEffect>>> componentMap : variableHolderComponents.entrySet()) {
             for (var value : componentMap.getValue()) {
-                LootContext context = createLootContext(value, componentMap.getKey());
-                variableValues.put(value, value.getPreviousValues(context));
-                EffectAPIEffect effect = value.construct(context, variableValues.get(value));
+                if (!contexts.containsKey(value))
+                    contexts.put(value, createLootContext(value, componentMap.getKey()));
+                variableValues.put(value, value.getPreviousValues(contexts.get(value)));
+                EffectAPIEffect effect = value.construct(contexts.get(value), variableValues.get(value));
                 if (effect == null) {
                     removeEffectInternal(value, componentMap.getKey());
                     return;
                 }
-                contexts.put(value, context);
+                contexts.put(value, contexts.get(value));
                 effectLookup.put(value, effect);
                 reverseEffectLookup.put(effect, value);
                 map.computeIfAbsent(effect.type(), t -> new HashSet<>()).add(effect);

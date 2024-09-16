@@ -27,12 +27,6 @@ public record EntityAttributeEffect(ResourceLocation id, Holder<Attribute> attri
     ).apply(inst, EntityAttributeEffect::new));
 
     @Override
-    public void onAdded(LootContext context) {
-        if (context.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof LivingEntity living)
-            living.getAttributes().addTransientAttributeModifiers(makeAttributeMap(context));
-    }
-
-    @Override
     public void onRemoved(LootContext context) {
         if (context.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof LivingEntity living)
             living.getAttributes().removeAttributeModifiers(makeAttributeMap(context));
@@ -40,7 +34,8 @@ public record EntityAttributeEffect(ResourceLocation id, Holder<Attribute> attri
 
     @Override
     public void onActivated(LootContext context) {
-        onAdded(context);
+        if (context.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof LivingEntity living)
+            living.getAttributes().addTransientAttributeModifiers(makeAttributeMap(context));
     }
 
     @Override
