@@ -23,7 +23,7 @@
         "entity": "this",
         "predicate": {
           "stepping_on": {
-            "block": {I go
+            "block": {
               "blocks": "minecraft:sponge"
             }
           }
