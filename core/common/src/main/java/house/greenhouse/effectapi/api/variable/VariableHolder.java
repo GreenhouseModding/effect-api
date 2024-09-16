@@ -4,15 +4,12 @@ import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.MapCodec;
 import house.greenhouse.effectapi.impl.variable.VariableHolderImplClient;
 import house.greenhouse.effectapi.impl.variable.VariableCodecWrapper;
 import house.greenhouse.effectapi.impl.variable.VariableHolderImpl;
-import net.minecraft.core.Registry;
 import net.minecraft.world.level.storage.loot.LootContext;
 
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Represents a variable holder.

@@ -1,7 +1,7 @@
 package house.greenhouse.effectapi.impl.util;
 
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
-import house.greenhouse.effectapi.api.variable.VariableHolder;
+import house.greenhouse.effectapi.api.variable.EffectHolder;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
@@ -23,9 +23,9 @@ public class InternalEffectUtil {
                 list.forEach(effect -> consumer.accept((EffectAPIEffect)effect));
     }
 
-    public static Optional<DataComponentMap> generateActiveEffectsIfNecessary(Map<VariableHolder<EffectAPIEffect>, LootContext> contexts,
-                                                                              Set<VariableHolder<EffectAPIEffect>> holdersToRefresh,
-                                                                              Map<EffectAPIEffect, VariableHolder<EffectAPIEffect>> reverseLookup,
+    public static Optional<DataComponentMap> generateActiveEffectsIfNecessary(Map<EffectHolder<EffectAPIEffect>, LootContext> contexts,
+                                                                              Set<EffectHolder<EffectAPIEffect>> holdersToRefresh,
+                                                                              Map<EffectAPIEffect, EffectHolder<EffectAPIEffect>> reverseLookup,
                                                                               LootContextParamSet paramSet, DataComponentMap combined, DataComponentMap previousMap,
                                                                               int tickCount) {
         Map<DataComponentType<?>, List<EffectAPIEffect>> newMap = new Reference2ObjectArrayMap<>();

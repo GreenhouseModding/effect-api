@@ -10,10 +10,36 @@
             "min_duration": 200,
             "max_duration": 200,
             "min_amplifier": {
-              "effect_api:variable_type": "effect_api_entity_test:health"
+              "effect_api:variable_type": "effect_api:modifier",
+              "base": {
+                "effect_api:variable_type": "effect_api_entity_test:health"
+              },
+              "modifiers": [
+                {
+                  "type": "effect_api:multiply",
+                  "amount": 0.5
+                },
+                {
+                  "type": "effect_api:add",
+                  "amount": -1
+                }
+              ]
             },
             "max_amplifier":  {
-              "effect_api:variable_type": "effect_api_entity_test:health"
+              "effect_api:variable_type": "effect_api:modifier",
+              "base": {
+                "effect_api:variable_type": "effect_api_entity_test:health"
+              },
+              "modifiers": [
+                {
+                  "type": "effect_api:multiply",
+                  "amount": 0.5
+                },
+                {
+                  "type": "effect_api:add",
+                  "amount": -1
+                }
+              ]
             }
           }
         }

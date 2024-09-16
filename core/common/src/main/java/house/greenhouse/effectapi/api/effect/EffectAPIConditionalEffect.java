@@ -10,9 +10,7 @@ import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 
-import java.util.Map;
 import java.util.Optional;
-import java.util.WeakHashMap;
 
 public class EffectAPIConditionalEffect<T extends EffectAPIEffect> implements EffectAPIEffect {
     private static Codec<LootItemCondition> conditionCodec(LootContextParamSet paramSet) {

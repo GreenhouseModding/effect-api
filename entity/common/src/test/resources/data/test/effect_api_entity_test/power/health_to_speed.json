@@ -5,9 +5,18 @@
         "id": "test:health_to_speed",
         "attribute": "minecraft:generic.movement_speed",
         "amount": {
-          "effect_api:variable_type": "effect_api_entity_test:health"
+          "effect_api:variable_type": "effect_api:modifier",
+          "base": {
+            "effect_api:variable_type": "effect_api_entity_test:health"
+          },
+          "modifiers": [
+            {
+              "type": "effect_api:multiply",
+              "amount": 0.005
+            }
+          ]
         },
-        "operation": "add_multiplied_total"
+        "operation": "add_value"
       }
     }
   ]

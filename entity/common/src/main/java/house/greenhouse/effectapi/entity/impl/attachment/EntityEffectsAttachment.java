@@ -1,6 +1,8 @@
 package house.greenhouse.effectapi.entity.impl.attachment;
 
-import house.greenhouse.effectapi.entity.api.EntityEffectAPI;
+import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
+import house.greenhouse.effectapi.api.variable.EffectHolder;
+import house.greenhouse.effectapi.entity.api.EffectAPIEntityEffectTypes;
 import house.greenhouse.effectapi.entity.api.registry.EffectAPIEntityLootContextParamSets;
 import house.greenhouse.effectapi.entity.impl.network.clientbound.SyncEntityEffectsAttachmentClientboundPacket;
 import house.greenhouse.effectapi.impl.EffectAPI;
@@ -18,8 +20,8 @@ public class EntityEffectsAttachment extends EffectsAttachmentImpl<Entity> {
     }
 
     @Override
-    public LootContext createLootContext(ResourceLocation source) {
-        return EntityEffectAPI.createEntityOnlyContext(provider, source);
+    public <E extends EffectAPIEffect> LootContext createLootContext(EffectHolder<E> holder, ResourceLocation source) {
+        return EffectAPIEntityEffectTypes.buildContext(holder.effectType(), provider, source);
     }
 
     @Override

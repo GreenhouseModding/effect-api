@@ -2,6 +2,7 @@ package house.greenhouse.effectapi.entity.impl;
 
 import house.greenhouse.effectapi.entity.api.EffectAPIEntityEffectTypes;
 import house.greenhouse.effectapi.entity.api.EffectAPIEntityActionTypes;
+import house.greenhouse.effectapi.entity.api.EffectAPIEntityVariableTypes;
 import house.greenhouse.effectapi.impl.attachment.EffectsAttachmentImpl;
 import house.greenhouse.effectapi.entity.api.command.EntityResourceArgument;
 import house.greenhouse.effectapi.entity.api.command.EntityResourceValueArgument;
@@ -34,9 +35,10 @@ public class EffectAPIEntityFabric implements ModInitializer {
 
     public static void registerContents() {
         EffectAPIEntityAttachments.init();
-        EffectAPIEntityEffectTypes.registerAll(Registry::register);
         EffectAPIEntityActionTypes.registerAll(Registry::register);
+        EffectAPIEntityEffectTypes.registerAll(Registry::register);
         EffectAPIEntityPredicates.registerAll(Registry::register);
+        EffectAPIEntityVariableTypes.registerAll(Registry::register);
 
         PayloadTypeRegistry.playS2C().register(ChangeEntityResourceClientboundPacket.TYPE, ChangeEntityResourceClientboundPacket.STREAM_CODEC);
         PayloadTypeRegistry.playS2C().register(SyncEntityEffectsAttachmentClientboundPacket.TYPE, SyncEntityEffectsAttachmentClientboundPacket.STREAM_CODEC);
