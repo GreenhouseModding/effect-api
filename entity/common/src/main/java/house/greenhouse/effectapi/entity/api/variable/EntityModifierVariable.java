@@ -11,7 +11,7 @@ import house.greenhouse.effectapi.entity.api.registry.EffectAPIEntityLootContext
 import java.util.List;
 
 public class EntityModifierVariable extends ModifierVariable {
-    public static final MapCodec<EntityModifierVariable> CODEC = ModifierVariable.codec(EffectAPIEntityRegistries.VARIABLE, EffectAPIEntityLootContextParamSets.ENTITY,
+    public static final MapCodec<EntityModifierVariable> CODEC = ModifierVariable.codec(EffectAPIEntityRegistries.VARIABLE_TYPE, EffectAPIEntityLootContextParamSets.ENTITY,
             EntityModifierVariable::new);
 
     public EntityModifierVariable(Either<Double, Variable<Number>> base, List<Modifier> modifiers) {

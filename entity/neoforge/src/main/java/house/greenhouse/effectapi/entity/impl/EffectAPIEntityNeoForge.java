@@ -73,6 +73,7 @@ public class EffectAPIEntityNeoForge {
         public static void createNewRegistries(NewRegistryEvent event) {
             event.register(EffectAPIEntityRegistries.ACTION_TYPE);
             event.register(EffectAPIEntityRegistries.EFFECT_COMPONENT_TYPE);
+            event.register(EffectAPIEntityRegistries.VARIABLE_TYPE);
         }
     }
 

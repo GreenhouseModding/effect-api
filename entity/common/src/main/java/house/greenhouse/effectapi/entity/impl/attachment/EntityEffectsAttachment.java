@@ -26,7 +26,7 @@ public class EntityEffectsAttachment extends EffectsAttachmentImpl<Entity> {
 
     @Override
     public void tick() {
-        if (!provider.isAlive())
+        if (provider == null || !provider.isAlive())
             return;
         super.tick();
     }

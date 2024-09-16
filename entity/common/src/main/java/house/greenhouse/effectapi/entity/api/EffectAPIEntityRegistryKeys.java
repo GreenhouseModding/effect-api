@@ -11,5 +11,5 @@ import net.minecraft.resources.ResourceKey;
 public class EffectAPIEntityRegistryKeys {
     public static final ResourceKey<Registry<DataComponentType<?>>> EFFECT_COMPONENT_TYPE = ResourceKey.createRegistryKey(EffectAPI.asResource("entity_effect_component_type"));
     public static final ResourceKey<Registry<MapCodec<? extends EffectAPIAction>>> ACTION_TYPE = ResourceKey.createRegistryKey(EffectAPI.asResource("entity_action_type"));
-    public static final ResourceKey<Registry<MapCodec<? extends Variable<?>>>> VARIABLE = ResourceKey.createRegistryKey(EffectAPI.asResource("entity_variable"));
+    public static final ResourceKey<Registry<MapCodec<? extends Variable<?>>>> VARIABLE_TYPE = ResourceKey.createRegistryKey(EffectAPI.asResource("entity_variable_type"));
 }

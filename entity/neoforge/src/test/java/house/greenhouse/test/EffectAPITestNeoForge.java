@@ -37,7 +37,7 @@ public class EffectAPITestNeoForge {
         @SubscribeEvent
         public static void registerContent(RegisterEvent event) {
             event.register(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, EffectAPIEntityTest.POWERS_ATTACHMENT_KEY, () -> POWERS);
-            event.register(EffectAPIEntityRegistryKeys.VARIABLE, EffectAPIEntityTest.asResource("health"), () -> HealthVariable.CODEC);
+            event.register(EffectAPIEntityRegistryKeys.VARIABLE_TYPE, EffectAPIEntityTest.asResource("health"), () -> HealthVariable.CODEC);
         }
 
         @SubscribeEvent
