@@ -25,6 +25,13 @@ public class EntityEffectsAttachment extends EffectsAttachmentImpl<Entity> {
     }
 
     @Override
+    public void tick() {
+        if (!provider.isAlive())
+            return;
+        super.tick();
+    }
+
+    @Override
     public void sync(ServerPlayer player) {
         EffectAPI.getHelper().sendClientbound(new SyncEntityEffectsAttachmentClientboundPacket(provider.getId(), combinedComponents, activeComponents), player);
     }

@@ -1,6 +1,7 @@
 package house.greenhouse.effectapi.impl.attachment;
 
 import com.google.common.collect.ImmutableList;
+import com.sun.jna.platform.win32.Wincon;
 import house.greenhouse.effectapi.api.attachment.EffectsAttachment;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
 import house.greenhouse.effectapi.api.variable.EffectHolder;
@@ -36,10 +37,11 @@ public abstract class EffectsAttachmentImpl<T> implements EffectsAttachment<T> {
 
     public void init(T provider) {
         this.provider = provider;
+        contexts.clear();
+        variableValues.clear();
         combinedComponents = DataComponentMap.EMPTY;
         activeComponents = DataComponentMap.EMPTY;
         combineComponents();
-        updateActiveComponents(Map.of());
     }
 
     public abstract int getTickCount();

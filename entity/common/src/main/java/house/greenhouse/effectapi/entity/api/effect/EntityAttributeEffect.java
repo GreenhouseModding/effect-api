@@ -27,12 +27,6 @@ public record EntityAttributeEffect(ResourceLocation id, Holder<Attribute> attri
     ).apply(inst, EntityAttributeEffect::new));
 
     @Override
-    public void onRemoved(LootContext context) {
-        if (context.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof LivingEntity living)
-            living.getAttributes().removeAttributeModifiers(makeAttributeMap(context));
-    }
-
-    @Override
     public void onActivated(LootContext context) {
         if (context.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof LivingEntity living)
             living.getAttributes().addTransientAttributeModifiers(makeAttributeMap(context));
@@ -40,7 +34,19 @@ public record EntityAttributeEffect(ResourceLocation id, Holder<Attribute> attri
 
     @Override
     public void onDeactivated(LootContext context) {
-        onRemoved(context);
+        if (context.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof LivingEntity living)
+            living.getAttributes().removeAttributeModifiers(makeAttributeMap(context));
+    }
+
+    @Override
+    public void onRemoved(LootContext context) {
+        onDeactivated(context);
+    }
+
+    @Override
+    public void onChanged(LootContext context, EffectAPIEffect previous, boolean active) {
+        if (active)
+            onActivated(context);
     }
 
     private HashMultimap<Holder<Attribute>, AttributeModifier> makeAttributeMap(LootContext context) {

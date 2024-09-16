@@ -42,7 +42,6 @@ public class InternalEffectUtil {
                             effect.onAdded(context);
                             effect.onChanged(context, holdersToRefresh.get(reverseLookup.get(effect)), active);
                             if (active) {
-                                effect.onActivated(context);
                                 newMap.computeIfAbsent(component.type(), type -> new ArrayList<>()).add(effect);
                             }
                             createNewMap = true;
