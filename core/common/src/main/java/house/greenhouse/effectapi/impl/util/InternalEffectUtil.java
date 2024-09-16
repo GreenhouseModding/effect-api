@@ -2,6 +2,7 @@ package house.greenhouse.effectapi.impl.util;
 
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
 import house.greenhouse.effectapi.api.variable.EffectHolder;
+import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
@@ -24,7 +25,7 @@ public class InternalEffectUtil {
     }
 
     public static Optional<DataComponentMap> generateActiveEffectsIfNecessary(Map<EffectHolder<EffectAPIEffect>, LootContext> contexts,
-                                                                              Set<EffectHolder<EffectAPIEffect>> holdersToRefresh,
+                                                                              Map<EffectHolder<EffectAPIEffect>, EffectAPIEffect> holdersToRefresh,
                                                                               Map<EffectAPIEffect, EffectHolder<EffectAPIEffect>> reverseLookup,
                                                                               LootContextParamSet paramSet, DataComponentMap combined, DataComponentMap previousMap,
                                                                               int tickCount) {
@@ -36,9 +37,12 @@ public class InternalEffectUtil {
                 for (EffectAPIEffect effect : ((List<EffectAPIEffect>) list)) {
                     if (effect.paramSet() == paramSet) {
                         LootContext context = contexts.get(reverseLookup.get(effect));
-                        if (holdersToRefresh.contains(reverseLookup.get(effect))) {
-                            if (effect.isActive(context, tickCount)) {
-                                effect.onAdded(context);
+                        if (holdersToRefresh.containsKey(reverseLookup.get(effect))) {
+                            boolean active = effect.isActive(context, tickCount);
+                            effect.onAdded(context);
+                            effect.onChanged(context, holdersToRefresh.get(reverseLookup.get(effect)), active);
+                            if (active) {
+                                effect.onActivated(context);
                                 newMap.computeIfAbsent(component.type(), type -> new ArrayList<>()).add(effect);
                             }
                             createNewMap = true;

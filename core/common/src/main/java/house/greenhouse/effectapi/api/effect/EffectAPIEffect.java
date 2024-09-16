@@ -53,6 +53,15 @@ public interface EffectAPIEffect {
     default void onRefreshed(LootContext context) {}
 
     /**
+     * Runs whenever this effect has a change in values provided by a {@link house.greenhouse.effectapi.api.variable.Variable}.
+     * @param context   The context of the effect within the attachment.
+     * @param previous  The previous version of this effect.
+     * @param active    Whether this effect is considered active.
+     * @see house.greenhouse.effectapi.api.variable.Variable
+     */
+    default void onChanged(LootContext context, EffectAPIEffect previous, boolean active) {}
+
+    /**
      * Runs whenever an effect should tick.
      * @param context   The context of the effect within the attachment.
      */

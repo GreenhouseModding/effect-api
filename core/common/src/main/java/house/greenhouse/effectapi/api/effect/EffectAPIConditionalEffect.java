@@ -96,6 +96,11 @@ public class EffectAPIConditionalEffect<T extends EffectAPIEffect> implements Ef
     }
 
     @Override
+    public void onChanged(LootContext context, EffectAPIEffect previous, boolean active) {
+        effect.onChanged(context, previous, active);
+    }
+
+    @Override
     public boolean isActive(LootContext context, int tickCount) {
         if (tickCount % checkRate == 0) {
             previousValue = requirements.isEmpty() || requirements.get().test(context);

@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public abstract class EffectsAttachmentImpl<T> implements EffectsAttachment<T> {
@@ -34,11 +35,11 @@ public abstract class EffectsAttachmentImpl<T> implements EffectsAttachment<T> {
     protected T provider;
 
     public void init(T provider) {
-        if (this.provider != null)
-            return;
         this.provider = provider;
+        combinedComponents = DataComponentMap.EMPTY;
+        activeComponents = DataComponentMap.EMPTY;
         combineComponents();
-        updateActiveComponents(Set.of());
+        updateActiveComponents(Map.of());
     }
 
     public abstract int getTickCount();
@@ -81,11 +82,11 @@ public abstract class EffectsAttachmentImpl<T> implements EffectsAttachment<T> {
     }
 
     public void tick() {
-        var holders = effectLookup.keySet().stream().filter(holder -> !holder.getPreviousValues(contexts.get(holder)).equals(this.variableValues.get(holder))).collect(Collectors.toSet());
+        var holders = effectLookup.keySet().stream().filter(holder -> !holder.getPreviousValues(contexts.get(holder)).equals(this.variableValues.get(holder))).collect(Collectors.toMap(Function.identity(), this::getEffect));
 
         if (!holders.isEmpty()) {
-            for (EffectHolder<EffectAPIEffect> holder : holders)
-                effectLookup.get(holder).onRemoved(contexts.get(holder));
+            for (Map.Entry<EffectHolder<EffectAPIEffect>, EffectAPIEffect> effect : holders.entrySet())
+                effect.getValue().onRemoved(contexts.get(effect.getKey()));
             combineComponents();
         }
 
@@ -98,7 +99,6 @@ public abstract class EffectsAttachmentImpl<T> implements EffectsAttachment<T> {
     }
 
     public void refresh() {
-
         InternalEffectUtil.executeOnAllEffects(activeComponents, effect ->
                 effect.onRefreshed(contexts.get(reverseEffectLookup.get(effect))));
     }
@@ -106,7 +106,7 @@ public abstract class EffectsAttachmentImpl<T> implements EffectsAttachment<T> {
     public void addEffect(EffectHolder<EffectAPIEffect> effect, ResourceLocation source) {
         variableHolderComponents.computeIfAbsent(source, s -> new ObjectArrayList<>()).add(effect);
         combineComponents();
-        updateActiveComponents(Set.of());
+        updateActiveComponents(Map.of());
         effectLookup.get(effect).onAdded(contexts.get(effect));
     }
 
@@ -115,7 +115,7 @@ public abstract class EffectsAttachmentImpl<T> implements EffectsAttachment<T> {
             return;
         removeEffectInternal(effect, source);
         combineComponents();
-        updateActiveComponents(Set.of());
+        updateActiveComponents(Map.of());
     }
 
     private void removeEffectInternal(EffectHolder<EffectAPIEffect> effect, ResourceLocation source) {
@@ -131,7 +131,7 @@ public abstract class EffectsAttachmentImpl<T> implements EffectsAttachment<T> {
             variableHolderComponents.remove(source);
     }
 
-    private void updateActiveComponents(Set<EffectHolder<EffectAPIEffect>> holders) {
+    private void updateActiveComponents(Map<EffectHolder<EffectAPIEffect>, EffectAPIEffect> holders) {
         DataComponentMap previous = activeComponents;
         var newComponents = InternalEffectUtil.generateActiveEffectsIfNecessary(contexts, holders, reverseEffectLookup, paramSet(), combinedComponents, previous, getTickCount());
         if (newComponents.isEmpty())
