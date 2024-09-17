@@ -43,7 +43,7 @@ public class EffectAPITestNeoForge {
         @SubscribeEvent
         public static void registerContent(RegisterEvent event) {
             event.register(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, EffectAPIEntityTest.POWERS_ATTACHMENT_KEY, () -> POWERS);
-            event.register(EffectAPIEntityRegistryKeys.EFFECT_COMPONENT_TYPE, EffectAPIEntityTest.asResource("particle"), () -> ParticleEffect.TYPE);
+            event.register(EffectAPIEntityRegistryKeys.EFFECT_TYPE, EffectAPIEntityTest.asResource("particle"), () -> ParticleEffect.TYPE);
             event.register(Registries.LOOT_CONDITION_TYPE, EffectAPIEntityTest.asResource("on_fire"), () -> OnFirePredicate.TYPE);
             event.register(EffectAPIRegistryKeys.VARIABLE_TYPE, EffectAPIEntityTest.asResource("health"), () -> HealthVariable.CODEC);
         }

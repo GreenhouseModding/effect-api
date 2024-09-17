@@ -3,7 +3,7 @@ package house.greenhouse.effectapi.entity.platform;
 import house.greenhouse.effectapi.api.attachment.EffectsAttachment;
 import house.greenhouse.effectapi.api.attachment.ResourcesAttachment;
 import house.greenhouse.effectapi.api.resource.Resource;
-import house.greenhouse.effectapi.api.variable.EffectHolder;
+import house.greenhouse.effectapi.api.effect.EffectHolder;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentMap;
@@ -28,9 +28,9 @@ public interface EffectAPIEntityPlatformHelper {
     @Nullable
     EffectsAttachment<Entity> getEntityEffects(Entity entity);
 
-    void addEntityEffect(Entity entity, EffectHolder<EffectAPIEffect> effect, ResourceLocation source);
+    void addEntityEffect(Entity entity, EffectHolder<EffectAPIEffect, Entity> effect, ResourceLocation source);
 
-    void removeEntityEffect(Entity entity, EffectHolder<EffectAPIEffect> effect, ResourceLocation source);
+    void removeEntityEffect(Entity entity, EffectHolder<EffectAPIEffect, Entity> effect, ResourceLocation source);
 
     void setEntityEffects(Entity entity, DataComponentMap combinedComponents, DataComponentMap activeComponents);
 }

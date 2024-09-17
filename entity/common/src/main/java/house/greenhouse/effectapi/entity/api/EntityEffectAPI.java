@@ -3,23 +3,13 @@ package house.greenhouse.effectapi.entity.api;
 import house.greenhouse.effectapi.api.attachment.EffectsAttachment;
 import house.greenhouse.effectapi.api.effect.EffectAPIConditionalEffect;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
-import house.greenhouse.effectapi.api.registry.EffectAPILootContextParams;
-import house.greenhouse.effectapi.api.variable.EffectHolder;
-import house.greenhouse.effectapi.api.variable.VariableHolder;
-import house.greenhouse.effectapi.impl.attachment.EffectsAttachmentImpl;
-import house.greenhouse.effectapi.entity.api.registry.EffectAPIEntityLootContextParamSets;
+import house.greenhouse.effectapi.api.effect.EffectHolder;
+import house.greenhouse.effectapi.api.effect.EffectType;
 import house.greenhouse.effectapi.entity.impl.EffectAPIEntity;
-import net.minecraft.core.component.DataComponentType;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * This class provides some common hooks for the entity effects attachment.
@@ -37,7 +27,7 @@ public class EntityEffectAPI {
      * @return                  A list of effects.
      * @param <E>               The effect class.
      */
-    public static <E extends EffectAPIEffect> List<E> getEffects(Entity entity, DataComponentType<E> type) {
+    public static <E extends EffectAPIEffect> List<E> getEffects(Entity entity, EffectType<E, Entity> type) {
         return getEffects(entity, type, false);
     }
 
@@ -50,7 +40,7 @@ public class EntityEffectAPI {
      * @return                  A list of effects.
      * @param <E>               The effect class.
      */
-    public static <E extends EffectAPIEffect> List<E> getEffects(Entity entity, DataComponentType<E> type, boolean includeInactive) {
+    public static <E extends EffectAPIEffect> List<E> getEffects(Entity entity, EffectType<E, Entity> type, boolean includeInactive) {
         EffectsAttachment<Entity> attachment = EffectAPIEntity.getHelper().getEntityEffects(entity);
         if (attachment == null)
             return List.of();
@@ -59,26 +49,26 @@ public class EntityEffectAPI {
 
     /**
      * Checks if an entity has a specific effect type active.
-     * For checking specific effects, or checking if more than one is active, use {@link EntityEffectAPI#getEffects(Entity, DataComponentType)}
+     * For checking specific effects, or checking if more than one is active, use {@link EntityEffectAPI#getEffects(Entity, EffectType)}
      *
      * @param entity    The entity to check.
      * @param type      The type of effect to check.
      * @return          True if the entity has an instance of the effect, false if not.
      */
-    public static <E extends EffectAPIEffect> boolean isTypeActive(Entity entity, DataComponentType<E> type) {
+    public static <E extends EffectAPIEffect> boolean isTypeActive(Entity entity, EffectType<E, Entity> type) {
         return hasType(entity, type, false);
     }
 
 
     /**
      * Checks if an entity has a specific effect type.
-     * For checking specific effects, use {@link EntityEffectAPI#getEffects(Entity, DataComponentType)}
+     * For checking specific effects, use {@link EntityEffectAPI#getEffects(Entity, EffectType)}
      *
      * @param entity    The entity to check.
      * @param type      The type of effect to check.
      * @return          True if the entity has an instance of the effect, false if not.
      */
-    public static <E extends EffectAPIEffect> boolean hasType(Entity entity, DataComponentType<E> type, boolean includeInactive) {
+    public static <E extends EffectAPIEffect> boolean hasType(Entity entity, EffectType<E, Entity> type, boolean includeInactive) {
         EffectsAttachment<Entity> attachment = EffectAPIEntity.getHelper().getEntityEffects(entity);
         if (attachment == null)
             return false;
@@ -93,7 +83,7 @@ public class EntityEffectAPI {
      * @param effect    The effect to add.
      * @param source    The source of the effect.
      */
-    public static void addEffect(Entity entity, EffectHolder<EffectAPIEffect> effect, ResourceLocation source) {
+    public static void addEffect(Entity entity, EffectHolder<EffectAPIEffect, Entity> effect, ResourceLocation source) {
         EffectAPIEntity.getHelper().addEntityEffect(entity, effect, source);
     }
 
@@ -104,8 +94,8 @@ public class EntityEffectAPI {
      * @param effects   The effects to add.
      * @param source    The source of the effects.
      */
-    public static void addEffects(Entity entity, List<? extends EffectHolder<EffectAPIEffect>> effects, ResourceLocation source) {
-        for (EffectHolder<EffectAPIEffect> effect : effects) {
+    public static void addEffects(Entity entity, List<? extends EffectHolder<EffectAPIEffect, Entity>> effects, ResourceLocation source) {
+        for (EffectHolder<EffectAPIEffect, Entity> effect : effects) {
             EffectAPIEntity.getHelper().addEntityEffect(entity, effect, source);
         }
     }
@@ -117,7 +107,7 @@ public class EntityEffectAPI {
      * @param effect    The effect to remove.
      * @param source    The source of the effect.
      */
-    public static void removeEffect(Entity entity, EffectHolder<EffectAPIEffect> effect, ResourceLocation source) {
+    public static void removeEffect(Entity entity, EffectHolder<EffectAPIEffect, Entity> effect, ResourceLocation source) {
         EffectAPIEntity.getHelper().removeEntityEffect(entity, effect, source);
     }
 
@@ -128,13 +118,12 @@ public class EntityEffectAPI {
      * @param effects   The effects to remove.
      * @param source    The source of the effect.
      */
-    public static void removeEffects(Entity entity, List<? extends EffectHolder<EffectAPIEffect>> effects, ResourceLocation source) {
-        for (EffectHolder<EffectAPIEffect> effect : effects) {
+    public static void removeEffects(Entity entity, List<? extends EffectHolder<EffectAPIEffect, Entity>> effects, ResourceLocation source) {
+        for (EffectHolder<EffectAPIEffect, Entity> effect : effects) {
             EffectAPIEntity.getHelper().removeEntityEffect(entity, effect, source);
         }
     }
 
-    // TODO: Only expose deferred syncing.
     /**
      * Syncs an entity's effects with any players surrounding it.
      *

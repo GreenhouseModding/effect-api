@@ -3,7 +3,7 @@ package house.greenhouse.effectapi.entity.platform;
 import house.greenhouse.effectapi.api.attachment.EffectsAttachment;
 import house.greenhouse.effectapi.api.attachment.ResourcesAttachment;
 import house.greenhouse.effectapi.api.resource.Resource;
-import house.greenhouse.effectapi.api.variable.EffectHolder;
+import house.greenhouse.effectapi.api.effect.EffectHolder;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
 import house.greenhouse.effectapi.impl.attachment.EffectsAttachmentImpl;
 import house.greenhouse.effectapi.entity.impl.registry.EffectAPIEntityAttachments;
@@ -59,7 +59,7 @@ public class EffectAPIEntityPlatformHelperFabric implements EffectAPIEntityPlatf
     }
 
     @Override
-    public void addEntityEffect(Entity entity, EffectHolder<EffectAPIEffect> effect, ResourceLocation source) {
+    public void addEntityEffect(Entity entity, EffectHolder<EffectAPIEffect, Entity> effect, ResourceLocation source) {
         if (entity.hasAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS) && entity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS).hasEffect(effect, true))
             return;
         EffectsAttachment<Entity> attachment =  entity.getAttachedOrCreate(EffectAPIEntityAttachments.ENTITY_EFFECTS);
@@ -68,7 +68,7 @@ public class EffectAPIEntityPlatformHelperFabric implements EffectAPIEntityPlatf
     }
 
     @Override
-    public void removeEntityEffect(Entity entity, EffectHolder<EffectAPIEffect> effect, ResourceLocation source) {
+    public void removeEntityEffect(Entity entity, EffectHolder<EffectAPIEffect, Entity> effect, ResourceLocation source) {
         EffectsAttachment<Entity> attachment =  entity.getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS);
         if (attachment == null || !attachment.hasEffect(effect, true))
             return;

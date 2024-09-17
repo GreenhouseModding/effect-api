@@ -1,13 +1,12 @@
 package house.greenhouse.effectapi.entity.impl.effect;
 
 import com.mojang.serialization.Codec;
+import house.greenhouse.effectapi.api.effect.EffectType;
 import house.greenhouse.effectapi.api.effect.TriggerEffect;
 import house.greenhouse.effectapi.api.action.EffectAPIAction;
 import house.greenhouse.effectapi.entity.api.EffectAPIEntityActionTypes;
 import house.greenhouse.effectapi.entity.api.EffectAPIEntityEffectTypes;
-import house.greenhouse.effectapi.entity.api.registry.EffectAPIEntityLootContextParamSets;
-import net.minecraft.core.component.DataComponentType;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
+import net.minecraft.world.entity.Entity;
 
 import java.util.Optional;
 
@@ -16,12 +15,7 @@ public record EntityTriggerEffect(Optional<EffectAPIAction> onAdded, Optional<Ef
             EffectAPIEntityActionTypes.CODEC, EntityTriggerEffect::new);
 
     @Override
-    public DataComponentType<?> type() {
+    public EffectType<?, Entity> type() {
         return EffectAPIEntityEffectTypes.ENTITY_TRIGGER;
-    }
-
-    @Override
-    public LootContextParamSet paramSet() {
-        return EffectAPIEntityLootContextParamSets.ENTITY;
     }
 }

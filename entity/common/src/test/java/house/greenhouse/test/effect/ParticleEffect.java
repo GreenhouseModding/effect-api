@@ -4,7 +4,9 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
+import house.greenhouse.effectapi.api.effect.EffectType;
 import house.greenhouse.effectapi.entity.api.EntityEffectAPI;
+import house.greenhouse.effectapi.entity.api.effect.EntityEffectTypeBuilder;
 import house.greenhouse.effectapi.entity.api.registry.EffectAPIEntityLootContextParamSets;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.particles.ParticleOptions;
@@ -20,8 +22,8 @@ public record ParticleEffect(ParticleOptions particle, Vec3 speed, int tickRate)
             Vec3.CODEC.optionalFieldOf("speed", Vec3.ZERO).forGetter(ParticleEffect::speed),
             Codec.intRange(1, Integer.MAX_VALUE).optionalFieldOf("tick_rate", 1).forGetter(ParticleEffect::tickRate)
     ).apply(inst, ParticleEffect::new));
-    public static final DataComponentType<ParticleEffect> TYPE = DataComponentType.<ParticleEffect>builder()
-            .persistent(CODEC)
+    public static final EffectType<ParticleEffect, Entity> TYPE = EntityEffectTypeBuilder.<ParticleEffect>builder()
+            .codec(CODEC)
             .build();
 
     public static void tickParticles(Entity entity) {
@@ -39,12 +41,7 @@ public record ParticleEffect(ParticleOptions particle, Vec3 speed, int tickRate)
     }
 
     @Override
-    public DataComponentType<?> type() {
+    public EffectType<?, Entity> type() {
         return TYPE;
-    }
-
-    @Override
-    public LootContextParamSet paramSet() {
-        return EffectAPIEntityLootContextParamSets.ENTITY;
     }
 }

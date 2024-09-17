@@ -4,7 +4,6 @@ package house.greenhouse.effectapi.api.effect;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.component.DataComponentType;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
@@ -120,12 +119,7 @@ public class EffectAPIConditionalEffect<T extends EffectAPIEffect> implements Ef
     }
 
     @Override
-    public DataComponentType<?> type() {
+    public EffectType<?, ?> type() {
         return effect.type();
-    }
-
-    @Override
-    public LootContextParamSet paramSet() {
-        return paramSet;
     }
 }

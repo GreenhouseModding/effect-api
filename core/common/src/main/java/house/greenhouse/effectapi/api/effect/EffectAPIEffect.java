@@ -85,10 +85,5 @@ public interface EffectAPIEffect {
     /**
      * The type of this effect.
      */
-    DataComponentType<?> type();
-
-    /**
-     * The param set of this effect, used for validation.
-     */
-    LootContextParamSet paramSet();
+    EffectType<?, ?> type();
 }

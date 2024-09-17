@@ -69,7 +69,7 @@ public class EffectAPIEntityNeoForge {
         @SubscribeEvent
         public static void createNewRegistries(NewRegistryEvent event) {
             event.register(EffectAPIEntityRegistries.ACTION_TYPE);
-            event.register(EffectAPIEntityRegistries.EFFECT_COMPONENT_TYPE);
+            event.register(EffectAPIEntityRegistries.EFFECT_TYPE);
         }
     }
 

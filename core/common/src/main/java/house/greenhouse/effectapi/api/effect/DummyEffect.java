@@ -2,7 +2,6 @@ package house.greenhouse.effectapi.api.effect;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.core.Registry;
-import net.minecraft.core.component.DataComponentType;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
@@ -17,13 +16,13 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
  * @param typeKey       The {@link ResourceLocation} of this type.
  * @param paramSet      A param set for validation.
  */
-public record DummyEffect(Registry<DataComponentType<?>> typeRegistry, ResourceKey<DataComponentType<?>> typeKey, LootContextParamSet paramSet) implements EffectAPIEffect {
-    public static Codec<DummyEffect> codec(Registry<DataComponentType<?>> typeRegistry, ResourceLocation typeKey, LootContextParamSet paramSet) {
-        return Codec.unit(() -> new DummyEffect(typeRegistry, ResourceKey.create(typeRegistry.key(), typeKey), paramSet));
+public record DummyEffect<T>(Registry<EffectType<?, T>> typeRegistry, ResourceKey<EffectType<?, T>> typeKey) implements EffectAPIEffect {
+    public static <T> Codec<DummyEffect<T>> codec(Registry<EffectType<?, T>> typeRegistry, ResourceLocation typeKey) {
+        return Codec.unit(() -> new DummyEffect<>(typeRegistry, ResourceKey.create(typeRegistry.key(), typeKey)));
     }
 
     @Override
-    public DataComponentType<?> type() {
+    public EffectType<?, ?> type() {
         return typeRegistry.getOrThrow(typeKey);
     }
 }

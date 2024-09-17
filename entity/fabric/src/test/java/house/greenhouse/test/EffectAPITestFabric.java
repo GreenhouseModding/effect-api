@@ -32,7 +32,7 @@ public class EffectAPITestFabric implements ModInitializer {
         DynamicRegistries.registerSynced(EffectAPIEntityTest.POWER, Power.DIRECT_CODEC, Power.NETWORK_DIRECT_CODEC);
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> TestCommand.register(dispatcher, registryAccess));
 
-        Registry.register(EffectAPIEntityRegistries.EFFECT_COMPONENT_TYPE, EffectAPIEntityTest.asResource("particle"), ParticleEffect.TYPE);
+        Registry.register(EffectAPIEntityRegistries.EFFECT_TYPE, EffectAPIEntityTest.asResource("particle"), ParticleEffect.TYPE);
         Registry.register(BuiltInRegistries.LOOT_CONDITION_TYPE, EffectAPIEntityTest.asResource("on_fire"), OnFirePredicate.TYPE);
         Registry.register(EffectAPIRegistries.VARIABLE_TYPE, EffectAPIEntityTest.asResource("health"), HealthVariable.CODEC);
 

@@ -1,7 +1,7 @@
 package house.greenhouse.effectapi.impl.util;
 
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
-import house.greenhouse.effectapi.api.variable.EffectHolder;
+import house.greenhouse.effectapi.api.effect.EffectHolder;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponentType;
@@ -32,10 +32,10 @@ public class InternalEffectUtil {
                 });
     }
 
-    public static <E extends EffectAPIEffect> Optional<DataComponentMap> generateActiveEffectsIfNecessary(
-            Function<EffectHolder<EffectAPIEffect>, LootContext> contextCreator,
-            @Nullable Map<EffectHolder<E>, E> previousHolders,
-            Map<EffectAPIEffect, EffectHolder<EffectAPIEffect>> reverseLookup,
+    public static <E extends EffectAPIEffect, T> Optional<DataComponentMap> generateActiveEffectsIfNecessary(
+            Function<EffectHolder<EffectAPIEffect, T>, LootContext> contextCreator,
+            @Nullable Map<EffectHolder<E, T>, E> previousHolders,
+            Map<EffectAPIEffect, EffectHolder<EffectAPIEffect, T>> reverseLookup,
             DataComponentMap combined, DataComponentMap previousMap,
             int tickCount) {
         Map<DataComponentType<?>, List<EffectAPIEffect>> newMap = new Reference2ObjectArrayMap<>();
@@ -44,7 +44,7 @@ public class InternalEffectUtil {
         for (TypedDataComponent<?> component : combined) {
             if (component.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect)
                 for (EffectAPIEffect effect : ((List<EffectAPIEffect>) list)) {
-                    EffectHolder<EffectAPIEffect> holder = reverseLookup.get(effect);
+                    EffectHolder<EffectAPIEffect, T> holder = reverseLookup.get(effect);
                     LootContext context = contextCreator.apply(holder);
                     if (previousHolders != null && previousHolders.containsKey(holder)) {
                         boolean active = effect.isActive(context, tickCount);

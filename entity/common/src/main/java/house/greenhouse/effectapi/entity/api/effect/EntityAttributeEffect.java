@@ -4,16 +4,14 @@ import com.google.common.collect.HashMultimap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
+import house.greenhouse.effectapi.api.effect.EffectType;
 import house.greenhouse.effectapi.entity.api.EffectAPIEntityEffectTypes;
-import house.greenhouse.effectapi.entity.api.registry.EffectAPIEntityLootContextParamSets;
 import net.minecraft.core.Holder;
-import net.minecraft.core.component.DataComponentType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProviders;
@@ -57,12 +55,7 @@ public record EntityAttributeEffect(ResourceLocation id, Holder<Attribute> attri
     }
 
     @Override
-    public DataComponentType<?> type() {
+    public EffectType<?, ?> type() {
         return EffectAPIEntityEffectTypes.ENTITY_ATTRIBUTE;
-    }
-
-    @Override
-    public LootContextParamSet paramSet() {
-        return EffectAPIEntityLootContextParamSets.ENTITY;
     }
 }
