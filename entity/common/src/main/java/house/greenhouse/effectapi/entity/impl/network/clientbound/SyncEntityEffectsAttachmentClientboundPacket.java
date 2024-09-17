@@ -30,6 +30,8 @@ public record SyncEntityEffectsAttachmentClientboundPacket(int entityId, DataCom
     public void handle() {
         Minecraft.getInstance().execute(() -> {
             Entity entity = Minecraft.getInstance().level.getEntity(entityId);
+            if (entity == null)
+                return;
             EffectAPIEntity.getHelper().setEntityEffects(entity, combinedComponents, activeComponents);
         });
     }
