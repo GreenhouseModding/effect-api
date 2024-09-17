@@ -37,7 +37,7 @@ public class InternalEffectUtil {
                                                                               DataComponentMap combined, DataComponentMap previousMap,
                                                                               int tickCount) {
         Map<DataComponentType<?>, List<EffectAPIEffect>> newMap = new Reference2ObjectArrayMap<>();
-        boolean createNewMap = false;
+        boolean createNewMap = previousMap.stream().anyMatch(typedDataComponent -> ((List<?>) typedDataComponent.value()).stream().noneMatch(o -> ((List<?>) combined.getOrDefault(typedDataComponent.type(), List.of())).contains(o)));
 
         for (TypedDataComponent<?> component : combined) {
             if (component.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect)
@@ -69,6 +69,7 @@ public class InternalEffectUtil {
                 }
         }
 
+
         if (!createNewMap)
             return Optional.empty();
 
@@ -78,5 +79,4 @@ public class InternalEffectUtil {
 
         return Optional.of(builder.build());
     }
-
 }

@@ -148,7 +148,10 @@ public abstract class EffectsAttachmentImpl<T> implements EffectsAttachment<T> {
         removeEffectInternal(effect, source);
         combineComponents();
         updateActiveComponents();
-        sync();
+        if (variableHolderComponents.isEmpty())
+            syncInternal();
+        else
+            sync();
     }
 
     private void removeEffectInternal(EffectHolder<EffectAPIEffect> effect, ResourceLocation source) {
