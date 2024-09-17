@@ -7,7 +7,11 @@ import house.greenhouse.test.command.TestCommand;
 import house.greenhouse.test.effect.ParticleEffect;
 import house.greenhouse.test.network.clientbound.SyncPowerAttachmentClientboundPacket;
 import house.greenhouse.test.platform.EffectAPITestHelperNeoForge;
+import house.greenhouse.test.predicate.OnFirePredicate;
 import house.greenhouse.test.variable.HealthVariable;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -40,6 +44,7 @@ public class EffectAPITestNeoForge {
         public static void registerContent(RegisterEvent event) {
             event.register(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, EffectAPIEntityTest.POWERS_ATTACHMENT_KEY, () -> POWERS);
             event.register(EffectAPIEntityRegistryKeys.EFFECT_COMPONENT_TYPE, EffectAPIEntityTest.asResource("particle"), () -> ParticleEffect.TYPE);
+            event.register(Registries.LOOT_CONDITION_TYPE, EffectAPIEntityTest.asResource("on_fire"), () -> OnFirePredicate.TYPE);
             event.register(EffectAPIRegistryKeys.VARIABLE_TYPE, EffectAPIEntityTest.asResource("health"), () -> HealthVariable.CODEC);
         }
 
