@@ -1,0 +1,35 @@
+{
+  "effect_api_entity_test:particle": [
+    {
+      "particle": {
+        "type": "minecraft:portal"
+      },
+      "speed": [
+        {
+          "effect_api:variable_type": "effect_api:number_provider",
+          "provider": {
+            "type": "minecraft:uniform",
+            "min": -0.4,
+            "max": 0.4
+          }
+        },
+        {
+          "effect_api:variable_type": "effect_api:number_provider",
+          "provider": {
+            "type": "minecraft:uniform",
+            "min": -0.8,
+            "max": 0.8
+          }
+        },
+        {
+          "effect_api:variable_type": "effect_api:number_provider",
+          "provider": {
+            "type": "minecraft:uniform",
+            "min": -0.4,
+            "max": 0.4
+          }
+        }
+      ]
+    }
+  ]
+}

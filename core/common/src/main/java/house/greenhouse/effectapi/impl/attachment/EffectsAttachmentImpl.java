@@ -64,12 +64,12 @@ public abstract class EffectsAttachmentImpl<T> implements EffectsAttachment<T> {
     }
 
     @Override
-    public <E extends EffectAPIEffect> List<E> getEffects(DataComponentType<List<E>> type, boolean includeInactive) {
-        return includeInactive ? combinedComponents.getOrDefault(type, List.of()) : activeComponents.getOrDefault(type, List.of());
+    public <E extends EffectAPIEffect> List<E> getEffects(DataComponentType<E> type, boolean includeInactive) {
+        return includeInactive ? (List<E>) combinedComponents.getOrDefault(type, List.of()) : (List<E>) activeComponents.getOrDefault(type, List.of());
     }
 
     @Override
-    public <E extends EffectAPIEffect> boolean hasEffectType(DataComponentType<List<E>> type, boolean includeInactive) {
+    public <E extends EffectAPIEffect> boolean hasEffectType(DataComponentType<E> type, boolean includeInactive) {
         return includeInactive ? combinedComponents.keySet().contains(type) : activeComponents.keySet().contains(type);
     }
 

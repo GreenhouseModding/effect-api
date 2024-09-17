@@ -10,7 +10,7 @@ import java.util.Map;
 @Mixin(DataComponentMap.Builder.class)
 public interface DataComponentMapBuilderAccessor {
     @Invoker("buildFromMapTrusted")
-    static DataComponentMap effectapi$invokeBuildFromMapTrusted(Map<DataComponentType<?>, Object> map) {
+    static DataComponentMap effect_api$invokeBuildFromMapTrusted(Map<DataComponentType<?>, Object> map) {
         throw new RuntimeException();
     }
 }

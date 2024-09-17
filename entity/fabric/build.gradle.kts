@@ -73,6 +73,11 @@ dependencies {
             requireCapability("${Properties.GROUP}:${core.props.modId}-common")
         }
     }
+    testCompileOnly(project(":core-common")) {
+        capabilities {
+            requireCapability("${Properties.GROUP}:${core.props.modId}-common")
+        }
+    }
     implementation(project(":core-fabric", "namedElements")) {
         isTransitive = false
     }

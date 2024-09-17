@@ -2,6 +2,7 @@ package house.greenhouse.effectapi.impl;
 
 import house.greenhouse.effectapi.api.EffectAPIDataTypes;
 import house.greenhouse.effectapi.api.EffectAPIModifierTypes;
+import house.greenhouse.effectapi.api.EffectAPIVariableTypes;
 import house.greenhouse.effectapi.api.registry.EffectAPIRegistries;
 import house.greenhouse.effectapi.api.registry.EffectAPIRegistryKeys;
 import house.greenhouse.effectapi.api.resource.Resource;
@@ -31,6 +32,7 @@ public class EffectAPINeoForge {
             register(event, EffectAPIAttachments::registerAll);
             register(event, EffectAPIDataTypes::registerAll);
             register(event, EffectAPIModifierTypes::registerAll);
+            register(event, EffectAPIVariableTypes::registerAll);
         }
 
         private static <T> void register(RegisterEvent event, Consumer<RegistrationCallback<T>> consumer) {
@@ -42,6 +44,7 @@ public class EffectAPINeoForge {
         public static void createNewRegistries(NewRegistryEvent event) {
             event.register(EffectAPIRegistries.DATA_TYPE);
             event.register(EffectAPIRegistries.MODIFIER);
+            event.register(EffectAPIRegistries.VARIABLE_TYPE);
         }
         @SubscribeEvent
         public static void createNewDataPackRegistries(DataPackRegistryEvent.NewRegistry event) {

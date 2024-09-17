@@ -14,7 +14,7 @@ public abstract class EntityMixin {
     @Shadow public abstract Level level();
 
     @Inject(method = "tick", at = @At("TAIL"))
-    private void effectapitest$tick(CallbackInfo ci) {
+    private void effect_api$tick(CallbackInfo ci) {
         if (!level().isClientSide() && ((Entity)(Object)this).hasAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS))
             ((Entity)(Object)this).getAttached(EffectAPIEntityAttachments.ENTITY_EFFECTS).tick();
     }

@@ -29,6 +29,9 @@
             "house.greenhouse.test.EffectAPITestFabricPre"
         ]
     },
+    "mixins": [
+        "${mod_id}_test.fabric.mixins.json"
+    ],
     "depends": {
         "fabricloader": "${fabric_loader_range}",
         "fabric-api": "*",

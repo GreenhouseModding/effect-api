@@ -35,9 +35,9 @@ public class EntityEffectAPI {
      * @param entity            The entity to get the effects of.
      * @param type              The type of effect.
      * @return                  A list of effects.
-     * @param <T>               The effect class.
+     * @param <E>               The effect class.
      */
-    public static <T extends EffectAPIEffect> List<T> getEffects(Entity entity, DataComponentType<List<T>> type) {
+    public static <E extends EffectAPIEffect> List<E> getEffects(Entity entity, DataComponentType<E> type) {
         return getEffects(entity, type, false);
     }
 
@@ -48,9 +48,9 @@ public class EntityEffectAPI {
      * @param type              The type of effect.
      * @param includeInactive   Whether to include inactive effects.
      * @return                  A list of effects.
-     * @param <T>               The effect class.
+     * @param <E>               The effect class.
      */
-    public static <T extends EffectAPIEffect> List<T> getEffects(Entity entity, DataComponentType<List<T>> type, boolean includeInactive) {
+    public static <E extends EffectAPIEffect> List<E> getEffects(Entity entity, DataComponentType<E> type, boolean includeInactive) {
         EffectsAttachment<Entity> attachment = EffectAPIEntity.getHelper().getEntityEffects(entity);
         if (attachment == null)
             return List.of();
@@ -65,7 +65,7 @@ public class EntityEffectAPI {
      * @param type      The type of effect to check.
      * @return          True if the entity has an instance of the effect, false if not.
      */
-    public static <T extends EffectAPIEffect> boolean isTypeActive(Entity entity, DataComponentType<List<T>> type) {
+    public static <E extends EffectAPIEffect> boolean isTypeActive(Entity entity, DataComponentType<E> type) {
         return hasType(entity, type, false);
     }
 
@@ -78,7 +78,7 @@ public class EntityEffectAPI {
      * @param type      The type of effect to check.
      * @return          True if the entity has an instance of the effect, false if not.
      */
-    public static <T extends EffectAPIEffect> boolean hasType(Entity entity, DataComponentType<List<T>> type, boolean includeInactive) {
+    public static <E extends EffectAPIEffect> boolean hasType(Entity entity, DataComponentType<E> type, boolean includeInactive) {
         EffectsAttachment<Entity> attachment = EffectAPIEntity.getHelper().getEntityEffects(entity);
         if (attachment == null)
             return false;

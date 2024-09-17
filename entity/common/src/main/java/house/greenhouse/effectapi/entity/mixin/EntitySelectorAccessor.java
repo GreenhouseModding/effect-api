@@ -13,20 +13,20 @@ import java.util.UUID;
 @Mixin(EntitySelector.class)
 public interface EntitySelectorAccessor {
     @Accessor("playerName")
-    String effectapi$getPlayerName();
+    String effect_api$getPlayerName();
 
     @Accessor("entityUUID")
-    UUID effectapi$getEntityUUID();
+    UUID effect_api$getEntityUUID();
 
     @Accessor("currentEntity")
-    boolean effectapi$getCurrentEntity();
+    boolean effect_api$getCurrentEntity();
 
     @Accessor("type")
-    EntityTypeTest<Entity, ?> effectapi$getType();
+    EntityTypeTest<Entity, ?> effect_api$getType();
 
     @Accessor("aabb")
-    AABB effectapi$getAABB();
+    AABB effect_api$getAABB();
 
     @Invoker("getResultLimit")
-    int effectapi$invokeGetResultLimit();
+    int effect_api$invokeGetResultLimit();
 }

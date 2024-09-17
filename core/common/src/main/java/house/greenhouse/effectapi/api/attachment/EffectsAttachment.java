@@ -12,12 +12,12 @@ public interface EffectsAttachment<T> {
     boolean isEmpty();
     <E extends EffectAPIEffect> E getEffect(EffectHolder<E> holder);
 
-    <E extends EffectAPIEffect> List<E> getEffects(DataComponentType<List<E>> type, boolean includeInactive);
+    <E extends EffectAPIEffect> List<E> getEffects(DataComponentType<E> type, boolean includeInactive);
 
-    default <E extends EffectAPIEffect> boolean hasEffectType(DataComponentType<List<E>> type) {
+    default <E extends EffectAPIEffect> boolean hasEffectType(DataComponentType<E> type) {
         return hasEffectType(type, false);
     }
-    <E extends EffectAPIEffect> boolean hasEffectType(DataComponentType<List<E>> type, boolean includeInactive);
+    <E extends EffectAPIEffect> boolean hasEffectType(DataComponentType<E> type, boolean includeInactive);
 
     default <E extends EffectAPIEffect> boolean hasEffect(EffectHolder<E> effect) {
         return hasEffect(effect, false);

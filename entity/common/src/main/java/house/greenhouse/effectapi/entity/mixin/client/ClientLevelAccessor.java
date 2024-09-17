@@ -9,5 +9,5 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(ClientLevel.class)
 public interface ClientLevelAccessor {
     @Invoker("getEntities")
-    LevelEntityGetter<Entity> effectapi$invokeGetEntities();
+    LevelEntityGetter<Entity> effect_api$invokeGetEntities();
 }

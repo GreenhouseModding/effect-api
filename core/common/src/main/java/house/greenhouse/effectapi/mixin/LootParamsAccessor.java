@@ -10,5 +10,5 @@ import java.util.Map;
 @Mixin(LootParams.class)
 public interface LootParamsAccessor {
     @Accessor("params")
-    Map<LootContextParam<?>, Object> effectapi$getParams();
+    Map<LootContextParam<?>, Object> effect_api$getParams();
 }

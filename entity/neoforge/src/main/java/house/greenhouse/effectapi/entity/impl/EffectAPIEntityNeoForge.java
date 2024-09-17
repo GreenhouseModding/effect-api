@@ -3,7 +3,6 @@ package house.greenhouse.effectapi.entity.impl;
 import house.greenhouse.effectapi.entity.api.EffectAPIEntityEffectTypes;
 import house.greenhouse.effectapi.entity.api.EffectAPIEntityActionTypes;
 import house.greenhouse.effectapi.entity.api.EffectAPIEntityRegistries;
-import house.greenhouse.effectapi.entity.api.EffectAPIEntityVariableTypes;
 import house.greenhouse.effectapi.impl.attachment.EffectsAttachmentImpl;
 import house.greenhouse.effectapi.entity.api.command.EntityResourceArgument;
 import house.greenhouse.effectapi.entity.api.command.EntityResourceValueArgument;
@@ -17,7 +16,6 @@ import house.greenhouse.effectapi.impl.EffectAPI;
 import house.greenhouse.effectapi.impl.registry.EffectAPIAttachments;
 import house.greenhouse.effectapi.impl.registry.internal.RegistrationCallback;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
-import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -51,7 +49,6 @@ public class EffectAPIEntityNeoForge {
             register(event, EffectAPIEntityEffectTypes::registerAll);
             register(event, EffectAPIEntityActionTypes::registerAll);
             register(event, EffectAPIEntityPredicates::registerAll);
-            register(event, EffectAPIEntityVariableTypes::registerAll);
             event.register(Registries.COMMAND_ARGUMENT_TYPE, EffectAPI.asResource("data_resource"), () -> ArgumentTypeInfos.registerByClass(EntityResourceArgument.class, new EntityResourceArgument.Info()));
             event.register(Registries.COMMAND_ARGUMENT_TYPE, EffectAPI.asResource("data_resource_type"), () -> ArgumentTypeInfos.registerByClass(EntityResourceValueArgument.class, new EntityResourceValueArgument.Info()));
         }
@@ -73,7 +70,6 @@ public class EffectAPIEntityNeoForge {
         public static void createNewRegistries(NewRegistryEvent event) {
             event.register(EffectAPIEntityRegistries.ACTION_TYPE);
             event.register(EffectAPIEntityRegistries.EFFECT_COMPONENT_TYPE);
-            event.register(EffectAPIEntityRegistries.VARIABLE_TYPE);
         }
     }
 

@@ -27,8 +27,8 @@ public class EffectAPIEffectTypes {
         return Codec.lazyInitialized(() -> Codec.dispatchedMap(typeRegistry.byNameCodec(), type -> type.codecOrThrow().listOf()).flatXmap(dataComponentMap -> encodeComponents(dataComponentMap), map -> (DataResult) decodeComponents(map)));
     }
 
-    public static Codec<DataComponentMap> variableAllowedCodec(Registry<DataComponentType<?>> typeRegistry, Registry<MapCodec<? extends Variable<?>>> variableRegistry, LootContextParamSet paramSet) {
-        return Codec.dispatchedMap(typeRegistry.byNameCodec(), type -> VariableHolder.wrapCodec(type.codecOrThrow(), EffectAPIVariableTypes.codec(variableRegistry, paramSet)).listOf()).flatXmap(dataComponentMap -> {
+    public static Codec<DataComponentMap> variableAllowedCodec(Registry<DataComponentType<?>> typeRegistry, LootContextParamSet paramSet) {
+        return Codec.dispatchedMap(typeRegistry.byNameCodec(), type -> VariableHolder.wrapCodec(type.codecOrThrow(), EffectAPIVariableTypes.validatedCodec(paramSet)).listOf()).flatXmap(dataComponentMap -> {
             var map = dataComponentMap.entrySet().stream().map(entry ->
                     Pair.of(entry.getKey(), entry.getValue().stream().map(variableHolder -> new EffectHolderImpl<>((DataComponentType<EffectAPIEffect>) entry.getKey(), (VariableHolder<EffectAPIEffect>) variableHolder)).toList())
             ).collect(Collectors.toMap(Pair::getFirst, Pair::getSecond));
@@ -36,15 +36,15 @@ public class EffectAPIEffectTypes {
         }, map -> (DataResult)decodeComponents(map));
     }
 
-    public static Codec<DataComponentMap> variableAllowedNetworkCodec(Registry<DataComponentType<?>> typeRegistry, Registry<MapCodec<? extends Variable<?>>> variableRegistry, LootContextParamSet paramSet) {
-        return Codec.dispatchedMap(typeRegistry.byNameCodec(), type -> VariableHolder.wrapCodecForNetwork(type.codecOrThrow(), EffectAPIVariableTypes.codec(variableRegistry, paramSet)).listOf()).flatXmap(dataComponentMap -> encodeComponents(dataComponentMap), map -> (DataResult)decodeComponents(map));
+    public static Codec<DataComponentMap> variableAllowedNetworkCodec(Registry<DataComponentType<?>> typeRegistry, LootContextParamSet paramSet) {
+        return Codec.dispatchedMap(typeRegistry.byNameCodec(), type -> VariableHolder.wrapCodecForNetwork(type.codecOrThrow(), EffectAPIVariableTypes.validatedCodec(paramSet)).listOf()).flatXmap(dataComponentMap -> encodeComponents(dataComponentMap), map -> (DataResult)decodeComponents(map));
     }
 
     @ApiStatus.Internal
     private static DataResult<DataComponentMap> encodeComponents(Map<DataComponentType<?>, ?> componentTypes) {
         if (componentTypes.isEmpty())
             return DataResult.success(DataComponentMap.EMPTY);
-        return DataResult.success(DataComponentMapBuilderAccessor.effectapi$invokeBuildFromMapTrusted((Map) componentTypes));
+        return DataResult.success(DataComponentMapBuilderAccessor.effect_api$invokeBuildFromMapTrusted((Map) componentTypes));
     }
 
     @ApiStatus.Internal

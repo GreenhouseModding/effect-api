@@ -28,8 +28,8 @@ import java.util.function.BiFunction;
 
 public class EffectAPIEntityEffectTypes {
     public static final Codec<DataComponentMap> CODEC = EffectAPIEffectTypes.codec(EffectAPIEntityRegistries.EFFECT_COMPONENT_TYPE);
-    public static final Codec<DataComponentMap> VARIABLE_ALLOWED_CODEC = EffectAPIEffectTypes.variableAllowedCodec(EffectAPIEntityRegistries.EFFECT_COMPONENT_TYPE, EffectAPIEntityRegistries.VARIABLE_TYPE, EffectAPIEntityLootContextParamSets.ENTITY);
-    public static final Codec<DataComponentMap> VARIABLE_ALLOWED_NETWORK_CODEC = EffectAPIEffectTypes.variableAllowedNetworkCodec(EffectAPIEntityRegistries.EFFECT_COMPONENT_TYPE, EffectAPIEntityRegistries.VARIABLE_TYPE, EffectAPIEntityLootContextParamSets.ENTITY);
+    public static final Codec<DataComponentMap> VARIABLE_ALLOWED_CODEC = EffectAPIEffectTypes.variableAllowedCodec(EffectAPIEntityRegistries.EFFECT_COMPONENT_TYPE, EffectAPIEntityLootContextParamSets.ENTITY);
+    public static final Codec<DataComponentMap> VARIABLE_ALLOWED_NETWORK_CODEC = EffectAPIEffectTypes.variableAllowedNetworkCodec(EffectAPIEntityRegistries.EFFECT_COMPONENT_TYPE, EffectAPIEntityLootContextParamSets.ENTITY);
 
     public static final DataComponentType<EffectAPIConditionalEffect<EntityAttributeEffect>> ENTITY_ATTRIBUTE = DataComponentType.<EffectAPIConditionalEffect<EntityAttributeEffect>>builder()
             .persistent(EffectAPIConditionalEffect.codec(EntityAttributeEffect.CODEC, EffectAPIEntityLootContextParamSets.ENTITY))

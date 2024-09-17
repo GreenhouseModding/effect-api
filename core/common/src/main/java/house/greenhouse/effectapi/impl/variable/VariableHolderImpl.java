@@ -72,17 +72,23 @@ public class VariableHolderImpl<T> implements VariableHolder<T> {
 
     private void encodeVariable(JsonElement original, String key, Variable<?> variable, Object value) {
         JsonElement currentElement = original;
-        String[] str = key.split("\\.");
-        for (int i = 0; i < str.length; ++i) {
-            if (i == str.length - 1) {
-                currentElement.getAsJsonObject().add(str[i], ((Codec<Object>)variable.dataType().codec()).encodeStart(JsonOps.INSTANCE, value).getOrThrow());
+        String[] split = key.split("\\.");
+        for (int i = 0; i < split.length; ++i) {
+            String string = split[i];
+            if (i == split.length - 1) {
+                JsonElement newElement = ((Codec<Object>)variable.dataType().codec()).encodeStart(JsonOps.INSTANCE, value).getOrThrow();
+                if (string.matches("\\[([0-9]+)]")) {
+                    int listIndex = Integer.parseInt(string.substring(1).substring(0, string.length() - 2));
+                    currentElement.getAsJsonArray().set(listIndex, newElement);
+                } else
+                    currentElement.getAsJsonObject().add(string, newElement);
                 break;
             }
-            if (str[i].matches("\\[([0-9]+)]")) {
-                int listIndex = Integer.parseInt(str[i].split("\\[")[0].split("]")[0]);
+            if (string.matches("\\[([0-9]+)]")) {
+                int listIndex = Integer.parseInt(string.substring(1).substring(0, string.length() - 2));
                 currentElement = currentElement.getAsJsonArray().get(listIndex);
             } else
-                currentElement = currentElement.getAsJsonObject().get(str[i]);
+                currentElement = currentElement.getAsJsonObject().get(string);
         }
     }
 }

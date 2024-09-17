@@ -83,7 +83,7 @@ public class EntityResourceArgument implements ArgumentType<Holder<Resource<?>>>
 
         StringReader entitiesReader = new StringReader(entitiesString);
         EntitySelector selector = EntityArgument.entities().parse(entitiesReader);
-        List<? extends Entity> entities = EntitySelectorUtil.findEntitiesServer(selector, ((EntitySelectorAccessor)selector).effectapi$getPlayerName(), ((EntitySelectorAccessor)selector).effectapi$getEntityUUID());
+        List<? extends Entity> entities = EntitySelectorUtil.findEntitiesServer(selector, ((EntitySelectorAccessor)selector).effect_api$getPlayerName(), ((EntitySelectorAccessor)selector).effect_api$getEntityUUID());
 
         List<Holder.Reference<Resource<?>>> resources = getResourcesFromSource(entities);
         if (resources.stream().noneMatch(reference -> reference.is(resource.get())))
@@ -96,7 +96,7 @@ public class EntityResourceArgument implements ArgumentType<Holder<Resource<?>>>
     public <S> CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {
         EntitySelector selector = context.getArgument(entitiesParam, EntitySelector.class);
 
-        List<? extends Entity> entities = ClientEntitySelectorUtil.findEntitiesClient(selector, ((EntitySelectorAccessor)selector).effectapi$getPlayerName(), ((EntitySelectorAccessor)selector).effectapi$getEntityUUID());
+        List<? extends Entity> entities = ClientEntitySelectorUtil.findEntitiesClient(selector, ((EntitySelectorAccessor)selector).effect_api$getPlayerName(), ((EntitySelectorAccessor)selector).effect_api$getEntityUUID());
 
         for (Holder<Resource<?>> val : getResourcesFromSource(entities))
             builder.suggest(val.unwrapKey().get().location().toString());

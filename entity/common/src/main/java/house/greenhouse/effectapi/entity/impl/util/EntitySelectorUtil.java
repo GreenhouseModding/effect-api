@@ -18,19 +18,19 @@ public class EntitySelectorUtil {
             return List.of(EffectAPI.getHelper().getServer().getPlayerList().getPlayerByName(playerName));
         if (uuid != null)
             return List.of(EffectAPI.getHelper().getServer().getPlayerList().getPlayer(uuid));
-        if (((EntitySelectorAccessor)selector).effectapi$getCurrentEntity())
+        if (((EntitySelectorAccessor)selector).effect_api$getCurrentEntity())
             return List.of(Minecraft.getInstance().player);
 
         List<Entity> entities = new ArrayList<>();
-        int resultLimit = ((EntitySelectorAccessor) selector).effectapi$invokeGetResultLimit();
-        if (((EntitySelectorAccessor)selector).effectapi$getAABB() != null) {
+        int resultLimit = ((EntitySelectorAccessor) selector).effect_api$invokeGetResultLimit();
+        if (((EntitySelectorAccessor)selector).effect_api$getAABB() != null) {
             for (ServerLevel level : EffectAPI.getHelper().getServer().getAllLevels()) {
-                level.getEntities(((EntitySelectorAccessor) selector).effectapi$getType(), ((EntitySelectorAccessor) selector).effectapi$getAABB().move(Minecraft.getInstance().cameraEntity.position()), entity -> entity.getType().isEnabled(Minecraft.getInstance().level.enabledFeatures()), entities, resultLimit);
+                level.getEntities(((EntitySelectorAccessor) selector).effect_api$getType(), ((EntitySelectorAccessor) selector).effect_api$getAABB().move(Minecraft.getInstance().cameraEntity.position()), entity -> entity.getType().isEnabled(Minecraft.getInstance().level.enabledFeatures()), entities, resultLimit);
             }
         }
         else
             for (ServerLevel level : EffectAPI.getHelper().getServer().getAllLevels()) {
-                level.getEntities(((EntitySelectorAccessor) selector).effectapi$getType(), entity -> entity.getType().isEnabled(Minecraft.getInstance().level.enabledFeatures()), entities, resultLimit);
+                level.getEntities(((EntitySelectorAccessor) selector).effect_api$getType(), entity -> entity.getType().isEnabled(Minecraft.getInstance().level.enabledFeatures()), entities, resultLimit);
             }
         return entities;
     }

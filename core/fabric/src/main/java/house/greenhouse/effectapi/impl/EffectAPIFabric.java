@@ -2,6 +2,7 @@ package house.greenhouse.effectapi.impl;
 
 import house.greenhouse.effectapi.api.EffectAPIDataTypes;
 import house.greenhouse.effectapi.api.EffectAPIModifierTypes;
+import house.greenhouse.effectapi.api.EffectAPIVariableTypes;
 import house.greenhouse.effectapi.api.registry.EffectAPIRegistryKeys;
 import house.greenhouse.effectapi.api.resource.Resource;
 import house.greenhouse.effectapi.impl.registry.EffectAPIAttachments;
@@ -19,6 +20,7 @@ public class EffectAPIFabric implements ModInitializer {
         DynamicRegistries.registerSynced(EffectAPIRegistryKeys.RESOURCE, Resource.DIRECT_CODEC);
         EffectAPIDataTypes.registerAll(Registry::register);
         EffectAPIModifierTypes.registerAll(Registry::register);
+        EffectAPIVariableTypes.registerAll(Registry::register);
         EffectAPIAttachments.init();
 
         ServerLifecycleEvents.SERVER_STARTED.register(EffectAPIFabric::setServer);

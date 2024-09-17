@@ -1,9 +1,10 @@
 package house.greenhouse.test;
 
-import house.greenhouse.effectapi.entity.api.EffectAPIEntityRegistries;
+import house.greenhouse.effectapi.api.registry.EffectAPIRegistryKeys;
 import house.greenhouse.effectapi.entity.api.EffectAPIEntityRegistryKeys;
 import house.greenhouse.test.attachment.PowersAttachment;
 import house.greenhouse.test.command.TestCommand;
+import house.greenhouse.test.effect.ParticleEffect;
 import house.greenhouse.test.network.clientbound.SyncPowerAttachmentClientboundPacket;
 import house.greenhouse.test.platform.EffectAPITestHelperNeoForge;
 import house.greenhouse.test.variable.HealthVariable;
@@ -15,6 +16,7 @@ import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -37,7 +39,8 @@ public class EffectAPITestNeoForge {
         @SubscribeEvent
         public static void registerContent(RegisterEvent event) {
             event.register(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, EffectAPIEntityTest.POWERS_ATTACHMENT_KEY, () -> POWERS);
-            event.register(EffectAPIEntityRegistryKeys.VARIABLE_TYPE, EffectAPIEntityTest.asResource("health"), () -> HealthVariable.CODEC);
+            event.register(EffectAPIEntityRegistryKeys.EFFECT_COMPONENT_TYPE, EffectAPIEntityTest.asResource("particle"), () -> ParticleEffect.TYPE);
+            event.register(EffectAPIRegistryKeys.VARIABLE_TYPE, EffectAPIEntityTest.asResource("health"), () -> HealthVariable.CODEC);
         }
 
         @SubscribeEvent
@@ -54,6 +57,11 @@ public class EffectAPITestNeoForge {
 
     @EventBusSubscriber(modid = EffectAPIEntityTest.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
     public static class GameEvents {
+        @SubscribeEvent
+        public static void onEntityTick(EntityTickEvent.Post event) {
+            ParticleEffect.tickParticles(event.getEntity());
+        }
+
         @SubscribeEvent
         public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
             if (event.getEntity().hasData(POWERS)) {

@@ -13,7 +13,7 @@ import java.util.Map;
 public class LootContextUtil {
     public static LootParams.Builder copyIntoParamBuilder(LootContext context) {
         LootParams.Builder params = new LootParams.Builder(EffectAPI.getHelper().getServer().getLevel(Level.OVERWORLD));
-        for (Map.Entry<LootContextParam<?>, Object> entry : ((LootParamsAccessor)((LootContextAccessor)context).effectapi$getParams()).effectapi$getParams().entrySet()) {
+        for (Map.Entry<LootContextParam<?>, Object> entry : ((LootParamsAccessor)((LootContextAccessor)context).effect_api$getParams()).effect_api$getParams().entrySet()) {
             params.withParameter((LootContextParam<Object>)entry.getKey(), entry.getValue());
         }
         return params;
