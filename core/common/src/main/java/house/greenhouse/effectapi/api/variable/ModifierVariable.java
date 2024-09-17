@@ -29,8 +29,8 @@ public class ModifierVariable implements Variable<Double> {
             EffectAPIModifierTypes.CODEC.listOf().fieldOf("modifiers").forGetter(ModifierVariable::modifiers)
     ).apply(inst, ModifierVariable::new));
 
-    private Either<Double, Variable<Number>> base;
-    private List<Modifier> modifiers;
+    private final Either<Double, Variable<Number>> base;
+    private final List<Modifier> modifiers;
     private Optional<Boolean> hasChecked = Optional.empty();
 
     public ModifierVariable(Either<Double, Variable<Number>> base, List<Modifier> modifiers) {
@@ -45,11 +45,9 @@ public class ModifierVariable implements Variable<Double> {
                 return 0.0;
 
             if (hasChecked.isEmpty()) {
-                var missing = ((LootParamsAccessor)((LootContextAccessor)context).effect_api$getParams())
-                        .effect_api$getParams()
-                        .keySet()
+                var missing = variable.requiredParams()
                         .stream()
-                        .filter(param -> variable.requiredParams().contains(param))
+                        .filter(param -> !((LootParamsAccessor)((LootContextAccessor)context).effect_api$getParams()).effect_api$getParams().containsKey(param))
                         .map(param -> param.getName().toString())
                         .toList();
                 if (!missing.isEmpty()) {
