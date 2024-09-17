@@ -27,11 +27,10 @@ import java.util.function.Predicate;
 public abstract class EffectsAttachmentImpl<T> implements EffectsAttachment<T> {
     private final Map<EffectHolder<EffectAPIEffect>, EffectAPIEffect> effectLookup = new HashMap<>();
     private final Map<EffectAPIEffect, EffectHolder<EffectAPIEffect>> reverseEffectLookup = new HashMap<>();
-    private final Map<EffectHolder<EffectAPIEffect>, LootContext> contexts = new HashMap<>();
     private final Map<EffectHolder<EffectAPIEffect>, Map<String, Object>> variableValues = new HashMap<>();
     private final Map<EffectHolder<EffectAPIEffect>, Boolean> activeValues = new HashMap<>();
 
-    protected Object2ObjectArrayMap<ResourceLocation, List<EffectHolder<EffectAPIEffect>>> variableHolderComponents = new Object2ObjectArrayMap<>();
+    protected Object2ObjectArrayMap<EffectHolder<EffectAPIEffect>, List<ResourceLocation>> sources = new Object2ObjectArrayMap<>();
     protected DataComponentMap combinedComponents = DataComponentMap.EMPTY;
     protected DataComponentMap activeComponents = DataComponentMap.EMPTY;
 
@@ -40,7 +39,6 @@ public abstract class EffectsAttachmentImpl<T> implements EffectsAttachment<T> {
 
     public void init(T provider) {
         this.provider = provider;
-        contexts.clear();
         variableValues.clear();
         combinedComponents = DataComponentMap.EMPTY;
         activeComponents = DataComponentMap.EMPTY;
@@ -66,7 +64,7 @@ public abstract class EffectsAttachmentImpl<T> implements EffectsAttachment<T> {
     public abstract LootContextParamSet paramSet();
 
     public boolean isEmpty() {
-        return variableHolderComponents.isEmpty();
+        return sources.isEmpty();
     }
 
     @Override
@@ -103,7 +101,7 @@ public abstract class EffectsAttachmentImpl<T> implements EffectsAttachment<T> {
         Map<EffectHolder<EffectAPIEffect>, EffectAPIEffect> changedEffects = new HashMap<>();
         InternalEffectUtil.executeOnAllEffects(combinedComponents, effect -> {
             EffectHolder<EffectAPIEffect> holder = reverseEffectLookup.get(effect);
-            LootContext context = contexts.get(holder);
+            LootContext context = createLootContext(holder, sources.get(holder).getFirst());
             boolean isActive = effect.isActive(context, getTickCount());
             if (effect.shouldTick(context, isActive, getTickCount())) {
                 if (!variableValues.containsKey(holder) || !holder.getPreviousValues(context).equals(variableValues.get(holder)))
@@ -124,7 +122,7 @@ public abstract class EffectsAttachmentImpl<T> implements EffectsAttachment<T> {
 
         InternalEffectUtil.executeOnAllEffects(combinedComponents, effect -> {
             EffectHolder<EffectAPIEffect> holder = reverseEffectLookup.get(effect);
-            LootContext context = contexts.get(holder);
+            LootContext context = createLootContext(holder, sources.get(holder).getFirst());
             if (passedEffects.contains(effect) || effect.shouldTick(context, activeComponents.stream().anyMatch(typedDataComponent -> typedDataComponent.value() instanceof List<?> list && list.stream().anyMatch(o -> o == effect)), getTickCount()))
                 effect.tick(context, getTickCount());
         });
@@ -136,41 +134,42 @@ public abstract class EffectsAttachmentImpl<T> implements EffectsAttachment<T> {
     }
 
     public void refresh() {
-        InternalEffectUtil.executeOnAllEffects(activeComponents, effect ->
-                effect.onRefreshed(contexts.get(reverseEffectLookup.get(effect))));
+        InternalEffectUtil.executeOnAllEffects(activeComponents, effect -> {
+            EffectHolder<EffectAPIEffect> holder = reverseEffectLookup.get(effect);
+            effect.onRefreshed(createLootContext(holder, sources.get(holder).getFirst()));
+        });
     }
 
     public void addEffect(EffectHolder<EffectAPIEffect> effect, ResourceLocation source) {
-        variableHolderComponents.computeIfAbsent(source, s -> new ObjectArrayList<>()).add(effect);
+        sources.computeIfAbsent(effect, s -> new ObjectArrayList<>()).add(source);
         combineComponents();
         updateActiveComponents();
-        effectLookup.get(effect).onAdded(contexts.get(effect));
+        effectLookup.get(effect).onAdded(createLootContext(effect, source));
         sync();
     }
 
     public void removeEffect(EffectHolder<EffectAPIEffect> effect, ResourceLocation source) {
-        if (variableHolderComponents.isEmpty())
+        if (sources.isEmpty())
             return;
-        removeEffectInternal(effect, source);
+        removeEffectInternal(effect, Set.of(source));
         combineComponents();
         updateActiveComponents();
-        if (variableHolderComponents.isEmpty())
+        if (sources.isEmpty())
             syncInternal();
         else
             sync();
     }
 
-    private void removeEffectInternal(EffectHolder<EffectAPIEffect> effect, ResourceLocation source) {
+    private void removeEffectInternal(EffectHolder<EffectAPIEffect> effect, Set<ResourceLocation> removals) {
         if (effectLookup.containsKey(effect)) {
             EffectAPIEffect inner = effectLookup.get(effect);
-            inner.onRemoved(contexts.get(effect));
+            inner.onRemoved(createLootContext(effect, sources.get(effect).getFirst()));
             reverseEffectLookup.remove(inner);
         }
-        contexts.remove(effect);
         effectLookup.remove(effect);
-        variableHolderComponents.get(source).remove(effect);
-        if (variableHolderComponents.get(source).isEmpty())
-            variableHolderComponents.remove(source);
+        sources.get(effect).removeIf(removals::contains);
+        if (sources.get(effect).isEmpty())
+            sources.remove(effect);
     }
 
     private void updateActiveComponents() {
@@ -179,21 +178,22 @@ public abstract class EffectsAttachmentImpl<T> implements EffectsAttachment<T> {
 
     private <E extends EffectAPIEffect> void updateActiveComponents(@Nullable Map<EffectHolder<E>, E> previousHolders) {
         DataComponentMap previous = activeComponents;
-        var newComponents = InternalEffectUtil.generateActiveEffectsIfNecessary(contexts, previousHolders, reverseEffectLookup, combinedComponents, previous, getTickCount());
+        var newComponents = InternalEffectUtil.generateActiveEffectsIfNecessary(holder -> createLootContext(holder, sources.get(holder).getFirst()), previousHolders, reverseEffectLookup, combinedComponents, previous, getTickCount());
         if (newComponents.isEmpty())
             return;
         activeComponents = newComponents.get();
     }
 
     private <E extends EffectAPIEffect> void refreshEffect(EffectHolder<E> holder) {
-        if (!contexts.containsKey(holder))
+        if (!sources.containsKey(holder))
             return;
-        if ((!variableValues.containsKey(holder) || !holder.getPreviousValues(contexts.get(holder)).equals(variableValues.get(holder)))) {
+        LootContext context = createLootContext(holder, sources.get(holder).getFirst());
+        if ((!variableValues.containsKey(holder) || !holder.getPreviousValues(context).equals(variableValues.get(holder)))) {
             combineComponents(Set.of((EffectHolder<EffectAPIEffect>) holder));
             updateActiveComponents(Map.of(holder, (E)effectLookup.get(holder)));
             sync();
         } else {
-            boolean isActive = effectLookup.get(holder).isActive(contexts.get(holder), getTickCount());
+            boolean isActive = effectLookup.get(holder).isActive(context, getTickCount());
             if (activeValues.get(holder) != isActive) {
                 activeValues.put((EffectHolder<EffectAPIEffect>) holder, isActive);
                 combineComponents();
@@ -210,7 +210,7 @@ public abstract class EffectsAttachmentImpl<T> implements EffectsAttachment<T> {
             if (!reverseEffectLookup.containsKey(effect))
                 return;
             EffectHolder<EffectAPIEffect> holder = reverseEffectLookup.get(effect);
-            LootContext context = contexts.get(holder);
+            LootContext context = createLootContext(holder, sources.get(holder).getFirst());
             if (effectPredicate.test(effect)) {
                 if (!variableValues.containsKey(holder) || !holder.getPreviousValues(context).equals(variableValues.get(holder)))
                     changedEffects.put(holder, effect);
@@ -236,23 +236,20 @@ public abstract class EffectsAttachmentImpl<T> implements EffectsAttachment<T> {
 
     private void combineComponents(Set<EffectHolder<EffectAPIEffect>> variableChangedEffects) {
         Map<DataComponentType<?>, Set<EffectAPIEffect>> map = new HashMap<>();
-        for (Map.Entry<ResourceLocation, List<EffectHolder<EffectAPIEffect>>> componentMap : variableHolderComponents.entrySet()) {
-            for (var value : componentMap.getValue()) {
-                if (!contexts.containsKey(value) || variableChangedEffects.contains(value)) {
-                    if (!contexts.containsKey(value))
-                        contexts.put(value, createLootContext(value, componentMap.getKey()));
-                    variableValues.put(value, value.getPreviousValues(contexts.get(value)));
-                    EffectAPIEffect effect = value.construct(contexts.get(value), variableValues.get(value));
-                    if (effect == null) {
-                        removeEffectInternal(value, componentMap.getKey());
-                        return;
-                    }
-                    contexts.put(value, contexts.get(value));
-                    effectLookup.put(value, effect);
-                    reverseEffectLookup.put(effect, value);
-                }
-                map.computeIfAbsent(value.effectType(), t -> new HashSet<>()).add(effectLookup.get(value));
+        for (Map.Entry<EffectHolder<EffectAPIEffect>, List<ResourceLocation>> componentMap : sources.entrySet()) {
+            EffectHolder<EffectAPIEffect> holder = componentMap.getKey();
+            if (!effectLookup.containsKey(holder) || variableChangedEffects.contains(componentMap.getKey())) {
+                LootContext context = createLootContext(holder, sources.get(holder).getFirst());
+                variableValues.put(holder, holder.getPreviousValues(context));
+                EffectAPIEffect effect = holder.construct(context, variableValues.get(holder));
+                if (effect == null) {
+                    removeEffectInternal(holder, new HashSet<>(componentMap.getValue()));
+                    return;
+                };
+                effectLookup.put(holder, effect);
+                reverseEffectLookup.put(effect, holder);
             }
+            map.computeIfAbsent(holder.effectType(), t -> new HashSet<>()).add(effectLookup.get(holder));
         }
         effectLookup.entrySet().removeIf(entry -> !map.containsKey(entry.getKey().effectType()) || !map.get(entry.getKey().effectType()).contains(entry.getValue()));
         reverseEffectLookup.values().removeIf(effect -> !effectLookup.containsKey(effect));

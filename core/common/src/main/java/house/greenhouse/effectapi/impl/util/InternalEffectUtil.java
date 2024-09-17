@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class InternalEffectUtil {
@@ -31,11 +32,12 @@ public class InternalEffectUtil {
                 });
     }
 
-    public static <E extends EffectAPIEffect> Optional<DataComponentMap> generateActiveEffectsIfNecessary(Map<EffectHolder<EffectAPIEffect>, LootContext> contexts,
-                                                                              @Nullable Map<EffectHolder<E>, E> previousHolders,
-                                                                              Map<EffectAPIEffect, EffectHolder<EffectAPIEffect>> reverseLookup,
-                                                                              DataComponentMap combined, DataComponentMap previousMap,
-                                                                              int tickCount) {
+    public static <E extends EffectAPIEffect> Optional<DataComponentMap> generateActiveEffectsIfNecessary(
+            Function<EffectHolder<EffectAPIEffect>, LootContext> contextCreator,
+            @Nullable Map<EffectHolder<E>, E> previousHolders,
+            Map<EffectAPIEffect, EffectHolder<EffectAPIEffect>> reverseLookup,
+            DataComponentMap combined, DataComponentMap previousMap,
+            int tickCount) {
         Map<DataComponentType<?>, List<EffectAPIEffect>> newMap = new Reference2ObjectArrayMap<>();
         boolean createNewMap = previousMap.stream().anyMatch(typedDataComponent -> ((List<?>) typedDataComponent.value()).stream().noneMatch(o -> ((List<?>) combined.getOrDefault(typedDataComponent.type(), List.of())).contains(o)));
 
@@ -43,7 +45,7 @@ public class InternalEffectUtil {
             if (component.value() instanceof List<?> list && list.getFirst() instanceof EffectAPIEffect)
                 for (EffectAPIEffect effect : ((List<EffectAPIEffect>) list)) {
                     EffectHolder<EffectAPIEffect> holder = reverseLookup.get(effect);
-                    LootContext context = contexts.get(holder);
+                    LootContext context = contextCreator.apply(holder);
                     if (previousHolders != null && previousHolders.containsKey(holder)) {
                         boolean active = effect.isActive(context, tickCount);
                         effect.onChanged(context, previousHolders.get(holder), active);
