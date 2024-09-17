@@ -10,6 +10,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.phys.Vec3;
 
@@ -30,6 +31,11 @@ public record ParticleEffect(ParticleOptions particle, Vec3 speed, int tickRate)
             if (entity.tickCount % effect.tickRate == 0)
                 entity.level().addParticle(effect.particle, entity.getX(), entity.getY(0.5), entity.getZ(), effect.speed.x, effect.speed.y, effect.speed.z);
         });
+    }
+
+    @Override
+    public boolean shouldTick(LootContext context, boolean isActive, int tickCount) {
+        return isActive && tickCount % tickRate == 0;
     }
 
     @Override

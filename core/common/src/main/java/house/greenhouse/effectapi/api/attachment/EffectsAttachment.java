@@ -22,7 +22,7 @@ public interface EffectsAttachment<T> {
     default <E extends EffectAPIEffect> boolean hasEffect(EffectHolder<E> effect) {
         return hasEffect(effect, false);
     }
-    <E extends EffectAPIEffect> boolean hasEffect(EffectHolder<E> effect, boolean includeInactive);
+    <E extends EffectAPIEffect> boolean hasEffect(EffectHolder<E> holder, boolean includeInactive);
 
     default <E extends EffectAPIEffect> boolean hasEffect(E effect) {
         return hasEffect(effect, false);

@@ -32,6 +32,8 @@ public record SyncPowerAttachmentClientboundPacket(int entityId, List<Holder<Pow
     public void handle() {
         Minecraft.getInstance().execute(() -> {
             Entity entity = Minecraft.getInstance().level.getEntity(entityId);
+            if (entity == null)
+                return;
             PowersAttachment attachment = EffectAPIEntityTest.getHelper().getPowers(entity);
             attachment.setFromNetwork(allPowers);
             if (allPowers.isEmpty())

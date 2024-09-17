@@ -32,12 +32,12 @@ public class EntityEffectsAttachment extends EffectsAttachmentImpl<Entity> {
     }
 
     @Override
-    public void sync(ServerPlayer player) {
+    protected void syncInternal(ServerPlayer player) {
         EffectAPI.getHelper().sendClientbound(new SyncEntityEffectsAttachmentClientboundPacket(provider.getId(), combinedComponents, activeComponents), player);
     }
 
     @Override
-    public void sync() {
+    protected void syncInternal() {
         EffectAPI.getHelper().sendClientboundTracking(new SyncEntityEffectsAttachmentClientboundPacket(provider.getId(), combinedComponents, activeComponents), provider);
     }
 
