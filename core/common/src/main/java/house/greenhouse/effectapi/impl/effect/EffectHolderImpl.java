@@ -5,10 +5,9 @@ import house.greenhouse.effectapi.api.effect.EffectHolder;
 import house.greenhouse.effectapi.api.effect.EffectType;
 import house.greenhouse.effectapi.api.variable.VariableHolder;
 import house.greenhouse.effectapi.impl.variable.VariableHolderImpl;
-import net.minecraft.world.entity.Entity;
 
 public class EffectHolderImpl<E extends EffectAPIEffect, T> extends VariableHolderImpl<E> implements EffectHolder<E, T> {
-    private EffectType<E, T> effectType;
+    private final EffectType<E, T> effectType;
 
     public EffectHolderImpl(EffectType<E, T> type, VariableHolder<E> holder) {
         super(((VariableHolderImpl<E>)holder).getInnerCodec(), holder.getVariables(), holder.getRawJson());
