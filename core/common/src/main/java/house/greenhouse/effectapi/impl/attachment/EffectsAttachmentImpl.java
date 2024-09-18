@@ -86,6 +86,7 @@ public abstract class EffectsAttachmentImpl<T> implements EffectsAttachment<T> {
 
     @Override
     public <E extends EffectAPIEffect> boolean hasEffect(EffectHolder<E, T> holder, boolean includeInactive) {
+        refreshEffect(holder);
         return hasEffect(effectLookup.get(holder), includeInactive);
     }
 
