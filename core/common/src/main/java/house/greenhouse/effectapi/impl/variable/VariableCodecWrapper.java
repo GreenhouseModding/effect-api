@@ -7,11 +7,14 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
+import house.greenhouse.effectapi.api.variable.JsonReference;
 import house.greenhouse.effectapi.api.variable.Variable;
 import house.greenhouse.effectapi.api.variable.VariableHolder;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class VariableCodecWrapper<T> implements Codec<VariableHolder<T>> {
@@ -27,35 +30,33 @@ public class VariableCodecWrapper<T> implements Codec<VariableHolder<T>> {
 
     @Override
     public <TOps> DataResult<Pair<VariableHolder<T>, TOps>> decode(DynamicOps<TOps> ops, TOps input) {
-        Map<String, Variable<?>> variableMap = new HashMap<>();
+        Map<List<JsonReference>, Variable<?>> variableMap = new HashMap<>();
         JsonElement rawJson = ops.convertTo(JsonOps.INSTANCE, input);
-        addToMap(variableMap, rawJson, "");
+        addToMap(variableMap, rawJson, new ArrayList<>());
         VariableHolder<T> holder = constructor.construct(codec, variableMap, rawJson);
         return holder.validate(ops).map(h -> Pair.of(h, input));
     }
 
-    private void addToMap(Map<String, Variable<?>> variableMap,
-                          JsonElement input, String key) {
+    private void addToMap(Map<List<JsonReference>, Variable<?>> variableMap,
+                          JsonElement input, List<JsonReference> keys) {
         Variable<?> variable = createPotentialVariable(input);
         if (variable != null) {
-            variableMap.put(key, variable);
+            variableMap.put(keys, variable);
             return;
         }
 
         if (input.isJsonObject()) {
             for (Map.Entry<String, JsonElement> entries : input.getAsJsonObject().asMap().entrySet()) {
-                String newKey = entries.getKey();
-                if (!key.isEmpty())
-                    newKey = key + "." + newKey;
-                addToMap(variableMap, entries.getValue(), newKey);
+                List<JsonReference> newKeys = new ArrayList<>(keys);
+                newKeys.add(JsonReference.createObject(entries.getKey()));
+                addToMap(variableMap, entries.getValue(), newKeys);
             }
         } else if (input.isJsonArray()) {
             JsonArray array = input.getAsJsonArray();
             for (int i = 0; i < array.size(); ++i) {
-                String newKey = "[" + i + "]";
-                if (!key.isEmpty())
-                    newKey = key + "." + newKey;
-                addToMap(variableMap, array.get(i), newKey);
+                List<JsonReference> newKeys = new ArrayList<>(keys);
+                newKeys.add(JsonReference.createArrayValue(i));
+                addToMap(variableMap, array.get(i), newKeys);
             }
         }
     }
@@ -76,6 +77,6 @@ public class VariableCodecWrapper<T> implements Codec<VariableHolder<T>> {
 
     @FunctionalInterface
     public interface Constructor<T> {
-        VariableHolder<T> construct(Codec<T> codec, Map<String, Variable<?>> variableMap, JsonElement rawJson);
+        VariableHolder<T> construct(Codec<T> codec, Map<List<JsonReference>, Variable<?>> variableMap, JsonElement rawJson);
     }
 }

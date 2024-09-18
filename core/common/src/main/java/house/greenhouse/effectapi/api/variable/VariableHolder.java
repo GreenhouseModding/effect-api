@@ -9,6 +9,7 @@ import house.greenhouse.effectapi.impl.variable.VariableCodecWrapper;
 import house.greenhouse.effectapi.impl.variable.VariableHolderImpl;
 import net.minecraft.world.level.storage.loot.LootContext;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -46,7 +47,7 @@ public interface VariableHolder<T> {
         return new VariableCodecWrapper<>(codec, variableCodec, VariableHolderImplClient::new);
     }
 
-    Map<String, Object> getPreviousValues(LootContext context);
+    Map<List<JsonReference>, Object> getPreviousValues(LootContext context);
 
     /**
      * Computes the variable, creating a new object.
@@ -55,7 +56,7 @@ public interface VariableHolder<T> {
      * @param context           The loot context for this variable.
      * @return                  Either a computed value or the fallback value if they would be the exact same.
      */
-    T construct(LootContext context, Map<String, Object> variableValues);
+    T construct(LootContext context, Map<List<JsonReference>, Object> variableValues);
 
 
     <TOps> DataResult<VariableHolder<T>> validate(DynamicOps<TOps> ops);
@@ -64,7 +65,7 @@ public interface VariableHolder<T> {
      * Every variable for the constructor's reference.
      * The key is an array of strings, with each value after the first index signifying an inner object.
      */
-    Map<String, Variable<?>> getVariables();
+    Map<List<JsonReference>, Variable<?>> getVariables();
 
     /**
      * The raw json of this VariableHolder, including both variable fields and non*variable fields.

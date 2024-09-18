@@ -5,6 +5,7 @@ import house.greenhouse.effectapi.api.attachment.EffectsAttachment;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
 import house.greenhouse.effectapi.api.effect.EffectHolder;
 import house.greenhouse.effectapi.api.effect.EffectType;
+import house.greenhouse.effectapi.api.variable.JsonReference;
 import house.greenhouse.effectapi.impl.util.InternalEffectUtil;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -28,7 +29,7 @@ import java.util.function.Predicate;
 public abstract class EffectsAttachmentImpl<T> implements EffectsAttachment<T> {
     private final Map<EffectHolder<EffectAPIEffect, T>, EffectAPIEffect> effectLookup = new HashMap<>();
     private final Map<EffectAPIEffect, EffectHolder<EffectAPIEffect, T>> reverseEffectLookup = new HashMap<>();
-    private final Map<EffectHolder<EffectAPIEffect, T>, Map<String, Object>> variableValues = new HashMap<>();
+    private final Map<EffectHolder<EffectAPIEffect, T>, Map<List<JsonReference>, Object>> variableValues = new HashMap<>();
     private final Map<EffectHolder<EffectAPIEffect, T>, Boolean> activeValues = new HashMap<>();
 
     protected Object2ObjectArrayMap<EffectHolder<EffectAPIEffect, T>, List<ResourceLocation>> sources = new Object2ObjectArrayMap<>();
