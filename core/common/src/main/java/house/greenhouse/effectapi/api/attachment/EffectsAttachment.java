@@ -3,7 +3,6 @@ package house.greenhouse.effectapi.api.attachment;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
 import house.greenhouse.effectapi.api.effect.EffectHolder;
 import house.greenhouse.effectapi.api.effect.EffectType;
-import net.minecraft.core.component.DataComponentType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
