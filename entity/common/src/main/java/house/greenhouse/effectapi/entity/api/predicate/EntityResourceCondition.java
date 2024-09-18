@@ -36,7 +36,7 @@ public record EntityResourceCondition(Holder<Resource<Object>> resource, Object 
 
     @Override
     public LootItemConditionType getType() {
-        return EffectAPIEntityPredicates.ENTITY_RESOURCCE;
+        return EffectAPIEntityPredicates.ENTITY_RESOURCE;
     }
 
     public static class EntityResourceConditionCodec extends MapCodec<EntityResourceCondition> {
