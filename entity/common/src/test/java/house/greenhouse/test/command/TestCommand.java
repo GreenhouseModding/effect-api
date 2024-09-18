@@ -9,10 +9,9 @@ import house.greenhouse.effectapi.entity.api.EntityResourceAPI;
 import house.greenhouse.effectapi.entity.api.command.EntityResourceArgument;
 import house.greenhouse.effectapi.entity.api.command.EntityResourceValueArgument;
 import house.greenhouse.effectapi.entity.impl.EffectAPIEntity;
+import house.greenhouse.test.DataEffect;
 import house.greenhouse.test.EffectAPIEntityTest;
-import house.greenhouse.test.Power;
-import house.greenhouse.test.attachment.PowersAttachment;
-import io.netty.util.internal.ResourcesUtil;
+import house.greenhouse.test.attachment.DataEffectsAttachment;
 import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -33,7 +32,7 @@ public class TestCommand {
                 .build();
 
         LiteralCommandNode<CommandSourceStack> powerNode = Commands
-                .literal("power")
+                .literal("effect")
                 .build();
 
         LiteralCommandNode<CommandSourceStack> resourceNode = Commands
@@ -43,24 +42,24 @@ public class TestCommand {
         LiteralCommandNode<CommandSourceStack> addPowerNode = Commands
                 .literal("add")
                 .then(Commands.argument("targets", EntityArgument.entities())
-                        .then(Commands.argument("power", ResourceArgument.resource(context, EffectAPIEntityTest.POWER))
-                                .executes(TestCommand::addPower)))
+                        .then(Commands.argument("effect", ResourceArgument.resource(context, EffectAPIEntityTest.DATA_EFFECT))
+                                .executes(TestCommand::addEffect)))
                 .build();
         LiteralCommandNode<CommandSourceStack> removePowerNode = Commands
                 .literal("remove")
                 .then(Commands.argument("targets", EntityArgument.entities())
-                        .then(Commands.argument("power", ResourceArgument.resource(context, EffectAPIEntityTest.POWER))
-                                .executes(TestCommand::removePower)))
+                        .then(Commands.argument("effect", ResourceArgument.resource(context, EffectAPIEntityTest.DATA_EFFECT))
+                                .executes(TestCommand::removeEffect)))
                 .build();
         LiteralCommandNode<CommandSourceStack> listPowersNode = Commands
                 .literal("list")
                 .then(Commands.argument("target", EntityArgument.entity())
-                                .executes(TestCommand::listPowers))
+                                .executes(TestCommand::listEffects))
                 .build();
         LiteralCommandNode<CommandSourceStack> clearPowersNode = Commands
                 .literal("clear")
                 .then(Commands.argument("targets", EntityArgument.entities())
-                        .executes(TestCommand::clearPowers))
+                        .executes(TestCommand::clearEffects))
                 .build();
 
         LiteralCommandNode<CommandSourceStack> setResourceNode = Commands
@@ -91,9 +90,9 @@ public class TestCommand {
         dispatcher.getRoot().addChild(testNode);
     }
 
-    private static int addPower(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+    private static int addEffect(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         Collection<? extends Entity> entities = EntityArgument.getEntities(context, "targets");
-        Holder<Power> power = ResourceArgument.getResource(context, "power", EffectAPIEntityTest.POWER);
+        Holder<DataEffect> effect = ResourceArgument.getResource(context, "effect", EffectAPIEntityTest.DATA_EFFECT);
 
         int successes = 0;
         Entity firstEntity = null;
@@ -101,9 +100,9 @@ public class TestCommand {
         for (Entity entity : entities) {
             if (firstEntity == null)
                 firstEntity = entity;
-            PowersAttachment attachment = EffectAPIEntityTest.getHelper().getPowers(entity);
-            if (!attachment.hasPower(power)) {
-                attachment.addPower(power);
+            DataEffectsAttachment attachment = EffectAPIEntityTest.getHelper().getDataEffects(entity);
+            if (!attachment.hasEffect(effect)) {
+                attachment.addEffect(effect);
                 attachment.sync();
                 ++successes;
             }
@@ -112,22 +111,22 @@ public class TestCommand {
         int finalSuccesses = successes;
         if (entities.size() > 1) {
             if (successes > 0)
-                context.getSource().sendSuccess(() -> Component.literal("Added power \"" + power.unwrapKey().map(ResourceKey::location).orElse(null) + "\" to " + finalSuccesses + " entities."), true);
+                context.getSource().sendSuccess(() -> Component.literal("Added power \"" + effect.unwrapKey().map(ResourceKey::location).orElse(null) + "\" to " + finalSuccesses + " entities."), true);
             else
-                context.getSource().sendFailure(Component.literal("All of the specified entities already have the power \"" + power.unwrapKey().map(ResourceKey::location).orElse(null) + "\"."));
+                context.getSource().sendFailure(Component.literal("All of the specified entities already have the power \"" + effect.unwrapKey().map(ResourceKey::location).orElse(null) + "\"."));
         } else {
             Entity finalFirstEntity = firstEntity;
             if (successes > 0)
-                context.getSource().sendSuccess(() -> Component.literal("Added power \"" + power.unwrapKey().map(ResourceKey::location).orElse(null) + "\" to " + finalFirstEntity.getScoreboardName() + "."), true);
+                context.getSource().sendSuccess(() -> Component.literal("Added power \"" + effect.unwrapKey().map(ResourceKey::location).orElse(null) + "\" to " + finalFirstEntity.getScoreboardName() + "."), true);
             else
-                context.getSource().sendFailure(Component.literal(finalFirstEntity.getScoreboardName() + " already has the power \"" + power.unwrapKey().map(ResourceKey::location).orElse(null) + "\"."));
+                context.getSource().sendFailure(Component.literal(finalFirstEntity.getScoreboardName() + " already has the power \"" + effect.unwrapKey().map(ResourceKey::location).orElse(null) + "\"."));
         }
         return successes;
     }
 
-    private static int removePower(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+    private static int removeEffect(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         Collection<? extends Entity> entities = EntityArgument.getEntities(context, "targets");
-        Holder<Power> power = ResourceArgument.getResource(context, "power", EffectAPIEntityTest.POWER);
+        Holder<DataEffect> effect = ResourceArgument.getResource(context, "effect", EffectAPIEntityTest.DATA_EFFECT);
 
         int successes = 0;
         Entity firstEntity = null;
@@ -135,14 +134,14 @@ public class TestCommand {
         for (Entity entity : entities) {
             if (firstEntity == null)
                 firstEntity = entity;
-            if (!EffectAPIEntityTest.getHelper().hasPowers(entity))
+            if (!EffectAPIEntityTest.getHelper().hasDataEffects(entity))
                 continue;
-            PowersAttachment attachment = EffectAPIEntityTest.getHelper().getPowers(entity);
-            if (attachment.hasPower(power)) {
-                attachment.removePower(power);
+            DataEffectsAttachment attachment = EffectAPIEntityTest.getHelper().getDataEffects(entity);
+            if (attachment.hasEffect(effect)) {
+                attachment.removeEffect(effect);
                 attachment.sync();
                 if (attachment.isEmpty())
-                    EffectAPIEntityTest.getHelper().removePowerAttachment(entity);
+                    EffectAPIEntityTest.getHelper().removeDataEffectAttachment(entity);
                 ++successes;
             }
         }
@@ -150,28 +149,28 @@ public class TestCommand {
         int finalSuccesses = successes;
         if (entities.size() > 1) {
             if (successes > 0)
-                context.getSource().sendSuccess(() -> Component.literal("Removed power \"" + power.unwrapKey().map(ResourceKey::location).orElse(null) + "\" from " + finalSuccesses + " entities."), true);
+                context.getSource().sendSuccess(() -> Component.literal("Removed power \"" + effect.unwrapKey().map(ResourceKey::location).orElse(null) + "\" from " + finalSuccesses + " entities."), true);
             else
-                context.getSource().sendFailure(Component.literal("All of the specified entities do not have the power \"" + power.unwrapKey().map(ResourceKey::location).orElse(null) + "\"."));
+                context.getSource().sendFailure(Component.literal("All of the specified entities do not have the power \"" + effect.unwrapKey().map(ResourceKey::location).orElse(null) + "\"."));
         } else {
             Entity finalFirstEntity = firstEntity;
             if (successes > 0)
-                context.getSource().sendSuccess(() -> Component.literal("Removed power \"" + power.unwrapKey().map(ResourceKey::location).orElse(null) + "\" from " + finalFirstEntity.getScoreboardName() + "."), true);
+                context.getSource().sendSuccess(() -> Component.literal("Removed power \"" + effect.unwrapKey().map(ResourceKey::location).orElse(null) + "\" from " + finalFirstEntity.getScoreboardName() + "."), true);
             else
-                context.getSource().sendFailure(Component.literal(finalFirstEntity.getScoreboardName() + " does not have the power \"" + power.unwrapKey().map(ResourceKey::location).orElse(null) + "\"."));
+                context.getSource().sendFailure(Component.literal(finalFirstEntity.getScoreboardName() + " does not have the power \"" + effect.unwrapKey().map(ResourceKey::location).orElse(null) + "\"."));
         }
         return successes;
     }
 
-    private static int listPowers(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+    private static int listEffects(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         Entity entity = EntityArgument.getEntity(context, "target");
 
-        if (!EffectAPIEntityTest.getHelper().hasPowers(entity)) {
+        if (!EffectAPIEntityTest.getHelper().hasDataEffects(entity)) {
             context.getSource().sendFailure(Component.literal("Entity does not have any powers."));
             return 0;
         }
 
-        PowersAttachment attachment = EffectAPIEntityTest.getHelper().getPowers(entity);
+        DataEffectsAttachment attachment = EffectAPIEntityTest.getHelper().getDataEffects(entity);
         if (attachment == null) {
             context.getSource().sendFailure(Component.literal("Entity does not have any powers."));
             return 0;
@@ -190,7 +189,7 @@ public class TestCommand {
     }
 
 
-    private static int clearPowers(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+    private static int clearEffects(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         Collection<? extends Entity> entities = EntityArgument.getEntities(context, "targets");
 
         int successes = 0;
@@ -199,12 +198,11 @@ public class TestCommand {
         for (Entity entity : entities) {
             if (firstEntity == null)
                 firstEntity = entity;
-            if (EffectAPIEntityTest.getHelper().hasPowers(entity)) {
-                EffectAPIEntityTest.getHelper().removePowerAttachment(entity);
+            if (EffectAPIEntityTest.getHelper().hasDataEffects(entity)) {
+                EffectAPIEntityTest.getHelper().removeDataEffectAttachment(entity);
                 ++successes;
             }
         }
-
 
         int finalSuccesses = successes;
         if (entities.size() > 1) {
@@ -254,7 +252,7 @@ public class TestCommand {
 
         Holder<Resource<Object>> resource = EntityResourceArgument.getResource(context, "key");
 
-        if (EffectAPIEntity.getHelper().getResources(entity) == null || !EffectAPIEntity.getHelper().getResources(entity).hasResource(resource)) {
+        if (EffectAPIEntity.getHelper().getResources(entity) == null || !EffectAPIEntity.getHelper().getResources(entity).hasResource(resource) || !EffectAPIEntity.getHelper().getResources(entity).hasSourceFromMod(resource, EffectAPIEntityTest.MOD_ID)) {
             context.getSource().sendFailure(Component.literal("Entity does not have resource \"" + resource + "\"."));
             return 0;
         }

@@ -36,6 +36,20 @@ public record ResourcesAttachmentImpl(Map<Holder<Resource<Object>>, Pair<Resourc
         return resources.containsKey(resource);
     }
 
+    @Override
+    public <T> boolean hasSource(Holder<Resource<T>> resource, ResourceLocation source) {
+        if (!resources.containsKey(resource))
+            return false;
+        return resources.get(resource).getSecond().contains(source);
+    }
+
+    @Override
+    public <T> boolean hasSourceFromMod(Holder<Resource<T>> resource, String modId) {
+        if (!resources.containsKey(resource))
+            return false;
+        return resources.get(resource).getSecond().stream().anyMatch(source -> source.getNamespace().equals(modId));
+    }
+
     @Nullable
     public <T> T getValue(Holder<Resource<T>> id) {
         return (T) Optional.ofNullable(resources.get(id)).map(pair -> pair.getFirst().getValue()).orElse(null);

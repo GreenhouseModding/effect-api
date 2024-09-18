@@ -1,24 +1,24 @@
 package house.greenhouse.test.platform;
 
 import house.greenhouse.test.EffectAPITestNeoForge;
-import house.greenhouse.test.attachment.PowersAttachment;
+import house.greenhouse.test.attachment.DataEffectsAttachment;
 import net.minecraft.world.entity.Entity;
 
 public class EffectAPITestHelperNeoForge implements EffectAPITestHelper {
     @Override
-    public boolean hasPowers(Entity entity) {
-        return entity.hasData(EffectAPITestNeoForge.POWERS);
+    public boolean hasDataEffects(Entity entity) {
+        return entity.hasData(EffectAPITestNeoForge.DATA_EFFECTS);
     }
 
     @Override
-    public PowersAttachment getPowers(Entity entity) {
-        PowersAttachment attachment = entity.getData(EffectAPITestNeoForge.POWERS);
+    public DataEffectsAttachment getDataEffects(Entity entity) {
+        DataEffectsAttachment attachment = entity.getData(EffectAPITestNeoForge.DATA_EFFECTS);
         attachment.init(entity);
         return attachment;
     }
 
     @Override
-    public void removePowerAttachment(Entity entity) {
-        entity.removeData(EffectAPITestNeoForge.POWERS);
+    public void removeDataEffectAttachment(Entity entity) {
+        entity.removeData(EffectAPITestNeoForge.DATA_EFFECTS);
     }
 }

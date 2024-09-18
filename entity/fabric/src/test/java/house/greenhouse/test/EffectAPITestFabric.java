@@ -2,11 +2,10 @@ package house.greenhouse.test;
 
 import house.greenhouse.effectapi.api.registry.EffectAPIRegistries;
 import house.greenhouse.effectapi.entity.api.EffectAPIEntityRegistries;
-import house.greenhouse.effectapi.entity.impl.EffectAPIEntity;
-import house.greenhouse.test.attachment.PowersAttachment;
+import house.greenhouse.test.attachment.DataEffectsAttachment;
 import house.greenhouse.test.command.TestCommand;
 import house.greenhouse.test.effect.ParticleEffect;
-import house.greenhouse.test.network.clientbound.SyncPowerAttachmentClientboundPacket;
+import house.greenhouse.test.network.clientbound.SyncDataEffectAttachmentClientboundPacket;
 import house.greenhouse.test.predicate.OnFirePredicate;
 import house.greenhouse.test.variable.HealthVariable;
 import net.fabricmc.api.ModInitializer;
@@ -21,34 +20,34 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 
 public class EffectAPITestFabric implements ModInitializer {
-    public static final AttachmentType<PowersAttachment> POWERS = AttachmentRegistry.<PowersAttachment>builder()
-            .initializer(PowersAttachment::new)
-            .persistent(PowersAttachment.CODEC)
+    public static final AttachmentType<DataEffectsAttachment> DATA_EFFECTS = AttachmentRegistry.<DataEffectsAttachment>builder()
+            .initializer(DataEffectsAttachment::new)
+            .persistent(DataEffectsAttachment.CODEC)
             .copyOnDeath()
             .buildAndRegister(EffectAPIEntityTest.POWERS_ATTACHMENT_KEY);
 
     @Override
     public void onInitialize() {
-        DynamicRegistries.registerSynced(EffectAPIEntityTest.POWER, Power.DIRECT_CODEC, Power.NETWORK_DIRECT_CODEC);
+        DynamicRegistries.registerSynced(EffectAPIEntityTest.DATA_EFFECT, DataEffect.DIRECT_CODEC, DataEffect.NETWORK_DIRECT_CODEC);
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> TestCommand.register(dispatcher, registryAccess));
 
         Registry.register(EffectAPIEntityRegistries.EFFECT_TYPE, EffectAPIEntityTest.asResource("particle"), ParticleEffect.TYPE);
         Registry.register(BuiltInRegistries.LOOT_CONDITION_TYPE, EffectAPIEntityTest.asResource("on_fire"), OnFirePredicate.TYPE);
         Registry.register(EffectAPIRegistries.VARIABLE_TYPE, EffectAPIEntityTest.asResource("health"), HealthVariable.CODEC);
 
-        PayloadTypeRegistry.playS2C().register(SyncPowerAttachmentClientboundPacket.TYPE, SyncPowerAttachmentClientboundPacket.STREAM_CODEC);
+        PayloadTypeRegistry.playS2C().register(SyncDataEffectAttachmentClientboundPacket.TYPE, SyncDataEffectAttachmentClientboundPacket.STREAM_CODEC);
 
         EntityTrackingEvents.START_TRACKING.register((trackedEntity, player) -> {
-            if (trackedEntity.hasAttached(POWERS)) {
-                trackedEntity.getAttached(POWERS).init(trackedEntity);
-                trackedEntity.getAttached(POWERS).sync();
+            if (trackedEntity.hasAttached(DATA_EFFECTS)) {
+                trackedEntity.getAttached(DATA_EFFECTS).init(trackedEntity);
+                trackedEntity.getAttached(DATA_EFFECTS).sync();
             }
         });
 
         ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {
-            if (entity.hasAttached(POWERS)) {
-                entity.getAttached(POWERS).init(entity);
-                entity.getAttached(POWERS).sync();
+            if (entity.hasAttached(DATA_EFFECTS)) {
+                entity.getAttached(DATA_EFFECTS).init(entity);
+                entity.getAttached(DATA_EFFECTS).sync();
             }
         });
     }

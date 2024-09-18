@@ -1,6 +1,5 @@
 package house.greenhouse.test;
 
-import house.greenhouse.effectapi.impl.EffectAPI;
 import house.greenhouse.test.platform.EffectAPITestHelper;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -12,7 +11,7 @@ public class EffectAPIEntityTest {
 
     private static EffectAPITestHelper helper;
 
-    public static final ResourceKey<Registry<Power>> POWER = ResourceKey.createRegistryKey(EffectAPIEntityTest.asResource("power"));
+    public static final ResourceKey<Registry<DataEffect>> DATA_EFFECT = ResourceKey.createRegistryKey(EffectAPIEntityTest.asResource("effect"));
 
     public static void init(EffectAPITestHelper helper) {
         EffectAPIEntityTest.helper = helper;

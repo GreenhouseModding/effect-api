@@ -5,9 +5,9 @@ import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
 import house.greenhouse.effectapi.api.effect.EffectHolder;
 import house.greenhouse.effectapi.entity.api.EntityEffectAPI;
 import house.greenhouse.effectapi.impl.EffectAPI;
+import house.greenhouse.test.DataEffect;
 import house.greenhouse.test.EffectAPIEntityTest;
-import house.greenhouse.test.Power;
-import house.greenhouse.test.network.clientbound.SyncPowerAttachmentClientboundPacket;
+import house.greenhouse.test.network.clientbound.SyncDataEffectAttachmentClientboundPacket;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -15,60 +15,60 @@ import net.minecraft.world.entity.Entity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PowersAttachment {
-    public static final Codec<PowersAttachment> CODEC = Power.CODEC.listOf().xmap(holders -> {
-        PowersAttachment attachment = new PowersAttachment();
-        for (Holder<Power> power : holders)
-            attachment.addDelegatedPower(power);
+public class DataEffectsAttachment {
+    public static final Codec<DataEffectsAttachment> CODEC = DataEffect.CODEC.listOf().xmap(holders -> {
+        DataEffectsAttachment attachment = new DataEffectsAttachment();
+        for (Holder<DataEffect> power : holders)
+            attachment.addDelegatedEffect(power);
         return attachment;
-    }, attachment -> attachment.powers);
+    }, attachment -> attachment.effects);
 
-    private List<Holder<Power>> powers = new ArrayList<>();
-    private final List<Holder<Power>> delegatedPowers = new ArrayList<>();
+    private List<Holder<DataEffect>> effects = new ArrayList<>();
+    private final List<Holder<DataEffect>> delegatedEffects = new ArrayList<>();
 
     private Entity provider;
 
-    public PowersAttachment() {}
+    public DataEffectsAttachment() {}
 
     public void init(Entity entity) {
         if (provider != null)
             return;
         provider = entity;
-        for (Holder<Power> power : delegatedPowers) {
-            powers.add(power);
+        for (Holder<DataEffect> power : delegatedEffects) {
+            effects.add(power);
             EntityEffectAPI.addEffects(provider, power.value().effects().stream().filter(component -> component.value() instanceof List<?> list && list.getFirst() instanceof EffectHolder).flatMap(component -> ((List<EffectHolder<EffectAPIEffect, Entity>>)component.value()).stream()).toList(), createSource(power));
         }
-        delegatedPowers.clear();
+        delegatedEffects.clear();
         sync();
     }
 
-    public List<Holder<Power>> getPowers() {
-        return powers;
+    public List<Holder<DataEffect>> getPowers() {
+        return effects;
     }
 
     public boolean isEmpty() {
-        return powers.isEmpty();
+        return effects.isEmpty();
     }
 
     public int totalPowers() {
-        return powers.size();
+        return effects.size();
     }
 
-    public boolean hasPower(Holder<Power> power) {
-        return powers.contains(power);
+    public boolean hasEffect(Holder<DataEffect> power) {
+        return effects.contains(power);
     }
 
-    public void addPower(Holder<Power> power) {
-        powers.add(power);
+    public void addEffect(Holder<DataEffect> power) {
+        effects.add(power);
         EntityEffectAPI.addEffects(provider, power.value().effects().stream().filter(component -> component.value() instanceof List<?> list && list.getFirst() instanceof EffectHolder).flatMap(component -> ((List<EffectHolder<EffectAPIEffect, Entity>>)component.value()).stream()).toList(), createSource(power));
     }
 
-    private void addDelegatedPower(Holder<Power> power) {
-        delegatedPowers.add(power);
+    private void addDelegatedEffect(Holder<DataEffect> power) {
+        delegatedEffects.add(power);
     }
 
-    public void removePower(Holder<Power> power) {
-        powers.remove(power);
+    public void removeEffect(Holder<DataEffect> power) {
+        effects.remove(power);
         EntityEffectAPI.removeEffects(provider, power.value().effects().stream().filter(component -> component.value() instanceof List<?> list && list.getFirst() instanceof EffectHolder).flatMap(component -> ((List<EffectHolder<EffectAPIEffect, Entity>>)component.value()).stream()).toList(), createSource(power));
     }
 
@@ -76,14 +76,14 @@ public class PowersAttachment {
         if (provider.level().isClientSide())
             return;
         EntityEffectAPI.syncEffects(provider);
-        EffectAPI.getHelper().sendClientboundTracking(new SyncPowerAttachmentClientboundPacket(provider.getId(), powers), provider, true);
+        EffectAPI.getHelper().sendClientboundTracking(new SyncDataEffectAttachmentClientboundPacket(provider.getId(), effects), provider, true);
     }
 
-    public void setFromNetwork(List<Holder<Power>> powers) {
-        this.powers = powers;
+    public void setFromNetwork(List<Holder<DataEffect>> powers) {
+        this.effects = powers;
     }
 
-    public static ResourceLocation createSource(Holder<Power> holder) {
+    public static ResourceLocation createSource(Holder<DataEffect> holder) {
         return EffectAPIEntityTest.asResource(holder.unwrapKey().map(key -> {
             String namespace = key.location().getNamespace();
             String path = key.location().getPath();

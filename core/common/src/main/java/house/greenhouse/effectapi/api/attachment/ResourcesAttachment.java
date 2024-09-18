@@ -8,6 +8,8 @@ public interface ResourcesAttachment {
     boolean isEmpty();
 
     <T> boolean hasResource(Holder<Resource<T>> resource);
+    <T> boolean hasSource(Holder<Resource<T>> resource, ResourceLocation source);
+    <T> boolean hasSourceFromMod(Holder<Resource<T>> resource, String modId);
 
     <T> T getValue(Holder<Resource<T>> resource);
 
