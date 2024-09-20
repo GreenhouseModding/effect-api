@@ -200,7 +200,7 @@ public class EffectsAttachmentImpl implements EffectsAttachment {
             sync();
         } else {
             boolean isActive = effectLookup.get(holder).isActive(context, provider.tickCount);
-            if (activeValues.get(holder) != isActive) {
+            if (activeValues.getOrDefault(holder, false) != isActive) {
                 activeValues.put((EffectHolder) holder, isActive);
                 combineComponents();
                 updateActiveComponents();

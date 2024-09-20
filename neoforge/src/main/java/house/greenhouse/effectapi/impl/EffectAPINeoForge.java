@@ -95,7 +95,7 @@ public class EffectAPINeoForge {
         @SubscribeEvent
         public static void onEntityTick(EntityTickEvent.Post event) {
             Entity entity = event.getEntity();
-            if (entity.hasData(EffectAPIAttachments.RESOURCES)) {
+            if (entity.hasData(EffectAPIAttachments.EFFECTS)) {
                 entity.getData(EffectAPIAttachments.EFFECTS).tick();
             }
         }
