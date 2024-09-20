@@ -8,20 +8,7 @@ plugins {
     `maven-publish`
 }
 
-lateinit var props: Properties.ModuleProperties
-lateinit var platform: String
-
-Properties.MODULES.forEach { (name, metadata) ->
-    Properties.PLATFORMS.forEach { platform ->
-        if (project.name == "${name}-${platform}") {
-            props = metadata
-            this.platform = platform
-        }
-    }
-}
-project.ext["props"] = props
-
-base.archivesName.set("${props.modId}-${platform}")
+base.archivesName.set("${Properties.MOD_ID}-${project.name}")
 group = Properties.GROUP
 version = "${Versions.MOD}+${Versions.MINECRAFT}"
 
@@ -55,7 +42,7 @@ dependencies {
 // Read more about capabilities here: https://docs.gradle.org/current/userguide/component_capabilities.html#sec:declaring-additional-capabilities-for-a-local-component
 setOf("apiElements", "runtimeElements", "sourcesElements", "javadocElements").forEach { variant ->
     configurations.getByName(variant).outgoing {
-        capability("$group:${props.modId}-${platform}:$version")
+        capability("$group:${Properties.MOD_ID}-${project.name}:$version")
     }
     publishing.publications.forEach { publication ->
         if (publication is MavenPublication) {
@@ -67,16 +54,16 @@ setOf("apiElements", "runtimeElements", "sourcesElements", "javadocElements").fo
 tasks {
     named<Jar>("sourcesJar").configure {
         from(rootProject.file("LICENSE")) {
-            rename { "${it}_${props.modName}" }
+            rename { "${it}_${Properties.MOD_NAME}" }
         }
     }
     named<Jar>("jar").configure {
         from(rootProject.file("LICENSE")) {
-            rename { "${it}_${props.modName}" }
+            rename { "${it}_${Properties.MOD_NAME}" }
         }
 
         manifest {
-            attributes["Specification-Title"] = props.modName
+            attributes["Specification-Title"] = Properties.MOD_NAME
             attributes["Specification-Vendor"] = Properties.MOD_AUTHOR
             attributes["Specification-Version"] = archiveVersion
             attributes["Implementation-Title"] = project.name
@@ -94,13 +81,13 @@ tasks {
         "fabric_loader_version" to Versions.FABRIC_LOADER,
         "fabric_minecraft_version_range" to Versions.FABRIC_MINECRAFT_RANGE,
         "fabric_loader_range" to Versions.FABRIC_LOADER_RANGE,
-        "mod_name" to props.modName,
+        "mod_name" to Properties.MOD_NAME,
         "mod_author" to Properties.MOD_AUTHOR,
         "neoforge_mod_contributors" to Properties.MOD_CONTRIBUTORS.joinToString(),
         "fabric_mod_contributors" to Properties.MOD_CONTRIBUTORS.joinToString(separator = "\",\n\t\t\""),
-        "mod_id" to props.modId,
+        "mod_id" to Properties.MOD_ID,
         "mod_license" to Properties.LICENSE,
-        "mod_description" to props.description,
+        "mod_description" to Properties.MOD_DESCRIPTION,
         "neoforge_version" to Versions.NEOFORGE,
         "neoforge_minecraft_version_range" to Versions.NEOFORGE_MINECRAFT_RANGE,
         "neoforge_loader_version_range" to Versions.NEOFORGE_LOADER_RANGE,

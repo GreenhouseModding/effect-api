@@ -24,14 +24,3 @@ rootProject.name = "effect-api"
 include(
     "common", "fabric", "neoforge"
 )
-
-val platforms = setOf("common", "fabric", "neoforge")
-val modules = setOf("core", "entity")
-
-modules.forEach { name ->
-    platforms.forEach { platform ->
-        include(":${name}-${platform}")
-        val proj = project(":${name}-${platform}")
-        proj.projectDir = file("${name}/${platform}")
-    }
-}

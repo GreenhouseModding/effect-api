@@ -4,19 +4,6 @@ plugins {
     id("effectapi.common")
 }
 
-lateinit var props: Properties.ModuleProperties
-
-Properties.MODULES.forEach { (name, metadata) ->
-    Properties.PLATFORMS.forEach { platform ->
-        if (project.name == "${name}-${platform}")
-            props = metadata
-    }
-}
-
-fun getCommonProjectName() : String {
-    return props.moduleName + "-common"
-}
-
 configurations {
     register("commonJava") {
         isCanBeResolved = true
@@ -33,22 +20,22 @@ configurations {
 }
 
 dependencies {
-    compileOnly(project(":${getCommonProjectName()}")) {
+    compileOnly(project(":common")) {
         capabilities {
-            requireCapability("${Properties.GROUP}:${props.modId}-common")
+            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-common")
         }
     }
-    testCompileOnly(project(":${getCommonProjectName()}")) {
+    testCompileOnly(project(":common")) {
         capabilities {
-            requireCapability("${Properties.GROUP}:${props.modId}-common")
+            requireCapability("${Properties.GROUP}:${Properties.MOD_ID}-common")
         }
     }
-    testCompileOnly(project(":${getCommonProjectName()}", "commonTestJava"))
+    testCompileOnly(project(":common", "commonTestJava"))
 
-    "commonJava"(project(":${getCommonProjectName()}", "commonJava"))
-    "commonTestJava"(project(":${getCommonProjectName()}", "commonTestJava"))
-    "commonResources"(project(":${getCommonProjectName()}", "commonResources"))
-    "commonTestResources"(project(":${getCommonProjectName()}", "commonTestResources"))
+    "commonJava"(project(":common", "commonJava"))
+    "commonTestJava"(project(":common", "commonTestJava"))
+    "commonResources"(project(":common", "commonResources"))
+    "commonTestResources"(project(":common", "commonTestResources"))
 }
 
 tasks {
