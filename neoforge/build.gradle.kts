@@ -41,6 +41,9 @@ neoForge {
         register(Properties.MOD_ID) {
             sourceSet(sourceSets["main"])
         }
+        register(Properties.MOD_ID + "_test") {
+            sourceSet(sourceSets["test"])
+        }
     }
 }
 
