@@ -1,5 +1,5 @@
 {
-  "effect_api_entity_test:particle": [
+  "effect_api_test:particle": [
     {
       "particle": {
         "type": "minecraft:portal"

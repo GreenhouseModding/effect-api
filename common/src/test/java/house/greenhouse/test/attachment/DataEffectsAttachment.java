@@ -1,9 +1,9 @@
 package house.greenhouse.test.attachment;
 
 import com.mojang.serialization.Codec;
+import house.greenhouse.effectapi.api.EntityEffectAPI;
 import house.greenhouse.effectapi.api.effect.EffectAPIEffect;
 import house.greenhouse.effectapi.api.effect.EffectHolder;
-import house.greenhouse.effectapi.entity.api.EntityEffectAPI;
 import house.greenhouse.effectapi.impl.EffectAPI;
 import house.greenhouse.test.DataEffect;
 import house.greenhouse.test.EffectAPITest;
@@ -36,7 +36,7 @@ public class DataEffectsAttachment {
         provider = entity;
         for (Holder<DataEffect> power : delegatedEffects) {
             effects.add(power);
-            EntityEffectAPI.addEffects(provider, power.value().effects().stream().filter(component -> component.value() instanceof List<?> list && list.getFirst() instanceof EffectHolder).flatMap(component -> ((List<EffectHolder<EffectAPIEffect, Entity>>)component.value()).stream()).toList(), createSource(power));
+            EntityEffectAPI.addEffects(provider, power.value().effects().stream().filter(component -> component.value() instanceof List<?> list && list.getFirst() instanceof EffectHolder).flatMap(component -> ((List<EffectHolder<EffectAPIEffect>>)component.value()).stream()).toList(), createSource(power));
         }
         delegatedEffects.clear();
         sync();
@@ -60,7 +60,7 @@ public class DataEffectsAttachment {
 
     public void addEffect(Holder<DataEffect> power) {
         effects.add(power);
-        EntityEffectAPI.addEffects(provider, power.value().effects().stream().filter(component -> component.value() instanceof List<?> list && list.getFirst() instanceof EffectHolder).flatMap(component -> ((List<EffectHolder<EffectAPIEffect, Entity>>)component.value()).stream()).toList(), createSource(power));
+        EntityEffectAPI.addEffects(provider, power.value().effects().stream().filter(component -> component.value() instanceof List<?> list && list.getFirst() instanceof EffectHolder).flatMap(component -> ((List<EffectHolder<EffectAPIEffect>>)component.value()).stream()).toList(), createSource(power));
     }
 
     private void addDelegatedEffect(Holder<DataEffect> power) {
@@ -69,7 +69,7 @@ public class DataEffectsAttachment {
 
     public void removeEffect(Holder<DataEffect> power) {
         effects.remove(power);
-        EntityEffectAPI.removeEffects(provider, power.value().effects().stream().filter(component -> component.value() instanceof List<?> list && list.getFirst() instanceof EffectHolder).flatMap(component -> ((List<EffectHolder<EffectAPIEffect, Entity>>)component.value()).stream()).toList(), createSource(power));
+        EntityEffectAPI.removeEffects(provider, power.value().effects().stream().filter(component -> component.value() instanceof List<?> list && list.getFirst() instanceof EffectHolder).flatMap(component -> ((List<EffectHolder<EffectAPIEffect>>)component.value()).stream()).toList(), createSource(power));
     }
 
     public void sync() {

@@ -4,11 +4,11 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import house.greenhouse.effectapi.api.EntityResourceAPI;
+import house.greenhouse.effectapi.api.command.EntityResourceArgument;
+import house.greenhouse.effectapi.api.command.EntityResourceValueArgument;
 import house.greenhouse.effectapi.api.resource.Resource;
-import house.greenhouse.effectapi.entity.api.EntityResourceAPI;
-import house.greenhouse.effectapi.entity.api.command.EntityResourceArgument;
-import house.greenhouse.effectapi.entity.api.command.EntityResourceValueArgument;
-import house.greenhouse.effectapi.entity.impl.EffectAPIEntity;
+import house.greenhouse.effectapi.impl.EffectAPI;
 import house.greenhouse.test.DataEffect;
 import house.greenhouse.test.EffectAPITest;
 import house.greenhouse.test.attachment.DataEffectsAttachment;
@@ -229,7 +229,7 @@ public class TestCommand {
         int successes = 0;
 
         for (Entity entity : entities) {
-            if (EffectAPIEntity.getHelper().getResources(entity) != null && EffectAPIEntity.getHelper().getResources(entity).hasResource(resource)) {
+            if (EffectAPI.getHelper().getResources(entity) != null && EffectAPI.getHelper().getResources(entity).hasResource(resource)) {
                 EntityResourceAPI.setResourceValue(entity, resource, value);
                 ++successes;
             }
@@ -252,7 +252,7 @@ public class TestCommand {
 
         Holder<Resource<Object>> resource = EntityResourceArgument.getResource(context, "key");
 
-        if (EffectAPIEntity.getHelper().getResources(entity) == null || !EffectAPIEntity.getHelper().getResources(entity).hasResource(resource) || !EffectAPIEntity.getHelper().getResources(entity).hasSourceFromMod(resource, EffectAPITest.MOD_ID)) {
+        if (EffectAPI.getHelper().getResources(entity) == null || !EffectAPI.getHelper().getResources(entity).hasResource(resource) || !EffectAPI.getHelper().getResources(entity).hasSourceFromMod(resource, EffectAPITest.MOD_ID)) {
             context.getSource().sendFailure(Component.literal("Entity does not have resource \"" + resource + "\"."));
             return 0;
         }

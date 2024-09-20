@@ -8,7 +8,7 @@
         "operation": "add_value"
       },
       "requirements": {
-        "condition": "effect_api_entity_test:on_fire",
+        "condition": "effect_api_test:on_fire",
         "entity": "this"
       }
     }

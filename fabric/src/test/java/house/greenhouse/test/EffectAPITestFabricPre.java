@@ -6,6 +6,6 @@ import net.fabricmc.loader.api.entrypoint.PreLaunchEntrypoint;
 public class EffectAPITestFabricPre implements PreLaunchEntrypoint {
     @Override
     public void onPreLaunch() {
-        EffectAPIEntityTest.init(new EffectAPITestHelperFabric());
+        EffectAPITest.init(new EffectAPITestHelperFabric());
     }
 }

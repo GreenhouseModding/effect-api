@@ -39,7 +39,7 @@ public record ParticleEffect(ParticleOptions particle, Vec3 speed, int tickRate)
     }
 
     @Override
-    public EffectType<?, Entity> type() {
+    public EffectType<?> type() {
         return TYPE;
     }
 }

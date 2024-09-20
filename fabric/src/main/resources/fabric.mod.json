@@ -2,7 +2,7 @@
     "schemaVersion": 1,
     "id": "${mod_id}",
     "version": "${mod_version}+${minecraft_version}",
-    "name": "${mod_name} Base",
+    "name": "${mod_name}",
     "description": "${mod_description}",
     "authors": [
         "${mod_author}"
@@ -22,9 +22,9 @@
         "main": [
             "house.greenhouse.effectapi.impl.EffectAPIFabric"
         ],
-        "preLaunch": [
+        "client": [
             "house.greenhouse.effectapi.impl.client.EffectAPIFabricClient"
-        ]
+        ],
         "preLaunch": [
             "house.greenhouse.effectapi.impl.EffectAPIFabricPre"
         ]

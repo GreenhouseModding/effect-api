@@ -7,7 +7,7 @@
         "amount": {
           "effect_api:variable_type": "effect_api:modifier",
           "base": {
-            "effect_api:variable_type": "effect_api_entity_test:health"
+            "effect_api:variable_type": "effect_api_test:health"
           },
           "modifiers": [
             {

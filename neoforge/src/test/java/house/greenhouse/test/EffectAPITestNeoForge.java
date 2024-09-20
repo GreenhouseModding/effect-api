@@ -1,7 +1,8 @@
 package house.greenhouse.test;
 
+import house.greenhouse.effectapi.api.registry.EffectAPIRegistries;
 import house.greenhouse.effectapi.api.registry.EffectAPIRegistryKeys;
-import house.greenhouse.effectapi.entity.api.EffectAPIEntityRegistryKeys;
+import house.greenhouse.effectapi.impl.EffectAPI;
 import house.greenhouse.test.attachment.DataEffectsAttachment;
 import house.greenhouse.test.command.TestCommand;
 import house.greenhouse.test.effect.ParticleEffect;
@@ -24,7 +25,7 @@ import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
-@Mod(EffectAPIEntityTest.MOD_ID)
+@Mod(EffectAPITest.MOD_ID)
 public class EffectAPITestNeoForge {
     public static final AttachmentType<DataEffectsAttachment> DATA_EFFECTS = AttachmentType
             .builder(DataEffectsAttachment::new)
@@ -33,17 +34,17 @@ public class EffectAPITestNeoForge {
             .build();
 
     public EffectAPITestNeoForge(IEventBus eventBus) {
-        EffectAPIEntityTest.init(new EffectAPITestHelperNeoForge());
+        EffectAPITest.init(new EffectAPITestHelperNeoForge());
     }
 
-    @EventBusSubscriber(modid = EffectAPIEntityTest.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(modid = EffectAPITest.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
     public static class ModEvents {
         @SubscribeEvent
         public static void registerContent(RegisterEvent event) {
-            event.register(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, EffectAPIEntityTest.POWERS_ATTACHMENT_KEY, () -> DATA_EFFECTS);
-            event.register(EffectAPIEntityRegistryKeys.EFFECT_TYPE, EffectAPIEntityTest.asResource("particle"), () -> ParticleEffect.TYPE);
-            event.register(Registries.LOOT_CONDITION_TYPE, EffectAPIEntityTest.asResource("on_fire"), () -> OnFirePredicate.TYPE);
-            event.register(EffectAPIRegistryKeys.VARIABLE_TYPE, EffectAPIEntityTest.asResource("health"), () -> HealthVariable.CODEC);
+            event.register(NeoForgeRegistries.Keys.ATTACHMENT_TYPES, EffectAPITest.DATA_EFFECTS_ATTACHMENT_KEY, () -> DATA_EFFECTS);
+            event.register(EffectAPIRegistryKeys.EFFECT_TYPE, EffectAPITest.asResource("particle"), () -> ParticleEffect.TYPE);
+            event.register(Registries.LOOT_CONDITION_TYPE, EffectAPITest.asResource("on_fire"), () -> OnFirePredicate.TYPE);
+            event.register(EffectAPIRegistryKeys.VARIABLE_TYPE, EffectAPITest.asResource("health"), () -> HealthVariable.CODEC);
         }
 
         @SubscribeEvent
@@ -54,11 +55,11 @@ public class EffectAPITestNeoForge {
 
         @SubscribeEvent
         public static void createNewDataPackRegistry(DataPackRegistryEvent.NewRegistry event) {
-            event.dataPackRegistry(EffectAPIEntityTest.DATA_EFFECT, DataEffect.DIRECT_CODEC, DataEffect.NETWORK_DIRECT_CODEC);
+            event.dataPackRegistry(EffectAPITest.DATA_EFFECT, DataEffect.DIRECT_CODEC, DataEffect.NETWORK_DIRECT_CODEC);
         }
     }
 
-    @EventBusSubscriber(modid = EffectAPIEntityTest.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
+    @EventBusSubscriber(modid = EffectAPITest.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
     public static class GameEvents {
         @SubscribeEvent
         public static void onEntityTick(EntityTickEvent.Post event) {

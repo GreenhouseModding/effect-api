@@ -35,11 +35,3 @@ mandatory=true
 versionRange="[${mod_version},)"
 ordering="NONE"
 side="BOTH"
-
-
-[[dependencies.${mod_id}_test]]
-modId="effect_api_entity"
-mandatory=true
-versionRange="[${mod_version},)"
-ordering="NONE"
-side="BOTH"

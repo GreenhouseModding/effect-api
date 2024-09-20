@@ -37,7 +37,6 @@
         "fabric-api": "*",
         "minecraft": "${fabric_minecraft_version_range}",
         "java": ">=${java_version}",
-        "effect_api": ">=${mod_version}",
-        "effect_api_entity": ">=${mod_version}"
+        "effect_api": ">=${mod_version}"
     }
 }
