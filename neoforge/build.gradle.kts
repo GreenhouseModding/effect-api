@@ -28,10 +28,12 @@ neoForge {
         }
         create("client") {
             client()
+            ideName = "NeoForge Client"
             sourceSet = sourceSets["test"]
         }
         create("server") {
             server()
+            ideName = "NeoForge Server"
             programArgument("--nogui")
             sourceSet = sourceSets["test"]
         }
