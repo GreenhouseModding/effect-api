@@ -1,8 +1,7 @@
 package house.greenhouse.test.variable;
 
 import com.mojang.serialization.MapCodec;
-import house.greenhouse.effectapi.api.EffectAPIDataTypes;
-import house.greenhouse.effectapi.api.registry.EffectAPILootContextParams;
+import house.greenhouse.effectapi.impl.registry.EffectAPIDataTypes;
 import house.greenhouse.effectapi.api.variable.DataType;
 import house.greenhouse.effectapi.api.variable.Variable;
 import net.minecraft.world.entity.Entity;

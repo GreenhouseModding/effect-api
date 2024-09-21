@@ -2,7 +2,7 @@ package house.greenhouse.effectapi.api.variable;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import house.greenhouse.effectapi.api.EffectAPIDataTypes;
+import house.greenhouse.effectapi.impl.registry.EffectAPIDataTypes;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParam;
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;

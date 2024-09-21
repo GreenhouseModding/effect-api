@@ -1,6 +1,6 @@
 package house.greenhouse.effectapi.impl.network.clientbound;
 
-import house.greenhouse.effectapi.api.registry.EffectAPIRegistryKeys;
+import house.greenhouse.effectapi.impl.registry.EffectAPIRegistryKeys;
 import house.greenhouse.effectapi.api.resource.Resource;
 import house.greenhouse.effectapi.impl.EffectAPI;
 import net.minecraft.client.Minecraft;

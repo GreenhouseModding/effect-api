@@ -9,7 +9,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import house.greenhouse.effectapi.api.attachment.ResourcesAttachment;
-import house.greenhouse.effectapi.api.registry.EffectAPIRegistryKeys;
+import house.greenhouse.effectapi.impl.registry.EffectAPIRegistryKeys;
 import house.greenhouse.effectapi.api.resource.Resource;
 import house.greenhouse.effectapi.impl.EffectAPI;
 import house.greenhouse.effectapi.impl.attachment.ResourcesAttachmentImpl;

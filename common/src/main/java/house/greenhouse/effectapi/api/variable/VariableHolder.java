@@ -43,10 +43,6 @@ public interface VariableHolder<T> {
         return new VariableCodecWrapper<>(codec, variableCodec, VariableHolderImplClient::new);
     }
 
-    static <T> Codec<VariableHolder<T>> wrapListCodecForNetwork(Codec<T> codec, Codec<Variable<?>> variableCodec) {
-        return new VariableCodecWrapper<>(codec, variableCodec, VariableHolderImplClient::new);
-    }
-
     Map<List<JsonReference>, Object> getPreviousValues(LootContext context);
 
     /**

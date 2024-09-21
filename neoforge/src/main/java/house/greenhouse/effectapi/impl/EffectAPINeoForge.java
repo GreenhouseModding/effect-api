@@ -1,15 +1,15 @@
 package house.greenhouse.effectapi.impl;
 
 import house.greenhouse.effectapi.api.EffectAPIActionTypes;
-import house.greenhouse.effectapi.api.EffectAPIDataTypes;
-import house.greenhouse.effectapi.api.EffectAPIEffectTypes;
-import house.greenhouse.effectapi.api.EffectAPIModifierTypes;
-import house.greenhouse.effectapi.api.EffectAPIVariableTypes;
+import house.greenhouse.effectapi.impl.registry.EffectAPIDataTypes;
+import house.greenhouse.effectapi.impl.registry.EffectAPIEffectTypes;
+import house.greenhouse.effectapi.impl.registry.EffectAPIModifierTypes;
+import house.greenhouse.effectapi.impl.registry.EffectAPIVariableTypes;
 import house.greenhouse.effectapi.api.command.EntityResourceArgument;
 import house.greenhouse.effectapi.api.command.EntityResourceValueArgument;
-import house.greenhouse.effectapi.api.registry.EffectAPIPredicates;
-import house.greenhouse.effectapi.api.registry.EffectAPIRegistries;
-import house.greenhouse.effectapi.api.registry.EffectAPIRegistryKeys;
+import house.greenhouse.effectapi.impl.registry.EffectAPIPredicates;
+import house.greenhouse.effectapi.impl.registry.EffectAPIRegistries;
+import house.greenhouse.effectapi.impl.registry.EffectAPIRegistryKeys;
 import house.greenhouse.effectapi.api.resource.Resource;
 import house.greenhouse.effectapi.impl.attachment.EffectsAttachmentImpl;
 import house.greenhouse.effectapi.impl.network.clientbound.ChangeEntityResourceClientboundPacket;
@@ -28,7 +28,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
@@ -48,6 +48,11 @@ public class EffectAPINeoForge {
 
     @EventBusSubscriber(modid = EffectAPI.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
     public static class ModEvents {
+        @SubscribeEvent
+        public static void onFMLCommonSetup(FMLCommonSetupEvent event) {
+            EffectAPIDataTypes.registerArgumentTypes();
+        }
+
         @SubscribeEvent
         public static void registerContent(RegisterEvent event) {
             register(event, EffectAPIActionTypes::registerAll);

@@ -1,7 +1,7 @@
 package house.greenhouse.effectapi.api.effect;
 
 import com.mojang.serialization.Codec;
-import house.greenhouse.effectapi.api.registry.EffectAPILootContextParamSets;
+import house.greenhouse.effectapi.api.EffectAPILootContextContents;
 import house.greenhouse.effectapi.impl.EffectAPIEffectTypeInternals;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -52,7 +52,7 @@ public class EffectType<E> implements DataComponentType<E> {
     public static class Builder<E> {
         protected Codec<E> codec;
         protected BiFunction<Entity, ResourceLocation, LootContext> contextCreator = EffectAPIEffectTypeInternals::buildDefaultContext;
-        protected Collection<LootContextParam<?>> requiredParams = EffectAPILootContextParamSets.ENTITY.getRequired();
+        protected Collection<LootContextParam<?>> requiredParams = EffectAPILootContextContents.ENTITY.getRequired();
 
         protected Builder() {
 

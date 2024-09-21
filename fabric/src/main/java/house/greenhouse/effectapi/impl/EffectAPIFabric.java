@@ -1,14 +1,14 @@
 package house.greenhouse.effectapi.impl;
 
 import house.greenhouse.effectapi.api.EffectAPIActionTypes;
-import house.greenhouse.effectapi.api.EffectAPIDataTypes;
-import house.greenhouse.effectapi.api.EffectAPIEffectTypes;
-import house.greenhouse.effectapi.api.EffectAPIModifierTypes;
-import house.greenhouse.effectapi.api.EffectAPIVariableTypes;
+import house.greenhouse.effectapi.impl.registry.EffectAPIDataTypes;
+import house.greenhouse.effectapi.impl.registry.EffectAPIEffectTypes;
+import house.greenhouse.effectapi.impl.registry.EffectAPIModifierTypes;
+import house.greenhouse.effectapi.impl.registry.EffectAPIVariableTypes;
 import house.greenhouse.effectapi.api.command.EntityResourceArgument;
 import house.greenhouse.effectapi.api.command.EntityResourceValueArgument;
-import house.greenhouse.effectapi.api.registry.EffectAPIPredicates;
-import house.greenhouse.effectapi.api.registry.EffectAPIRegistryKeys;
+import house.greenhouse.effectapi.impl.registry.EffectAPIPredicates;
+import house.greenhouse.effectapi.impl.registry.EffectAPIRegistryKeys;
 import house.greenhouse.effectapi.api.resource.Resource;
 import house.greenhouse.effectapi.impl.attachment.EffectsAttachmentImpl;
 import house.greenhouse.effectapi.impl.network.clientbound.ChangeEntityResourceClientboundPacket;
@@ -38,6 +38,7 @@ public class EffectAPIFabric implements ModInitializer {
         DynamicRegistries.registerSynced(EffectAPIRegistryKeys.RESOURCE, Resource.DIRECT_CODEC);
         EffectAPIActionTypes.registerAll(Registry::register);
         EffectAPIDataTypes.registerAll(Registry::register);
+        EffectAPIDataTypes.registerArgumentTypes();
         EffectAPIEffectTypes.registerAll(Registry::register);
         EffectAPIModifierTypes.registerAll(Registry::register);
         EffectAPIPredicates.registerAll(Registry::register);

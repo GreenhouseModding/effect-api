@@ -1,4 +1,4 @@
-package house.greenhouse.effectapi.api.registry;
+package house.greenhouse.effectapi.impl.registry;
 
 import house.greenhouse.effectapi.api.predicate.EntityResourceCondition;
 import house.greenhouse.effectapi.impl.EffectAPI;

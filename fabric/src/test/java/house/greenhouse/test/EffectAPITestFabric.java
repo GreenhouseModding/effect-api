@@ -1,6 +1,6 @@
 package house.greenhouse.test;
 
-import house.greenhouse.effectapi.api.registry.EffectAPIRegistries;
+import house.greenhouse.effectapi.impl.registry.EffectAPIRegistries;
 import house.greenhouse.test.attachment.DataEffectsAttachment;
 import house.greenhouse.test.command.TestCommand;
 import house.greenhouse.test.effect.ParticleEffect;

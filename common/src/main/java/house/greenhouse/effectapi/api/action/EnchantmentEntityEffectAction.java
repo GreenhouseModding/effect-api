@@ -2,6 +2,7 @@ package house.greenhouse.effectapi.api.action;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import house.greenhouse.effectapi.api.EffectAPIActionTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -21,6 +22,7 @@ public record EnchantmentEntityEffectAction<T extends EnchantmentEntityEffect>(T
             EnchantmentEntityEffect.CODEC.fieldOf("effect").forGetter(EnchantmentEntityEffectAction::effect),
             EquipmentSlot.CODEC.optionalFieldOf("slot").forGetter(EnchantmentEntityEffectAction::slot)
     ).apply(inst, EnchantmentEntityEffectAction::new));
+    public static final ActionType<EnchantmentEntityEffectAction<?>> TYPE = new ActionType<>(paramSet -> CODEC);
 
     @Override
     public void apply(LootContext context) {
@@ -46,7 +48,7 @@ public record EnchantmentEntityEffectAction<T extends EnchantmentEntityEffect>(T
     }
 
     @Override
-    public MapCodec<? extends EffectAPIAction> codec() {
-        return CODEC;
+    public ActionType<?> type() {
+        return TYPE;
     }
 }

@@ -1,14 +1,8 @@
 package house.greenhouse.effectapi.impl;
 
-import com.mojang.datafixers.util.Pair;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import house.greenhouse.effectapi.api.EffectAPIVariableTypes;
 import house.greenhouse.effectapi.api.effect.EffectType;
-import house.greenhouse.effectapi.api.registry.EffectAPILootContextParamSets;
-import house.greenhouse.effectapi.api.registry.EffectAPILootContextParams;
-import house.greenhouse.effectapi.api.variable.VariableHolder;
-import house.greenhouse.effectapi.impl.effect.EffectHolderImpl;
+import house.greenhouse.effectapi.api.EffectAPILootContextContents;
 import house.greenhouse.effectapi.mixin.DataComponentMapBuilderAccessor;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
@@ -34,8 +28,8 @@ public class EffectAPIEffectTypeInternals {
         LootParams.Builder params = new LootParams.Builder((ServerLevel) entity.level());
         params.withParameter(LootContextParams.THIS_ENTITY, entity);
         params.withParameter(LootContextParams.ORIGIN, entity.position());
-        params.withOptionalParameter(EffectAPILootContextParams.SOURCE, source);
-        return new LootContext.Builder(params.create(EffectAPILootContextParamSets.ENTITY)).create(Optional.empty());
+        params.withOptionalParameter(EffectAPILootContextContents.SOURCE, source);
+        return new LootContext.Builder(params.create(EffectAPILootContextContents.ENTITY)).create(Optional.empty());
     }
 
     public static DataResult<DataComponentMap> encodeComponents(Map<EffectType<?>, ?> componentTypes) {

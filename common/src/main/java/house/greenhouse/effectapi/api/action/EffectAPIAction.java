@@ -30,7 +30,7 @@ public interface EffectAPIAction {
     Collection<LootContextParam<?>> requiredParams();
 
     /**
-     * The codec used for (de)serializing this action.
+     * The type of this action.
      */
-    MapCodec<? extends EffectAPIAction> codec();
+    ActionType<?> type();
 }

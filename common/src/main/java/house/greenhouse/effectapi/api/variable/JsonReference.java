@@ -9,10 +9,10 @@ public interface JsonReference {
      * @param key   The key of the array in the overhead object.
      * @param index The index of the value to get in the array.
      */
-    static JsonReference createArray(String key, int index) {
+    static JsonReference createArrayInObject(String key, int index) {
         if (index < 0)
             throw new IllegalStateException("Cannot create an array value with an index less than 0.");
-        return new ArrayWithValue(key, index);
+        return new ArrayInObject(key, index);
     }
 
     static JsonReference createArrayValue(int index) {
@@ -25,16 +25,16 @@ public interface JsonReference {
         return new Object(key);
     }
 
-    default boolean isCombined() {
-        return index() > -1 && !key().isEmpty();
+    default boolean isArrayInObject() {
+        return this instanceof ArrayInObject;
     }
 
-    default boolean isArray() {
-        return index() > -1 && key().isEmpty();
+    default boolean isArrayValue() {
+        return this instanceof ArrayValue;
     }
 
     default boolean isObject() {
-        return index() == -1 && !key().isEmpty();
+        return this instanceof Object;
     }
 
     default int index() {
@@ -45,7 +45,7 @@ public interface JsonReference {
         return "";
     }
 
-    record ArrayWithValue(String key, int index) implements JsonReference {
+    record ArrayInObject(String key, int index) implements JsonReference {
         @Override
         public int index() {
             return index;

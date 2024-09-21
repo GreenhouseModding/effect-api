@@ -2,11 +2,11 @@ package house.greenhouse.effectapi.impl.effect;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import house.greenhouse.effectapi.api.EffectAPIEffectTypes;
+import house.greenhouse.effectapi.api.EffectAPILootContextContents;
+import house.greenhouse.effectapi.impl.registry.EffectAPIEffectTypes;
 import house.greenhouse.effectapi.api.EntityResourceAPI;
 import house.greenhouse.effectapi.api.effect.EffectType;
 import house.greenhouse.effectapi.api.effect.ResourceEffect;
-import house.greenhouse.effectapi.api.registry.EffectAPILootContextParams;
 import house.greenhouse.effectapi.api.resource.Resource;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.Entity;
@@ -25,17 +25,14 @@ public class EntityResourceEffect<T> extends ResourceEffect<T> {
     @Override
     public void onAdded(LootContext lootContext) {
         Entity entity = lootContext.getParam(LootContextParams.THIS_ENTITY);
-        EntityResourceAPI.addResourceValue(entity, resource, EntityResourceAPI.hasResource(entity, resource) ? EntityResourceAPI.getResourceValue(entity, resource) : resource.value().defaultValue(), lootContext.getParam(EffectAPILootContextParams.SOURCE));
+        EntityResourceAPI.addResourceValue(entity, resource, EntityResourceAPI.hasResource(entity, resource) ? EntityResourceAPI.getResourceValue(entity, resource) : resource.value().defaultValue(), lootContext.getParam(EffectAPILootContextContents.SOURCE));
     }
 
     @Override
     public void onRemoved(LootContext lootContext) {
         Entity entity = lootContext.getParam(LootContextParams.THIS_ENTITY);
-        EntityResourceAPI.removeResource(entity, resource, lootContext.getParam(EffectAPILootContextParams.SOURCE));
+        EntityResourceAPI.removeResource(entity, resource, lootContext.getParam(EffectAPILootContextContents.SOURCE));
     }
-
-    @Override
-    public void onRefreshed(LootContext context) {}
 
     @Override
     public EffectType<?> type() {

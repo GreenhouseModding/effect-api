@@ -1,6 +1,7 @@
 package house.greenhouse.effectapi.impl.network.clientbound;
 
-import house.greenhouse.effectapi.api.EffectAPIEffectTypes;
+import house.greenhouse.effectapi.api.EffectAPICodecs;
+import house.greenhouse.effectapi.impl.registry.EffectAPIEffectTypes;
 import house.greenhouse.effectapi.impl.EffectAPI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponentMap;
@@ -17,13 +18,13 @@ public record SyncEntityEffectsAttachmentClientboundPacket(int entityId, DataCom
     public static final StreamCodec<RegistryFriendlyByteBuf, SyncEntityEffectsAttachmentClientboundPacket> STREAM_CODEC = StreamCodec.of(SyncEntityEffectsAttachmentClientboundPacket::write, SyncEntityEffectsAttachmentClientboundPacket::new);
 
     public SyncEntityEffectsAttachmentClientboundPacket(RegistryFriendlyByteBuf buf) {
-        this(buf.readInt(), ByteBufCodecs.fromCodecWithRegistries(EffectAPIEffectTypes.CODEC).decode(buf), ByteBufCodecs.fromCodecWithRegistries(EffectAPIEffectTypes.CODEC).decode(buf));
+        this(buf.readInt(), ByteBufCodecs.fromCodecWithRegistries(EffectAPICodecs.EFFECT_MAP).decode(buf), ByteBufCodecs.fromCodecWithRegistries(EffectAPICodecs.EFFECT_MAP).decode(buf));
     }
 
     public static void write(RegistryFriendlyByteBuf buf, SyncEntityEffectsAttachmentClientboundPacket packet) {
         buf.writeInt(packet.entityId);
-        ByteBufCodecs.fromCodecWithRegistries(EffectAPIEffectTypes.CODEC).encode(buf, packet.combinedComponents);
-        ByteBufCodecs.fromCodecWithRegistries(EffectAPIEffectTypes.CODEC).encode(buf, packet.activeComponents);
+        ByteBufCodecs.fromCodecWithRegistries(EffectAPICodecs.EFFECT_MAP).encode(buf, packet.combinedComponents);
+        ByteBufCodecs.fromCodecWithRegistries(EffectAPICodecs.EFFECT_MAP).encode(buf, packet.activeComponents);
     }
 
     public void handle() {

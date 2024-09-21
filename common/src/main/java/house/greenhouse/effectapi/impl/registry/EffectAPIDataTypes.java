@@ -1,8 +1,7 @@
-package house.greenhouse.effectapi.api;
+package house.greenhouse.effectapi.impl.registry;
 
 import com.mojang.brigadier.arguments.*;
 import com.mojang.serialization.Codec;
-import house.greenhouse.effectapi.api.registry.EffectAPIRegistries;
 import house.greenhouse.effectapi.api.variable.DataType;
 import house.greenhouse.effectapi.impl.EffectAPI;
 import house.greenhouse.effectapi.impl.registry.internal.RegistrationCallback;
@@ -25,8 +24,6 @@ public class EffectAPIDataTypes {
         callback.register(EffectAPIRegistries.DATA_TYPE, EffectAPI.asResource("float"), FLOAT);
         callback.register(EffectAPIRegistries.DATA_TYPE, EffectAPI.asResource("int"), INT);
         callback.register(EffectAPIRegistries.DATA_TYPE, EffectAPI.asResource("string"), STRING);
-
-        registerArgumentTypes();
     }
 
     public static void registerArgumentTypes() {
@@ -37,9 +34,9 @@ public class EffectAPIDataTypes {
         registerArgumentType(STRING, StringArgumentType.string());
     }
 
-    public static <T> void registerArgumentType(DataType<?> dataType, ArgumentType<T> argumentType) {
+    public static <T> void registerArgumentType(DataType<T> dataType, ArgumentType<T> argumentType) {
         if (ARGUMENT_TYPES.containsKey(dataType))
-            throw new UnsupportedOperationException("Data type \"" + EffectAPIRegistries.DATA_TYPE.getKey(dataType) + "\" has not been registered.");
+            throw new UnsupportedOperationException("An argument type for \"" + EffectAPIRegistries.DATA_TYPE.getKey(dataType) + "\" has already been registered.");
         ARGUMENT_TYPES.put(dataType, argumentType);
     }
 

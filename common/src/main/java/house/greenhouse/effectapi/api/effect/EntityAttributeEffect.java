@@ -3,7 +3,7 @@ package house.greenhouse.effectapi.api.effect;
 import com.google.common.collect.HashMultimap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import house.greenhouse.effectapi.api.EffectAPIEffectTypes;
+import house.greenhouse.effectapi.impl.registry.EffectAPIEffectTypes;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;

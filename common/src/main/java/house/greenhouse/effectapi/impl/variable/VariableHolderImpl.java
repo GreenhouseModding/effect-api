@@ -77,13 +77,13 @@ public class VariableHolderImpl<T> implements VariableHolder<T> {
             JsonReference key = keys.get(i);
             if (i == keys.size() - 1) {
                 JsonElement newElement = ((Codec<Object>)variable.dataType().codec()).encodeStart(JsonOps.INSTANCE, value).getOrThrow();
-                if (key.index() > -1)
+                if (key.isArrayValue())
                     currentElement.getAsJsonArray().set(key.index(), newElement);
                 else
                     currentElement.getAsJsonObject().add(key.key(), newElement);
                 break;
             }
-            if (key.index() > -1)
+            if (key.isArrayValue())
                 currentElement = currentElement.getAsJsonArray().get(key.index());
             else
                 currentElement = currentElement.getAsJsonObject().get(key.key());

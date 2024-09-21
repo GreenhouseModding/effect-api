@@ -5,9 +5,10 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import house.greenhouse.effectapi.api.EffectAPIDataTypes;
-import house.greenhouse.effectapi.api.EffectAPIModifierTypes;
-import house.greenhouse.effectapi.api.EffectAPIVariableTypes;
+import house.greenhouse.effectapi.api.EffectAPICodecs;
+import house.greenhouse.effectapi.impl.registry.EffectAPIDataTypes;
+import house.greenhouse.effectapi.impl.registry.EffectAPIModifierTypes;
+import house.greenhouse.effectapi.impl.registry.EffectAPIVariableTypes;
 import house.greenhouse.effectapi.api.modifier.Modifier;
 import house.greenhouse.effectapi.impl.EffectAPI;
 import house.greenhouse.effectapi.mixin.LootContextAccessor;
@@ -21,12 +22,12 @@ import java.util.Optional;
 
 public class ModifierVariable implements Variable<Double> {
     public static final MapCodec<ModifierVariable> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
-            Codec.either(Codec.DOUBLE, EffectAPIVariableTypes.CODEC.flatXmap(variable -> {
+            Codec.either(Codec.DOUBLE, EffectAPICodecs.VARIABLE.flatXmap(variable -> {
                 if (variable.dataType().validationValue() instanceof Number)
                     return DataResult.success((Variable<Number>)variable);
                 return DataResult.error(() -> "Base field of modifier variable type must be either a standalone number or a number based variable.");
                 }, DataResult::success)).fieldOf("base").forGetter(ModifierVariable::base),
-            EffectAPIModifierTypes.CODEC.listOf().fieldOf("modifiers").forGetter(ModifierVariable::modifiers)
+            EffectAPICodecs.MODIFIER.listOf().fieldOf("modifiers").forGetter(ModifierVariable::modifiers)
     ).apply(inst, ModifierVariable::new));
 
     private final Either<Double, Variable<Number>> base;

@@ -1,8 +1,7 @@
 package house.greenhouse.effectapi.api.effect;
 
-import net.minecraft.core.component.DataComponentType;
+import house.greenhouse.effectapi.impl.registry.EffectAPIEffectTypes;
 import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 
 /**
  * A generic effect interface.
@@ -14,7 +13,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
  * <br>
  * Effects must be registered to a respective registry in order to work.
  *
- * @see house.greenhouse.effectapi.api.EffectAPIEffectTypes
+ * @see EffectAPIEffectTypes
  * @see LootContext
  */
 public interface EffectAPIEffect {

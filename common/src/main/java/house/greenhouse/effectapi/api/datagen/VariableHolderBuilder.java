@@ -56,17 +56,17 @@ public class VariableHolderBuilder<T> {
             JsonReference key = keys.get(i);
             if (i == keys.size() - 1) {
                 JsonElement newElement = variableCodec.encodeStart(JsonOps.INSTANCE, variable).getOrThrow();
-                if (key.isCombined())
+                if (key.isArrayInObject())
                     currentElement.getAsJsonObject().get(key.key()).getAsJsonArray().set(key.index(), newElement);
-                else if (key.isArray())
+                else if (key.isArrayValue())
                     currentElement.getAsJsonArray().set(key.index(), newElement);
                 else
                     currentElement.getAsJsonObject().add(key.key(), newElement);
                 break;
             }
-            if (key.isCombined())
+            if (key.isArrayInObject())
                 currentElement = currentElement.getAsJsonObject().get(key.key()).getAsJsonArray().get(key.index());
-            else if (key.isArray())
+            else if (key.isArrayValue())
                 currentElement = currentElement.getAsJsonArray().get(key.index());
             else
                 currentElement = currentElement.getAsJsonObject().get(key.key());
