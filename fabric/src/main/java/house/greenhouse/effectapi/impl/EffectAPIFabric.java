@@ -50,6 +50,8 @@ public class EffectAPIFabric implements ModInitializer {
             setServer(null);
         });
 
+        registerEffectAttachmentEvents();
+
         PayloadTypeRegistry.playS2C().register(ChangeEntityResourceClientboundPacket.TYPE, ChangeEntityResourceClientboundPacket.STREAM_CODEC);
         PayloadTypeRegistry.playS2C().register(SyncEntityEffectsAttachmentClientboundPacket.TYPE, SyncEntityEffectsAttachmentClientboundPacket.STREAM_CODEC);
         PayloadTypeRegistry.playS2C().register(SyncEntityResourcesAttachmentClientboundPacket.TYPE, SyncEntityResourcesAttachmentClientboundPacket.STREAM_CODEC);
@@ -60,7 +62,7 @@ public class EffectAPIFabric implements ModInitializer {
 
     private static void registerEffectAttachmentEvents() {
         ServerEntityEvents.ENTITY_LOAD.addPhaseOrdering(EFFECT_API_BEFORE_EVENT, Event.DEFAULT_PHASE);
-        ServerEntityEvents.ENTITY_LOAD.register((trackedEntity, player) -> {
+        ServerEntityEvents.ENTITY_LOAD.register(EFFECT_API_BEFORE_EVENT, (trackedEntity, player) -> {
             if (trackedEntity.hasAttached(EffectAPIAttachments.EFFECTS)) {
                 EffectsAttachmentImpl attachment = (EffectsAttachmentImpl) trackedEntity.getAttached(EffectAPIAttachments.EFFECTS);
                 attachment.init(trackedEntity);
@@ -71,7 +73,7 @@ public class EffectAPIFabric implements ModInitializer {
                 EffectAPI.getHelper().sendClientboundTracking(new SyncEntityResourcesAttachmentClientboundPacket(trackedEntity.getId(), trackedEntity.getAttached(EffectAPIAttachments.RESOURCES)), trackedEntity);
         });
         EntityTrackingEvents.START_TRACKING.addPhaseOrdering(EFFECT_API_BEFORE_EVENT, Event.DEFAULT_PHASE);
-        EntityTrackingEvents.START_TRACKING.register((trackedEntity, player) -> {
+        EntityTrackingEvents.START_TRACKING.register(EFFECT_API_BEFORE_EVENT, (trackedEntity, player) -> {
             if (trackedEntity.hasAttached(EffectAPIAttachments.EFFECTS)) {
                 EffectsAttachmentImpl attachment = (EffectsAttachmentImpl) trackedEntity.getAttached(EffectAPIAttachments.EFFECTS);
                 attachment.sync(player);
@@ -80,7 +82,7 @@ public class EffectAPIFabric implements ModInitializer {
                 ServerPlayNetworking.send(player, new SyncEntityResourcesAttachmentClientboundPacket(trackedEntity.getId(), trackedEntity.getAttached(EffectAPIAttachments.RESOURCES)));
         });
         ServerPlayerEvents.AFTER_RESPAWN.addPhaseOrdering(EFFECT_API_BEFORE_EVENT, Event.DEFAULT_PHASE);
-        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
+        ServerPlayerEvents.AFTER_RESPAWN.register(EFFECT_API_BEFORE_EVENT, (oldPlayer, newPlayer, alive) -> {
             if (oldPlayer.hasAttached(EffectAPIAttachments.EFFECTS)) {
                 newPlayer.setAttached(EffectAPIAttachments.EFFECTS, oldPlayer.getAttached(EffectAPIAttachments.EFFECTS));
                 EffectsAttachmentImpl attachment = (EffectsAttachmentImpl) newPlayer.getAttached(EffectAPIAttachments.EFFECTS);
